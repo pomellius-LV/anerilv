@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Language, Content } from '../types';
 
@@ -10,17 +11,28 @@ const SchemaMarkup: React.FC<SchemaMarkupProps> = ({ content, lang }) => {
   const schemaData = {
     "@context": "https://schema.org",
     "@type": "BeautySalon",
+    "@id": "https://aneri.lv",
     "name": "Salons Aneri",
-    "image": "photos/og-image.jpg",
+    "url": "https://aneri.lv",
+    "image": "https://aneri-icon.pages.dev/photo/facade.jpg",
+    "telephone": "+371 27580047",
+    "sameAs": [
+      "https://www.instagram.com/salons_aneri/",
+      "https://www.facebook.com/61568612101531/about/"
+    ],
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Latgales iela 264",
       "addressLocality": "Rīga",
+      "addressRegion": "Ķengarags",
       "postalCode": "LV-1063",
       "addressCountry": "LV"
     },
-    "priceRange": "$$",
-    "telephone": "+371 27580047",
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 56.9085003,
+      "longitude": 24.1822941
+    },
     "openingHoursSpecification": [
       {
         "@type": "OpeningHoursSpecification",
@@ -29,16 +41,56 @@ const SchemaMarkup: React.FC<SchemaMarkupProps> = ({ content, lang }) => {
           "Tuesday",
           "Wednesday",
           "Thursday",
-          "Friday"
+          "Friday",
+          "Saturday"
         ],
         "opens": "09:00",
         "closes": "20:00"
       },
       {
         "@type": "OpeningHoursSpecification",
-        "dayOfWeek": "Saturday",
+        "dayOfWeek": "Sunday",
         "opens": "10:00",
-        "closes": "18:00"
+        "closes": "16:00"
+      }
+    ],
+    "priceRange": "$$",
+    "paymentAccepted": "Cash",
+    "makesOffer": [
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Frizētavas pakalpojumi / Hairdressing / Парикмахерские услуги"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Manikīrs un Pedikīrs / Manicure & Pedicure / Маникюр и Педикюр"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Solārijs / Solarium / Солярий"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Permanentais grims / Permanent Makeup / Перманентный макияж"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Kosmetoloģija / Cosmetology / Косметология"
+        }
       }
     ]
   };

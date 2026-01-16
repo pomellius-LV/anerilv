@@ -1,6 +1,7 @@
+
 User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://salonsaneri.lv/sitemap.xml
-Host: https://salonsaneri.lv
+Sitemap: https://aneri.lv/sitemap.xml
+Host: https://aneri.lv

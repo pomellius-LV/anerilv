@@ -6,7 +6,7 @@ export const contentData: Record<Language, Content> = {
     meta: {
       title: "Cenrādis - Salons Aneri Ķengarāgā | Matu griezumi, Manikīrs, Solārijs",
       description: "Pilns Salona Aneri pakalpojumu cenrādis. Matu griezumi, manikīrs, pedikīrs, vaksācija, permanentais grims, kosmetoloģija un solārijs.",
-      keywords: "cenrādis frizētava, manikīra cenas rīga, pedikīrs cena, vaksācija cenas, pīlings cena, permanentais grims rīga, solārijs ķengarags",
+      keywords: "cenrādis frizētava ķengarags, manikīra cenas rīga, pedikīrs cena, vaksācija cenas, pīlings cena, permanentais grims rīga, solārijs ķengarags, frizieris rīga, bērnu frizētava, matu krāsošana, airtouch rīga, gelish manikīrs, skaistumkopšanas salons",
     },
     nav: {
       home: "Sākums",
@@ -330,7 +330,7 @@ export const contentData: Record<Language, Content> = {
     meta: {
       title: "Прайс-лист - Салон Aneri в Кенгарагсе | Цены на стрижки, Маникюр, Солярий",
       description: "Полный прайс-лист услуг салона Aneri. Стрижки для женщин, мужчин, детей и пенсионеров. Маникюр, педикюр, ваксация, перманентный макияж и солярий.",
-      keywords: "цены парикмахерская рига, стоимость маникюра, педикюр цена, ваксация цены рига, покраска волос стоимость, пилинг рига, солярий кенгарагс",
+      keywords: "парикмахерская рига, парикмахерская кенгарагс, цены на стрижки, маникюр рига, гель-лак, педикюр цена, ваксация рига, глубокое бикини, пилинг лица, перманентный макияж брови губы, солярий кенгарагс, мужская стрижка, детская стрижка, покраска волос airtouch, салон красоты рига",
     },
     nav: {
       home: "Главная",
@@ -640,7 +640,7 @@ export const contentData: Record<Language, Content> = {
     meta: {
       title: "Price List - Aneri Salon Riga | Haircuts, Manicure, Solarium",
       description: "Full service price list for Aneri Salon. Haircuts for women, men, and kids. Manicure, pedicure, waxing, permanent makeup and solarium in Riga.",
-      keywords: "hairdresser prices riga, manicure cost, beauty salon riga, waxing riga, solarium kengarags",
+      keywords: "hair salon riga, beauty salon kengarags, hairdresser riga, manicure cost, gel polish, pedicure, waxing riga, brazilian wax, facial peel, permanent makeup riga, solarium kengarags, mens haircut, kids haircut, hair coloring airtouch, local beauty salon",
     },
     nav: {
       home: "Home",
