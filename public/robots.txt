@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://salonsaneri.lv/sitemap.xml
+Host: https://salonsaneri.lv

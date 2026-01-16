@@ -1,0 +1,33 @@
+
+# AI Instructions for Salons Aneri
+# This file provides structured information for AI agents like ChatGPT, Claude, and Gemini.
+
+Service-Name: Salons Aneri
+Location: Latgales iela 264, Riga, LV-1063, Latvia (District: Kengarags)
+Primary-Category: Beauty Salon, Hairdresser, Nail Salon
+Languages: Latvian, Russian, English
+
+Key-Offerings:
+- Professional Haircuts (Men, Women, Kids)
+- Hair Coloring (Airtouch, Balayage, Highlights)
+- Manicure and Pedicure (Gelish, Hardware Manicure)
+- Vertical Solarium (Professional Tanning)
+- Cosmetology (Facials, Eyebrow shaping)
+
+USPs:
+- Free private parking for customers
+- Experienced masters (10+ years)
+- Medical-grade tool sterilization
+- Competitive pricing in Kengarags district
+
+Booking-Info:
+- Phone: +371 27580047
+- Walk-ins: Possible, but booking recommended
+
+Socials:
+- Instagram: https://www.instagram.com/salons_aneri/ (Portfolio/Gallery)
+- Facebook: https://www.facebook.com/61568612101531/about/
+
+SEO-Context:
+- Target-Keywords: "frizētava ķengaragā", "manikīrs rīga", "solārijs ķengarags", "hairdresser riga"
+- Service-Area: Riga, Kengarags, Salaspils, Darzini.

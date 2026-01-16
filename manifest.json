@@ -1,0 +1,23 @@
+
+{
+  "name": "Salons Aneri",
+  "short_name": "Salons Aneri",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#FAFAF9",
+  "theme_color": "#9F1239",
+  "description": "Skaistumkopšanas salons Rīgā, Ķengarāgā.",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://aneri-icon.pages.dev/PWA/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://aneri-icon.pages.dev/PWA/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
