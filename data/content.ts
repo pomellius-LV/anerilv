@@ -6,7 +6,7 @@ export const contentData: Record<Language, Content> = {
     meta: {
       title: "Cenrādis - Salons Aneri Ķengarāgā | Matu griezumi, Manikīrs, Solārijs",
       description: "Pilns Salona Aneri pakalpojumu cenrādis. Matu griezumi, manikīrs, pedikīrs, vaksācija, permanentais grims, kosmetoloģija un solārijs.",
-      keywords: "cenrādis frizētava ķengarags, manikīra cenas rīga, pedikīrs cena, vaksācija cenas, pīlings cena, permanentais grims rīga, solārijs ķengarags, frizieris rīga, bērnu frizētava, matu krāsošana, airtouch rīga, gelish manikīrs, skaistumkopšanas salons",
+      keywords: "cenrādis frizētava ķengarags, manikīra cenas rīga, pedikīrs cena, vaksācija cenas, pīlings cena, permanentais grims rīga, solārijs ķengarags, frizieris rīga, bērnu frizētava, matu krāsošana, airtouch rīga, gelish manikīrs, skaistumkopšanas salons, Matrix, L'Oreal, Loreal",
     },
     nav: {
       home: "Sākums",
@@ -223,15 +223,15 @@ export const contentData: Record<Language, Content> = {
           sectionTitle: "5. Vaksācija",
           categories: [
             {
-              title: "Зonas",
+              title: "Zonas",
               services: [
                 { name: "Sejas zona", price: "7.00 - 12.00 €" },
                 { name: "Paduses", price: "10.00 - 12.00 €" },
                 { name: "Rokas", price: "12.00 - 18.00 €" },
                 { name: "Kājas līdz ceļiem", price: "15.00 - 20.00 €" },
                 { name: "Kājas visā garumā", price: "18.00 - 25.00 €" },
-                { name: "Бикини (классическое)", price: "14.00 - 18.00 €" },
-                { name: "Бикини (глубокое)", price: "25.00 - 30.00 €" },
+                { name: "Bikini (klasiskais)", price: "14.00 - 18.00 €" },
+                { name: "Bikini (dziļais)", price: "25.00 - 30.00 €" },
               ]
             }
           ]
@@ -287,7 +287,7 @@ export const contentData: Record<Language, Content> = {
           categoryTitle: "Procedūras un Materiāli",
           items: [
             { question: "Vai jūs veicat sarežģītas matu krāsošanas?", answer: "Jā, mūsu meistari specializējas Airtouch, Balayage, Šatuš un citās mūsdienīgās tehnikās. Precīzu cenu un laiku var noteikt konsultācijā." },
-            { question: "Kādu kosmētiku jūs izmantojat?", answer: "Darbā izmantojam tikai profesionālu un sertificētu kosmētiku no vadošajiem zīmoliem, lai garantētu noturīgu rezultātu un matu/ādas veselību." },
+            { question: "Kādu kosmētiku jūs izmantojat?", answer: "Darbā izmantojam tikai profesionālu un sertificētu kosmētiku (t.sk. Matrix, L'Oreal Professional), lai garantētu noturīgu rezultātu un matu/ādas veselību." },
             { question: "Vai solārija lampas ir drošas?", answer: "Mēs regulāri veicam lampu maiņu un apkopi, lai nodrošinātu drošu un efektīvu iedegumu, ievērojot ES normas." }
           ]
         },
@@ -331,7 +331,7 @@ export const contentData: Record<Language, Content> = {
     meta: {
       title: "Прайс-лист - Салон Aneri в Кенгарагсе | Цены на стрижки, Маникюр, Солярий",
       description: "Полный прайс-лист услуг салона Aneri. Стрижки для женщин, мужчин, детей и пенсионеров. Маникюр, педикюр, ваксация, перманентный макияж и солярий.",
-      keywords: "парикмахерская рига, парикмахерская кенгарагс, цены на стрижки, маникюр рига, гель-лак, педикюр цена, ваксация рига, глубокое бикини, пилинг лица, перманентный макияж брови губы, солярий кенгарагс, мужская стрижка, детская стрижка, покраска волос airtouch, салон красоты рига",
+      keywords: "парикмахерская рига, парикмахерская кенгарагс, цены на стрижки, маникюр рига, гель-лак, педикюр цена, ваксация рига, глубокое бикини, пилинг лица, перманентный макияж брови губы, солярий кенгарагс, мужская стрижка, детская стрижка, покраска волос airtouch, салон красоты рига, Matrix, L'Oreal, Loreal",
     },
     nav: {
       home: "Главная",
@@ -607,7 +607,7 @@ export const contentData: Record<Language, Content> = {
           categoryTitle: "Процедуры и Безопасность",
           items: [
             { question: "Делаете ли вы сложные окрашивания?", answer: "Да, наши мастера выполняют сложные техники: Airtouch, Balayage, Шатуш. Точная цена и время определяются на консультации." },
-            { question: "Какую косметику вы используете?", answer: "Мы работаем только с сертифицированной профессиональной косметикой от ведущих брендов, что гарантирует качество и безопасность." },
+            { question: "Какую косметику вы используете?", answer: "Мы работаем только с сертифицированной профессиональной косметикой от ведущих брендов (в т.ч. Matrix, L'Oreal Professional), что гарантирует качество и безопасность." },
             { question: "Безопасен ли солярий?", answer: "Мы регулярно меняем лампы и следим за их ресурсом, чтобы загар был эффективным и безопасным в соответствии с нормами ЕС." }
           ]
         },
@@ -641,7 +641,7 @@ export const contentData: Record<Language, Content> = {
     meta: {
       title: "Price List - Aneri Salon Riga | Haircuts, Manicure, Solarium",
       description: "Full service price list for Aneri Salon. Haircuts for women, men, and kids. Manicure, pedicure, waxing, permanent makeup and solarium in Riga.",
-      keywords: "hair salon riga, beauty salon kengarags, hairdresser riga, manicure cost, gel polish, pedicure, waxing riga, brazilian wax, facial peel, permanent makeup riga, solarium kengarags, mens haircut, kids haircut, hair coloring airtouch, local beauty salon",
+      keywords: "hair salon riga, beauty salon kengarags, hairdresser riga, manicure cost, gel polish, pedicure, waxing riga, brazilian wax, facial peel, permanent makeup riga, solarium kengarags, mens haircut, kids haircut, hair coloring airtouch, local beauty salon, Matrix, L'Oreal, Loreal",
     },
     nav: {
       home: "Home",
@@ -871,7 +871,7 @@ export const contentData: Record<Language, Content> = {
           categoryTitle: "Procedures & Safety",
           items: [
             { question: "Do you do complex coloring?", answer: "Yes, our masters specialize in Airtouch, Balayage, Shatush. Exact price and time are determined during consultation." },
-            { question: "What cosmetics do you use?", answer: "We use only professional certified cosmetics from leading brands." },
+            { question: "What cosmetics do you use?", answer: "We use only professional certified cosmetics from leading brands (incl. Matrix, L'Oreal Professional)." },
             { question: "Is the solarium safe?", answer: "We regularly change lamps and maintain equipment to ensure safe tanning according to EU standards." }
           ]
         },

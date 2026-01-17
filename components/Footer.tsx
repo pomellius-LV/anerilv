@@ -138,7 +138,7 @@ const Footer: React.FC<FooterProps> = ({ content, setView }) => {
         </div>
         
         <div className="pt-10 border-t border-stone-200 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] uppercase tracking-[0.25em] font-bold text-stone-500">
-           <p>&copy; {new Date().getFullYear()} {footer.copyright} <span className="opacity-50 ml-2 normal-case tracking-normal">v1.08</span></p>
+           <p>&copy; {new Date().getFullYear()} {footer.copyright} <span className="opacity-50 ml-2 normal-case tracking-normal">v1.09</span></p>
            <div className="flex gap-10">
               <button onClick={() => setView('terms')} className="hover:text-primary transition-colors focus:outline-none">{footer.termsLabel}</button>
               <button onClick={() => setView('privacy')} className="hover:text-primary transition-colors focus:outline-none">{footer.privacyLabel}</button>
