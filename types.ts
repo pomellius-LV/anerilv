@@ -111,5 +111,6 @@ export interface Content {
   cookie: {
     text: string;
     btn: string;
+    declineBtn: string; // NEW: Button for declining cookies
   };
 }

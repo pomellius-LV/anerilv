@@ -324,6 +324,7 @@ export const contentData: Record<Language, Content> = {
     cookie: {
       text: "Mēs izmantojam sīkdatnes labākai pieredzei.",
       btn: "Labi",
+      declineBtn: "Noraidīt",
     },
   },
   ru: {
@@ -634,7 +635,7 @@ export const contentData: Record<Language, Content> = {
       termsLabel: "Правила",
       privacyLabel: "Приватность",
     },
-    cookie: { text: "Мы используем куки для вашего удобства.", btn: "ОК" },
+    cookie: { text: "Мы используем куки для вашего удобства.", btn: "ОК", declineBtn: "Отказаться" },
   },
   en: {
     meta: {
@@ -898,6 +899,6 @@ export const contentData: Record<Language, Content> = {
       termsLabel: "Terms",
       privacyLabel: "Privacy",
     },
-    cookie: { text: "We use cookies for the best experience.", btn: "Accept" },
+    cookie: { text: "We use cookies for the best experience.", btn: "Accept", declineBtn: "Decline" },
   },
 };
