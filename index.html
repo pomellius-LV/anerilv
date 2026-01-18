@@ -2,13 +2,36 @@
 <!DOCTYPE html>
 <html lang="lv">
   <head>
-    <!-- Google Tag Manager -->
+    <!-- 1. Google Consent Mode (Must be first) -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      // Default to denied to comply with privacy laws
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied'
+      });
+    </script>
+
+    <!-- 2. Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-PLG2CXH4');</script>
     <!-- End Google Tag Manager -->
+
+    <!-- 3. Google Analytics (GA4) - Fixed ID G-HTJBX98E4Z -->
+    <!-- This ensures the tag is found by Google bots immediately -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-HTJBX98E4Z"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-HTJBX98E4Z');
+    </script>
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />

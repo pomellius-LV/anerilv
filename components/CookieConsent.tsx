@@ -6,40 +6,12 @@ interface CookieConsentProps {
   content: Content;
 }
 
-// Add types for Google Analytics to prevent TypeScript errors
 declare global {
   interface Window {
     dataLayer: any[];
     gtag: (...args: any[]) => void;
   }
 }
-
-const GA_MEASUREMENT_ID = 'G-HTJBX98E4Z';
-
-const loadGoogleAnalytics = () => {
-  // Prevent loading if already loaded
-  if (document.getElementById('google-analytics')) return;
-
-  // 1. Load the external script tag
-  const script = document.createElement('script');
-  script.id = 'google-analytics';
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
-  document.head.appendChild(script);
-
-  // 2. Initialize the DataLayer and Config
-  window.dataLayer = window.dataLayer || [];
-  function gtag(...args: any[]) {
-    window.dataLayer.push(args);
-  }
-  // Attach helper to window so it can be used elsewhere if needed
-  window.gtag = gtag;
-
-  gtag('js', new Date());
-  gtag('config', GA_MEASUREMENT_ID);
-  
-  console.log('Google Analytics loaded successfully');
-};
 
 const CookieConsent: React.FC<CookieConsentProps> = ({ content }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -48,19 +20,24 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ content }) => {
     try {
       const consent = localStorage.getItem('cookie-consent');
       if (consent === 'granted') {
-        // Consent previously granted -> Load Analytics immediately
-        loadGoogleAnalytics();
+        // Apply granted state immediately if previously accepted
+        if (typeof window.gtag === 'function') {
+           window.gtag('consent', 'update', {
+              'ad_storage': 'granted',
+              'ad_user_data': 'granted',
+              'ad_personalization': 'granted',
+              'analytics_storage': 'granted'
+           });
+        }
       } else if (consent === 'denied') {
-        // Consent previously denied -> Do NOT load Analytics, do NOT show banner
+        // Do nothing, default is already denied in index.html
         setIsVisible(false);
       } else {
         // No choice made yet -> Show banner
         setIsVisible(true);
       }
     } catch (e) {
-      // localStorage might be blocked or unavailable
       console.warn('CookieConsent: localStorage not available');
-      // If we can't check consent, show the banner
       setIsVisible(true);
     }
   }, []);
@@ -68,8 +45,16 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ content }) => {
   const handleAccept = () => {
     try {
       localStorage.setItem('cookie-consent', 'granted');
-      // User clicked accept -> Load Analytics now
-      loadGoogleAnalytics();
+      // Update Consent Mode to granted
+      if (typeof window.gtag === 'function') {
+        window.gtag('consent', 'update', {
+          'ad_storage': 'granted',
+          'ad_user_data': 'granted',
+          'ad_personalization': 'granted',
+          'analytics_storage': 'granted'
+        });
+        console.log('Google Consent Mode updated: Granted');
+      }
     } catch (e) {
       console.warn('CookieConsent: Could not save consent');
     }
@@ -79,7 +64,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ content }) => {
   const handleDecline = () => {
     try {
       localStorage.setItem('cookie-consent', 'denied');
-      // User clicked decline -> Do NOT load Analytics, just close banner
+      // No need to call update, index.html sets it to denied by default
     } catch (e) {
       console.warn('CookieConsent: Could not save consent');
     }
