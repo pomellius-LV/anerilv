@@ -60,7 +60,7 @@ const Footer: React.FC<FooterProps> = ({ content, setView }) => {
               {footer.quickLinks}
               <span className="h-px w-8 bg-primary/30"></span>
             </h3>
-            <ul className="space-y-4 text-sm font-semibold uppercase tracking-[0.15em] text-stone-600">
+            <ul className="space-y-4 text-sm font-semibold text-stone-600">
               <li><button onClick={() => setView('home')} className="flex items-center gap-2 hover:text-primary hover:translate-x-2 transition-all duration-300 focus:outline-none w-full text-left">{nav.home}</button></li>
               <li><button onClick={() => setView('faq')} className="flex items-center gap-2 hover:text-primary hover:translate-x-2 transition-all duration-300 focus:outline-none w-full text-left">{nav.faq}</button></li>
               <li><button onClick={() => setView('prices')} className="flex items-center gap-2 hover:text-primary hover:translate-x-2 transition-all duration-300 focus:outline-none w-full text-left">{nav.prices}</button></li>
@@ -71,6 +71,15 @@ const Footer: React.FC<FooterProps> = ({ content, setView }) => {
                 >
                   {nav.gallery}
                 </button>
+              </li>
+              <li>
+                <a 
+                  href="https://5plus.lv" 
+                  rel="dofollow"
+                  className="flex items-center gap-2 hover:text-primary hover:translate-x-2 transition-all duration-300 focus:outline-none w-full text-left"
+                >
+                  Noderīgas saites
+                </a>
               </li>
             </ul>
           </nav>
@@ -138,7 +147,7 @@ const Footer: React.FC<FooterProps> = ({ content, setView }) => {
         </div>
         
         <div className="pt-10 border-t border-stone-200 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] uppercase tracking-[0.25em] font-bold text-stone-500">
-           <p>&copy; {new Date().getFullYear()} {footer.copyright} <span className="opacity-50 ml-2 normal-case tracking-normal">v1.08</span></p>
+           <p>&copy; {new Date().getFullYear()} {footer.copyright} <span className="opacity-50 ml-2 normal-case tracking-normal">v1.09</span></p>
            <div className="flex gap-10">
               <button onClick={() => setView('terms')} className="hover:text-primary transition-colors focus:outline-none">{footer.termsLabel}</button>
               <button onClick={() => setView('privacy')} className="hover:text-primary transition-colors focus:outline-none">{footer.privacyLabel}</button>

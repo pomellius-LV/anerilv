@@ -6,7 +6,7 @@ export const contentData: Record<Language, Content> = {
     meta: {
       title: "Cenrādis - Salons Aneri Ķengarāgā | Matu griezumi, Manikīrs, Solārijs",
       description: "Pilns Salona Aneri pakalpojumu cenrādis. Matu griezumi, manikīrs, pedikīrs, vaksācija, permanentais grims, kosmetoloģija un solārijs.",
-      keywords: "cenrādis frizētava ķengarags, manikīra cenas rīga, pedikīrs cena, vaksācija cenas, pīlings cena, permanentais grims rīga, solārijs ķengarags, frizieris rīga, bērnu frizētava, matu krāsošana, airtouch rīga, gelish manikīrs, skaistumkopšanas salons, Matrix, L'Oreal, Loreal",
+      keywords: "Salons Aneri, frizētava, manikīrs, Rīga, Ķengarags, lētas frizētavas rīgā, frizētava rīgā cenas, frizētava ķengaragā, frizētava rīga, frizetava riga, frizieris riga, matu krāsošana, frizieri rīgā, frizetava kengarags, mego ķengarags, skaistumkopšanas salons, Matrix, L'Oreal",
     },
     nav: {
       home: "Sākums",
@@ -279,26 +279,27 @@ export const contentData: Record<Language, Content> = {
         {
           categoryTitle: "Atrašanās vieta un transports",
           items: [
+            { question: "Kur atrodas frizētava Ķengaragā?", answer: "Mēs atrodamies pašā Ķengaraga centrā, Latgales ielā 264. Tas ir ļoti ērti sasniedzams – blakus ir tirdzniecības centrs Dole un veikals Mego." },
             { question: "Vai pie salona ir autostāvvieta?", answer: "Jā, tieši pie salona ieejas mūsu klientiem ir pieejama bezmaksas privātā autostāvvieta." },
-            { question: "Kā pie Jums nokļūt ar sabiedrisko transportu?", answer: "Mēs atrodamies Latgales ielā 264. Pie mums var nokļūt ar 7. tramvaju vai autobusiem 15, 18, 31, 49, 60." }
+            { question: "Kā pie Jums nokļūt ar sabiedrisko transportu?", answer: "Pie mums var nokļūt ar 7. tramvaju vai autobusiem 15, 18, 31, 49, 60 (pietura pie TC Dole)." }
           ]
         },
         {
           categoryTitle: "Procedūras un Materiāli",
           items: [
-            { question: "Vai jūs veicat sarežģītas matu krāsošanas?", answer: "Jā, mūsu meistari specializējas Airtouch, Balayage, Šatuš un citās mūsdienīgās tehnikās. Precīzu cenu un laiku var noteikt konsultācijā." },
-            { question: "Kādu kosmētiku jūs izmantojat?", answer: "Darbā izmantojam tikai profesionālu un sertificētu kosmētiku (t.sk. Matrix, L'Oreal Professional), lai garantētu noturīgu rezultātu un matu/ādas veselību." },
+            { question: "Vai jūs veicat sarežģītas matu krāsošanas?", answer: "Jā, mūsu frizieri Rīgā specializējas Airtouch, Balayage, Šatuš un citās mūsdienīgās tehnikās." },
+            { question: "Kādu kosmētiku jūs izmantojat?", answer: "Darbā izmantojam tikai profesionālu un sertificētu kosmētiku (t.sk. Matrix, L'Oreal Professional), lai garantētu noturīgu rezultātu." },
             { question: "Vai solārija lampas ir drošas?", answer: "Mēs regulāri veicam lampu maiņu un apkopi, lai nodrošinātu drošu un efektīvu iedegumu, ievērojot ES normas." }
           ]
         },
         {
           categoryTitle: "Pakalpojumi un Apmaksa",
           items: [
+            { question: "Kādas ir frizētavas cenas?", answer: "Mūsu mērķis ir piedāvāt augstu kvalitāti par pieejamu cenu. Lētas frizētavas Rīgā bieži taupa uz materiāliem, bet mēs saglabājam demokrātiskas cenas (vīriešu griezums no 12€, sieviešu no 22€), izmantojot tikai profesionālos materiālus." },
             { question: "Vai pie jums var norēķināties ar karti?", answer: "Nē, mēs pieņemam tikai skaidru naudu (Euro)." },
-            { question: "Vai piedāvājat dāvanu kartes?", answer: "Jā, pie mums var iegādāties dāvanu kartes par jebkuru summu. Tā ir lieliska dāvana svētkos!" },
+            { question: "Vai piedāvājat dāvanu kartes?", answer: "Jā, pie mums var iegādāties dāvanu kartes par jebkuru summu." },
             { question: "Vai apkalpojat bērnus?", answer: "Protams! Mums ir liela pieredze darbā ar bērniem, sākot no pirmsskolas vecuma. Meistari prot atrast pieeju mazajiem klientiem." },
-            { question: "Vai vīriešiem ir pieejams manikīrs?", answer: "Jā, mēs veicam vīriešu manikīru un pedikīru, kā arī sejas kopšanas procedūras." },
-            { question: "Cik iepriekš jāpiesakās?", answer: "Mēs iesakām pierakstīties 2-3 dienas iepriekš, bet bieži varam atrast brīvu vietu arī tajā pašā dienā. Zvaniet +371 27580047!" }
+            { question: "Cik iepriekš jāpiesakās?", answer: "Mēs iesakām pierakstīties 2-3 dienas iepriekš. Zvaniet +371 27580047!" }
           ]
         }
       ]
@@ -331,7 +332,7 @@ export const contentData: Record<Language, Content> = {
     meta: {
       title: "Прайс-лист - Салон Aneri в Кенгарагсе | Цены на стрижки, Маникюр, Солярий",
       description: "Полный прайс-лист услуг салона Aneri. Стрижки для женщин, мужчин, детей и пенсионеров. Маникюр, педикюр, ваксация, перманентный макияж и солярий.",
-      keywords: "парикмахерская рига, парикмахерская кенгарагс, цены на стрижки, маникюр рига, гель-лак, педикюр цена, ваксация рига, глубокое бикини, пилинг лица, перманентный макияж брови губы, солярий кенгарагс, мужская стрижка, детская стрижка, покраска волос airtouch, салон красоты рига, Matrix, L'Oreal, Loreal",
+      keywords: "парикмахерская кенгарагс, парикмахерская рига, парикмахер, парихмахерская, парихмакер, услуги парикмахера, стрижка, цены на стрижки, маникюр рига, гель-лак, педикюр цена, ваксация рига, глубокое бикини, пилинг лица, перманентный макияж брови губы, солярий кенгарагс, мужская стрижка, детская стрижка, покраска волос, салон красоты рига, Matrix, L'Oreal, mego",
     },
     nav: {
       home: "Главная",
@@ -467,7 +468,7 @@ export const contentData: Record<Language, Content> = {
             {
               title: "Маникюр",
               services: [
-                { name: "Классический (без лака)", price: "16.00 €" },
+                { name: "Классический (bez лака)", price: "16.00 €" },
                 { name: "Классический (с лаком)", price: "18.00 €" },
                 { name: "Мужской маникюр", price: "20.00 €" },
                 { name: "Покрытие ногтей лаком", price: "5.00 €" },
@@ -599,14 +600,15 @@ export const contentData: Record<Language, Content> = {
         {
           categoryTitle: "Локация и транспорт",
           items: [
+            { question: "Где находится парикмахерская в Кенгарагсе?", answer: "Мы находимся на ул. Латгалес 264. Ориентир — торговый центр Dole и магазин Mego. Очень удобное расположение и транспортная доступность." },
             { question: "Есть ли у вас парковка?", answer: "Да, прямо перед входом в салон для наших клиентов есть бесплатная частная парковка." },
-            { question: "Как до вас доехать?", answer: "Мы находимся на ул. Латгалес 264. К нам идет 7-й трамвай или автобусы 15, 18, 31, 49, 60 (остановка ТЦ Доле)." }
+            { question: "Как до вас доехать?", answer: "К нам идет 7-й трамвай или автобусы 15, 18, 31, 49, 60 (остановка ТЦ Доле)." }
           ]
         },
         {
           categoryTitle: "Процедуры и Безопасность",
           items: [
-            { question: "Делаете ли вы сложные окрашивания?", answer: "Да, наши мастера выполняют сложные техники: Airtouch, Balayage, Шатуш. Точная цена и время определяются на консультации." },
+            { question: "Какие услуги парикмахера вы предлагаете?", answer: "Наш салон предлагает полный спектр услуг парикмахера: от простых стрижек (женских, мужских, детских) до сложного окрашивания (Airtouch, Balayage). Также делаем укладки и химические завивки." },
             { question: "Какую косметику вы используете?", answer: "Мы работаем только с сертифицированной профессиональной косметикой от ведущих брендов (в т.ч. Matrix, L'Oreal Professional), что гарантирует качество и безопасность." },
             { question: "Безопасен ли солярий?", answer: "Мы регулярно меняем лампы и следим за их ресурсом, чтобы загар был эффективным и безопасным в соответствии с нормами ЕС." }
           ]
@@ -864,7 +866,7 @@ export const contentData: Record<Language, Content> = {
           categoryTitle: "Location & Transport",
           items: [
             { question: "Do you have parking?", answer: "Yes, we have free private parking right in front of the salon for our customers." },
-            { question: "How to get to you?", answer: "We are at Latgales iela 264. You can take tram 7 or buses 15, 18, 31, 49, 60 (Dole stop)." }
+            { question: "How to get to you?", answer: "We are at Latgales iela 264 (near TC Dole and Mego). You can take tram 7 or buses 15, 18, 31, 49, 60." }
           ]
         },
         {
