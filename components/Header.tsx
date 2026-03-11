@@ -159,16 +159,22 @@ const Header: React.FC<HeaderProps> = ({ lang, setLang, content, view, setView }
               <span className="tabular-nums font-sans tracking-wider">+371 27580047</span>
             </a>
             <div className="flex gap-4 mt-1">
-              {(['lv', 'ru', 'en'] as Language[]).map((l) => (
-                <button 
-                  key={l} 
-                  onClick={() => setLang(l)} 
-                  className={`text-[10px] font-bold uppercase tracking-widest transition-opacity hover:opacity-100 focus:outline-none ${lang === l ? 'text-primary' : !isLight ? 'text-stone-400 opacity-60' : 'text-white/40 opacity-40'}`}
-                  aria-label={`Switch language to ${l}`}
-                >
-                  {l}
-                </button>
-              ))}
+              {(['lv', 'ru', 'en'] as Language[]).map((l) => {
+                const langPrefix = l === 'lv' ? '' : `/${l}`;
+                const viewPath = view === 'home' ? '' : `/${view}`;
+                const href = `${langPrefix}${viewPath}` || '/';
+                return (
+                  <a 
+                    key={l} 
+                    href={href}
+                    onClick={(e) => { e.preventDefault(); setLang(l); }} 
+                    className={`text-[10px] font-bold uppercase tracking-widest transition-opacity hover:opacity-100 focus:outline-none ${lang === l ? 'text-primary' : !isLight ? 'text-stone-400 opacity-60' : 'text-white/40 opacity-40'}`}
+                    aria-label={`Switch language to ${l}`}
+                  >
+                    {l}
+                  </a>
+                );
+              })}
             </div>
           </div>
           <a 
@@ -277,11 +283,21 @@ const Header: React.FC<HeaderProps> = ({ lang, setLang, content, view, setView }
               <Phone size={24} /> <span className="tabular-nums">+371 27580047</span>
             </a>
             <div className="flex justify-center gap-8">
-               {(['lv', 'ru', 'en'] as Language[]).map((l) => (
-                <button key={l} onClick={() => { setLang(l); setIsOpen(false); }} className={`text-lg font-bold uppercase tracking-widest ${lang === l ? 'text-primary' : 'text-stone-300'}`}>
-                  {l}
-                </button>
-              ))}
+               {(['lv', 'ru', 'en'] as Language[]).map((l) => {
+                const langPrefix = l === 'lv' ? '' : `/${l}`;
+                const viewPath = view === 'home' ? '' : `/${view}`;
+                const href = `${langPrefix}${viewPath}` || '/';
+                return (
+                  <a 
+                    key={l} 
+                    href={href}
+                    onClick={(e) => { e.preventDefault(); setLang(l); setIsOpen(false); }} 
+                    className={`text-lg font-bold uppercase tracking-widest ${lang === l ? 'text-primary' : 'text-stone-300'}`}
+                  >
+                    {l}
+                  </a>
+                );
+              })}
             </div>
           </div>
         </div>

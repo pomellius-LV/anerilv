@@ -12,11 +12,36 @@ import TermsPage from './components/TermsPage';
 import Footer from './components/Footer';
 import CookieConsent from './components/CookieConsent';
 import SchemaMarkup from './components/SchemaMarkup';
-import GalleryPage from './components/GalleryPage'; // Imported GalleryPage
+import GalleryPage from './components/GalleryPage';
+
+const parseUrl = (pathname: string): { lang: Language; view: View } => {
+  const parts = pathname.split('/').filter(Boolean);
+  let lang: Language = 'lv';
+  let viewStr = '';
+
+  if (parts[0] === 'ru' || parts[0] === 'en') {
+    lang = parts[0] as Language;
+    viewStr = parts[1] || 'home';
+  } else {
+    viewStr = parts[0] || 'home';
+  }
+
+  const validViews: View[] = ['home', 'prices', 'faq', 'gallery', 'terms', 'privacy'];
+  const view: View = validViews.includes(viewStr as View) ? (viewStr as View) : 'home';
+
+  return { lang, view };
+};
+
+export const generateUrl = (lang: Language, view: View): string => {
+  const langPrefix = lang === 'lv' ? '' : `/${lang}`;
+  const viewPath = view === 'home' ? '' : `/${view}`;
+  return `${langPrefix}${viewPath}` || '/';
+};
 
 const App: React.FC = () => {
-  const [lang, setLang] = useState<Language>('lv');
-  const [view, setViewInternal] = useState<View>('home');
+  const initialRoute = parseUrl(typeof window !== 'undefined' ? window.location.pathname : '/');
+  const [lang, setLangInternal] = useState<Language>(initialRoute.lang);
+  const [view, setViewInternal] = useState<View>(initialRoute.view);
   
   // Ref to store the scroll position of the home page
   const homeScrollRef = useRef(0);
@@ -30,14 +55,15 @@ const App: React.FC = () => {
     if (!isHistoryInitialized.current && typeof window !== 'undefined' && window.history) {
       try {
         if (!window.history.state) {
-          window.history.replaceState({ view: 'home' }, '', '/');
+          const url = generateUrl(lang, view);
+          window.history.replaceState({ view, lang }, '', url);
         }
       } catch (e) {
         console.warn('History API not available or restricted');
       }
       isHistoryInitialized.current = true;
     }
-  }, []);
+  }, [lang, view]);
 
   // Wrapper for setView that handles History API and Scroll Saving
   const setView = (newView: View) => {
@@ -51,8 +77,8 @@ const App: React.FC = () => {
     // Push the new state to the browser history
     if (typeof window !== 'undefined' && window.history) {
       try {
-        const url = newView === 'home' ? '/' : `/${newView}`;
-        window.history.pushState({ view: newView }, '', url);
+        const url = generateUrl(lang, newView);
+        window.history.pushState({ view: newView, lang }, '', url);
       } catch (e) {
         console.warn('History pushState failed');
       }
@@ -62,18 +88,33 @@ const App: React.FC = () => {
     setViewInternal(newView);
   };
 
+  const setLang = (newLang: Language) => {
+    if (newLang === lang) return;
+    
+    if (typeof window !== 'undefined' && window.history) {
+      try {
+        const url = generateUrl(newLang, view);
+        window.history.pushState({ view, lang: newLang }, '', url);
+      } catch (e) {
+        console.warn('History pushState failed');
+      }
+    }
+    
+    setLangInternal(newLang);
+  };
+
   // Handle the native browser "Back" button (popstate event)
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
-      // Safe fallback if state is null
-      const nextView = event.state?.view || 'home';
+      const { lang: newLang, view: newView } = parseUrl(window.location.pathname);
       
       // If we are currently at home and leaving via Back button (or forward), save scroll
       if (view === 'home') {
         homeScrollRef.current = window.scrollY;
       }
 
-      setViewInternal(nextView);
+      setLangInternal(newLang);
+      setViewInternal(newView);
     };
 
     if (typeof window !== 'undefined') {
@@ -103,13 +144,36 @@ const App: React.FC = () => {
     let metaKeywords = document.querySelector('meta[name="keywords"]');
     if (metaKeywords) metaKeywords.setAttribute('content', data.meta.keywords);
 
+    // --- DYNAMIC HREFLANG & CANONICAL ---
+    const baseUrl = 'https://aneri.lv';
+    
+    // Remove old alternate links
+    document.querySelectorAll('link[rel="alternate"]').forEach(el => el.remove());
+
+    // Add new alternate links for each language
+    const languages: Language[] = ['lv', 'ru', 'en'];
+    languages.forEach(l => {
+      const link = document.createElement('link');
+      link.setAttribute('rel', 'alternate');
+      link.setAttribute('hreflang', l);
+      link.setAttribute('href', baseUrl + generateUrl(l, view));
+      document.head.appendChild(link);
+    });
+    
+    // Add x-default
+    const xDefault = document.createElement('link');
+    xDefault.setAttribute('rel', 'alternate');
+    xDefault.setAttribute('hreflang', 'x-default');
+    xDefault.setAttribute('href', baseUrl + generateUrl('lv', view));
+    document.head.appendChild(xDefault);
+
     let canonical = document.querySelector('link[rel="canonical"]');
     if (!canonical) {
       canonical = document.createElement('link');
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', window.location.origin + (view === 'home' ? '' : `/${view}`));
+    canonical.setAttribute('href', baseUrl + generateUrl(lang, view));
 
     // --- SCROLL LOGIC ---
     if (view === 'home' && prevViewRef.current !== 'home') {
