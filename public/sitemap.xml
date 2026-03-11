@@ -7,6 +7,12 @@
   <url><loc>https://aneri.lv/faq</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://aneri.lv/terms</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
   <url><loc>https://aneri.lv/privacy</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://aneri.lv/article/haircare</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://aneri.lv/article/hair-loss</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://aneri.lv/article/keratin-vs-botox</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://aneri.lv/article/manicure-tips</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://aneri.lv/article/hardware-pedicure</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://aneri.lv/article/nail-trends</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 
   <!-- RU -->
   <url><loc>https://aneri.lv/ru/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
@@ -15,6 +21,12 @@
   <url><loc>https://aneri.lv/ru/faq</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://aneri.lv/ru/terms</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
   <url><loc>https://aneri.lv/ru/privacy</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://aneri.lv/ru/article/haircare</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://aneri.lv/ru/article/hair-loss</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://aneri.lv/ru/article/keratin-vs-botox</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://aneri.lv/ru/article/manicure-tips</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://aneri.lv/ru/article/hardware-pedicure</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://aneri.lv/ru/article/nail-trends</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 
   <!-- EN -->
   <url><loc>https://aneri.lv/en/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
@@ -23,4 +35,10 @@
   <url><loc>https://aneri.lv/en/faq</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://aneri.lv/en/terms</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
   <url><loc>https://aneri.lv/en/privacy</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://aneri.lv/en/article/haircare</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://aneri.lv/en/article/hair-loss</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://aneri.lv/en/article/keratin-vs-botox</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://aneri.lv/en/article/manicure-tips</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://aneri.lv/en/article/hardware-pedicure</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://aneri.lv/en/article/nail-trends</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>

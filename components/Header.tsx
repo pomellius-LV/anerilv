@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Language, Content, View } from '../types';
 import { Menu, X, Phone, Instagram, Facebook, Download } from 'lucide-react';
+import { generateUrl } from '../App';
 
 interface HeaderProps {
   lang: Language;
@@ -160,9 +161,15 @@ const Header: React.FC<HeaderProps> = ({ lang, setLang, content, view, setView }
             </a>
             <div className="flex gap-4 mt-1">
               {(['lv', 'ru', 'en'] as Language[]).map((l) => {
-                const langPrefix = l === 'lv' ? '' : `/${l}`;
-                const viewPath = view === 'home' ? '' : `/${view}`;
-                const href = `${langPrefix}${viewPath}` || '/';
+                // Extract articleId from URL if present
+                const parts = typeof window !== 'undefined' ? window.location.pathname.split('/').filter(Boolean) : [];
+                let articleId = '';
+                if (parts[0] === 'ru' || parts[0] === 'en') {
+                  if (parts[1] === 'article') articleId = parts[2] || '';
+                } else {
+                  if (parts[0] === 'article') articleId = parts[1] || '';
+                }
+                const href = generateUrl(l, view, articleId);
                 return (
                   <a 
                     key={l} 
@@ -284,9 +291,15 @@ const Header: React.FC<HeaderProps> = ({ lang, setLang, content, view, setView }
             </a>
             <div className="flex justify-center gap-8">
                {(['lv', 'ru', 'en'] as Language[]).map((l) => {
-                const langPrefix = l === 'lv' ? '' : `/${l}`;
-                const viewPath = view === 'home' ? '' : `/${view}`;
-                const href = `${langPrefix}${viewPath}` || '/';
+                // Extract articleId from URL if present
+                const parts = typeof window !== 'undefined' ? window.location.pathname.split('/').filter(Boolean) : [];
+                let articleId = '';
+                if (parts[0] === 'ru' || parts[0] === 'en') {
+                  if (parts[1] === 'article') articleId = parts[2] || '';
+                } else {
+                  if (parts[0] === 'article') articleId = parts[1] || '';
+                }
+                const href = generateUrl(l, view, articleId);
                 return (
                   <a 
                     key={l} 

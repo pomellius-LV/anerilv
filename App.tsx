@@ -14,27 +14,39 @@ import CookieConsent from './components/CookieConsent';
 import SchemaMarkup from './components/SchemaMarkup';
 import GalleryPage from './components/GalleryPage';
 
-const parseUrl = (pathname: string): { lang: Language; view: View } => {
+import ArticlePage from './components/ArticlePage';
+
+const parseUrl = (pathname: string): { lang: Language; view: View; articleId?: string } => {
   const parts = pathname.split('/').filter(Boolean);
   let lang: Language = 'lv';
   let viewStr = '';
+  let articleId = '';
 
-  if (parts[0] === 'ru' || parts[0] === 'en') {
+  if (parts[0] === 'ru' || parts[0] === 'en' || parts[0] === 'lv') {
     lang = parts[0] as Language;
     viewStr = parts[1] || 'home';
+    if (viewStr === 'article') {
+      articleId = parts[2] || '';
+    }
   } else {
     viewStr = parts[0] || 'home';
+    if (viewStr === 'article') {
+      articleId = parts[1] || '';
+    }
   }
 
-  const validViews: View[] = ['home', 'prices', 'faq', 'gallery', 'terms', 'privacy'];
+  const validViews: View[] = ['home', 'prices', 'faq', 'gallery', 'terms', 'privacy', 'article'];
   const view: View = validViews.includes(viewStr as View) ? (viewStr as View) : 'home';
 
-  return { lang, view };
+  return { lang, view, articleId };
 };
 
-export const generateUrl = (lang: Language, view: View): string => {
+export const generateUrl = (lang: Language, view: View, articleId?: string): string => {
   const langPrefix = lang === 'lv' ? '' : `/${lang}`;
-  const viewPath = view === 'home' ? '' : `/${view}`;
+  let viewPath = view === 'home' ? '' : `/${view}`;
+  if (view === 'article' && articleId) {
+    viewPath += `/${articleId}`;
+  }
   return `${langPrefix}${viewPath}` || '/';
 };
 
@@ -42,6 +54,7 @@ const App: React.FC = () => {
   const initialRoute = parseUrl(typeof window !== 'undefined' ? window.location.pathname : '/');
   const [lang, setLangInternal] = useState<Language>(initialRoute.lang);
   const [view, setViewInternal] = useState<View>(initialRoute.view);
+  const [articleId, setArticleId] = useState<string | undefined>(initialRoute.articleId);
   
   // Ref to store the scroll position of the home page
   const homeScrollRef = useRef(0);
@@ -55,7 +68,7 @@ const App: React.FC = () => {
     if (!isHistoryInitialized.current && typeof window !== 'undefined' && window.history) {
       try {
         if (!window.history.state) {
-          const url = generateUrl(lang, view);
+          const url = generateUrl(lang, view, articleId);
           window.history.replaceState({ view, lang }, '', url);
         }
       } catch (e) {
@@ -63,7 +76,7 @@ const App: React.FC = () => {
       }
       isHistoryInitialized.current = true;
     }
-  }, [lang, view]);
+  }, [lang, view, articleId]);
 
   // Wrapper for setView that handles History API and Scroll Saving
   const setView = (newView: View) => {
@@ -93,7 +106,7 @@ const App: React.FC = () => {
     
     if (typeof window !== 'undefined' && window.history) {
       try {
-        const url = generateUrl(newLang, view);
+        const url = generateUrl(newLang, view, articleId);
         window.history.pushState({ view, lang: newLang }, '', url);
       } catch (e) {
         console.warn('History pushState failed');
@@ -106,7 +119,7 @@ const App: React.FC = () => {
   // Handle the native browser "Back" button (popstate event)
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
-      const { lang: newLang, view: newView } = parseUrl(window.location.pathname);
+      const { lang: newLang, view: newView, articleId: newArticleId } = parseUrl(window.location.pathname);
       
       // If we are currently at home and leaving via Back button (or forward), save scroll
       if (view === 'home') {
@@ -115,6 +128,7 @@ const App: React.FC = () => {
 
       setLangInternal(newLang);
       setViewInternal(newView);
+      setArticleId(newArticleId);
     };
 
     if (typeof window !== 'undefined') {
@@ -129,17 +143,26 @@ const App: React.FC = () => {
     if (!data) return; // Safety check
 
     let pageTitle = data.meta.title;
+    let pageDesc = data.meta.description;
+    
     if (view === 'faq') pageTitle = `${data.faq.title} | Salons Aneri`;
     if (view === 'prices') pageTitle = `${data.prices.title} | Salons Aneri`;
     if (view === 'gallery') pageTitle = `${data.gallery.title} | Salons Aneri`;
     if (view === 'terms') pageTitle = `${data.terms.title} | Salons Aneri`;
     if (view === 'privacy') pageTitle = `${data.privacy.title} | Salons Aneri`;
+    if (view === 'article' && articleId) {
+      const article = data.articles?.find(a => a.id === articleId);
+      if (article) {
+        pageTitle = article.metaTitle;
+        pageDesc = article.metaDescription;
+      }
+    }
     
     document.title = pageTitle;
     document.documentElement.lang = lang;
 
     let metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) metaDesc.setAttribute('content', data.meta.description);
+    if (metaDesc) metaDesc.setAttribute('content', pageDesc);
 
     let metaKeywords = document.querySelector('meta[name="keywords"]');
     if (metaKeywords) metaKeywords.setAttribute('content', data.meta.keywords);
@@ -156,7 +179,7 @@ const App: React.FC = () => {
       const link = document.createElement('link');
       link.setAttribute('rel', 'alternate');
       link.setAttribute('hreflang', l);
-      link.setAttribute('href', baseUrl + generateUrl(l, view));
+      link.setAttribute('href', baseUrl + generateUrl(l, view, articleId));
       document.head.appendChild(link);
     });
     
@@ -164,7 +187,7 @@ const App: React.FC = () => {
     const xDefault = document.createElement('link');
     xDefault.setAttribute('rel', 'alternate');
     xDefault.setAttribute('hreflang', 'x-default');
-    xDefault.setAttribute('href', baseUrl + generateUrl('lv', view));
+    xDefault.setAttribute('href', baseUrl + generateUrl('lv', view, articleId));
     document.head.appendChild(xDefault);
 
     let canonical = document.querySelector('link[rel="canonical"]');
@@ -173,7 +196,7 @@ const App: React.FC = () => {
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', baseUrl + generateUrl(lang, view));
+    canonical.setAttribute('href', baseUrl + generateUrl(lang, view, articleId));
 
     // --- SCROLL LOGIC ---
     if (view === 'home' && prevViewRef.current !== 'home') {
@@ -191,7 +214,7 @@ const App: React.FC = () => {
     
     prevViewRef.current = view;
 
-  }, [lang, view]);
+  }, [lang, view, articleId]);
 
   const currentContent = contentData[lang];
   if (!currentContent) return null;
@@ -218,6 +241,7 @@ const App: React.FC = () => {
         {view === 'prices' && <PricePage content={currentContent} setView={setView} />}
         {view === 'faq' && <FAQPage content={currentContent} setView={setView} />}
         {view === 'gallery' && <GalleryPage content={currentContent} setView={setView} />}
+        {view === 'article' && articleId && <ArticlePage articleId={articleId} content={currentContent} setView={setView} />}
         {view === 'terms' && <TermsPage title={currentContent.terms.title} content={currentContent.terms.content} setView={setView} homeLabel={currentContent.nav.home} />}
         {view === 'privacy' && <TermsPage title={currentContent.privacy.title} content={currentContent.privacy.content} setView={setView} homeLabel={currentContent.nav.home} />}
       </main>

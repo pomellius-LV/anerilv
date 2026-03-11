@@ -1,5 +1,6 @@
 
 import { Content, Language } from '../types';
+import { getArticlesForLanguage } from './articles';
 
 export const contentData: Record<Language, Content> = {
   lv: {
@@ -84,6 +85,11 @@ export const contentData: Record<Language, Content> = {
         {
           id: "hair",
           sectionTitle: "1. Frizētavas pakalpojumi",
+          seoLinks: [
+            { text: "Kā kopt matus pēc krāsošanas?", url: "/article/haircare", articleId: "haircare" },
+            { text: "Matu izkrišanas cēloņi", url: "/article/hair-loss", articleId: "hair-loss" },
+            { text: "Keratīns vai botokss?", url: "/article/keratin-vs-botox", articleId: "keratin-vs-botox" }
+          ],
           categories: [
             {
               title: "Dāmām",
@@ -138,6 +144,11 @@ export const contentData: Record<Language, Content> = {
         {
           id: "nails",
           sectionTitle: "2. Manikīrs un Pedikīrs",
+          seoLinks: [
+            { text: "Kā pagarināt gēllakas noturību?", url: "/article/manicure-tips", articleId: "manicure-tips" },
+            { text: "Kāpēc izvēlēties aparātpedikīru?", url: "/article/hardware-pedicure", articleId: "hardware-pedicure" },
+            { text: "Aktuālākās manikīra tendences", url: "/article/nail-trends", articleId: "nail-trends" }
+          ],
           categories: [
             {
               title: "Manikīrs",
@@ -175,6 +186,9 @@ export const contentData: Record<Language, Content> = {
         {
           id: "cosmetology",
           sectionTitle: "3. Kosmetoloģija un Pīlingi",
+          seoLinks: [
+            { text: "Kāpēc nepieciešama sejas tīrīšana?", url: "/article/facial-cleansing", articleId: "facial-cleansing" }
+          ],
           categories: [
             {
               title: "Kosmētiskās procedūras",
@@ -204,6 +218,9 @@ export const contentData: Record<Language, Content> = {
         {
           id: "permanent",
           sectionTitle: "4. Permanentais grims",
+          seoLinks: [
+            { text: "Kā kopt permanento grimu?", url: "/article/permanent-makeup-care", articleId: "permanent-makeup-care" }
+          ],
           categories: [
             {
               title: "Procedūras",
@@ -221,6 +238,9 @@ export const contentData: Record<Language, Content> = {
         {
           id: "waxing",
           sectionTitle: "5. Vaksācija",
+          seoLinks: [
+            { text: "Vaksācija vai lāzerepilācija?", url: "/article/waxing-vs-laser", articleId: "waxing-vs-laser" }
+          ],
           categories: [
             {
               title: "Zonas",
@@ -239,6 +259,9 @@ export const contentData: Record<Language, Content> = {
         {
           id: "solarium",
           sectionTitle: "6. Solārijs",
+          seoLinks: [
+            { text: "Kā pareizi sauļoties solārijā?", url: "/article/solarium-rules", articleId: "solarium-rules" }
+          ],
           categories: [
             {
               title: "Apmeklējums / Abonements",
@@ -299,7 +322,12 @@ export const contentData: Record<Language, Content> = {
             { question: "Vai pie jums var norēķināties ar karti?", answer: "Nē, mēs pieņemam tikai skaidru naudu (Euro)." },
             { question: "Vai piedāvājat dāvanu kartes?", answer: "Jā, pie mums var iegādāties dāvanu kartes par jebkuru summu." },
             { question: "Vai apkalpojat bērnus?", answer: "Protams! Mums ir liela pieredze darbā ar bērniem, sākot no pirmsskolas vecuma. Meistari prot atrast pieeju mazajiem klientiem." },
-            { question: "Cik iepriekš jāpiesakās?", answer: "Mēs iesakām pierakstīties 2-3 dienas iepriekš. Zvaniet +371 27580047!" }
+            { question: "Cik iepriekš jāpiesakās?", answer: "Mēs iesakām pierakstīties 2-3 dienas iepriekš. Zvaniet +371 27580047!" },
+            { question: "Cik ilgi turas gēllaka?", answer: "Pareizi uzklāta gēllaka mūsu salonā turas no 3 līdz 4 nedēļām, atkarībā no jūsu nagu augšanas ātruma un ikdienas slodzes." },
+            { question: "Kā kopt matus pēc keratīna taisnošanas?", answer: "Pēc procedūras ieteicams lietot bezsulfātu šampūnus un mitrinošas maskas. Mūsu meistari ieteiks labākos profesionālos līdzekļus." },
+            { question: "Vai veicat vīriešu pedikīru?", answer: "Jā, mēs piedāvājam profesionālu vīriešu pedikīru, kas ietver pēdu apstrādi, nagu veidošanu un relaksējošu masāžu." },
+            { question: "Cik bieži jāveic sejas tīrīšana?", answer: "Atkarībā no ādas tipa, sejas tīrīšanu ieteicams veikt reizi 1-2 mēnešos. Taukainai ādai biežāk, sausai - retāk." },
+            { question: "Kas ir Airtouch matu krāsošana?", answer: "Airtouch ir moderna un saudzīga matu krāsošanas tehnika, kas rada dabisku, saulē izbalējušu matu efektu ar plūdenu pāreju." }
           ]
         }
       ]
@@ -317,7 +345,7 @@ export const contentData: Record<Language, Content> = {
       phoneLabel: "Zvanīt",
       hoursLabel: "Darba laiks",
       hours: "P.-S.: 09:00 - 20:00 | Sv.: 10:00 - 16:00",
-      copyright: "Salons Aneri. Visas tiesības aizsargātas.",
+      copyright: "Salons Aneri v2.0. Visas tiesības aizsargātas.",
       quickLinks: "Saites",
       termsLabel: "Noteikumi",
       privacyLabel: "Privātums",
@@ -327,6 +355,7 @@ export const contentData: Record<Language, Content> = {
       btn: "Labi",
       declineBtn: "Noraidīt",
     },
+    articles: getArticlesForLanguage('lv')
   },
   ru: {
     meta: {
@@ -410,6 +439,11 @@ export const contentData: Record<Language, Content> = {
         {
           id: "hair",
           sectionTitle: "1. Парикмахерские услуги",
+          seoLinks: [
+            { text: "Как сохранить цвет волос после окрашивания?", url: "/ru/article/haircare", articleId: "haircare" },
+            { text: "Причины выпадения волос", url: "/ru/article/hair-loss", articleId: "hair-loss" },
+            { text: "Кератин или ботокс для волос?", url: "/ru/article/keratin-vs-botox", articleId: "keratin-vs-botox" }
+          ],
           categories: [
             {
               title: "Дамам",
@@ -464,6 +498,11 @@ export const contentData: Record<Language, Content> = {
         {
           id: "nails",
           sectionTitle: "2. Маникюр и Педикюр",
+          seoLinks: [
+            { text: "Секреты идеального маникюра", url: "/ru/article/manicure-tips", articleId: "manicure-tips" },
+            { text: "Преимущества аппаратного педикюра", url: "/ru/article/hardware-pedicure", articleId: "hardware-pedicure" },
+            { text: "Тренды маникюра в этом сезоне", url: "/ru/article/nail-trends", articleId: "nail-trends" }
+          ],
           categories: [
             {
               title: "Маникюр",
@@ -501,6 +540,9 @@ export const contentData: Record<Language, Content> = {
         {
           id: "cosmetology",
           sectionTitle: "3. Косметология и Пилинги",
+          seoLinks: [
+            { text: "Зачем нужна чистка лица?", url: "/ru/article/facial-cleansing", articleId: "facial-cleansing" }
+          ],
           categories: [
             {
               title: "Косметические процедуры",
@@ -530,6 +572,9 @@ export const contentData: Record<Language, Content> = {
         {
           id: "permanent",
           sectionTitle: "4. Перманентный макияж",
+          seoLinks: [
+            { text: "Уход за перманентным макияжем", url: "/ru/article/permanent-makeup-care", articleId: "permanent-makeup-care" }
+          ],
           categories: [
             {
               title: "Процедуры",
@@ -547,6 +592,9 @@ export const contentData: Record<Language, Content> = {
         {
           id: "waxing",
           sectionTitle: "5. Ваксация (Депиляция)",
+          seoLinks: [
+            { text: "Ваксация или лазерная эпиляция?", url: "/ru/article/waxing-vs-laser", articleId: "waxing-vs-laser" }
+          ],
           categories: [
             {
               title: "Зоны",
@@ -565,6 +613,9 @@ export const contentData: Record<Language, Content> = {
         {
           id: "solarium",
           sectionTitle: "6. Солярий",
+          seoLinks: [
+            { text: "Как правильно загорать в солярии?", url: "/ru/article/solarium-rules", articleId: "solarium-rules" }
+          ],
           categories: [
             {
               title: "Посещение / Абонемент",
@@ -620,7 +671,13 @@ export const contentData: Record<Language, Content> = {
             { question: "Есть ли подарочные карты?", answer: "Да, вы можете приобрести подарочную карту на любую сумму. Это отличный подарок для близких!" },
             { question: "Вы стрижете детей?", answer: "Конечно! У нас большой опыт работы с детьми любого возраста. Мастера умеют найти подход даже к самым маленьким." },
             { question: "Делаете ли вы мужской маникюр?", answer: "Да, мы предлагаем мужской маникюр, педикюр и уход за лицом." },
-            { question: "Нужно ли записываться заранее?", answer: "Желательно за 2-3 дня, но часто мы можем найти окошко и в день обращения. Звоните +371 27580047!" }
+            { question: "Нужно ли записываться заранее?", answer: "Желательно за 2-3 дня, но часто мы можем найти окошко и в день обращения. Звоните +371 27580047!" },
+            { question: "Сколько держится гель-лак?", answer: "При правильном нанесении и уходе гель-лак в нашем салоне держится от 3 до 4 недель, сохраняя идеальный блеск." },
+            { question: "Как ухаживать за волосами после кератинового выпрямления?", answer: "Важно использовать безсульфатные шампуни и увлажняющие маски. Наши мастера подберут идеальный домашний уход для вашего типа волос." },
+            { question: "Делаете ли вы мужской педикюр в Риге?", answer: "Да, мы делаем профессиональный аппаратный и классический мужской педикюр. Это не только эстетика, но и здоровье ваших ног." },
+            { question: "Как часто нужно делать чистку лица?", answer: "Для поддержания здоровья кожи чистку лица с ультразвуком рекомендуется делать раз в 1-2 месяца, в зависимости от типа кожи." },
+            { question: "Что такое окрашивание Airtouch?", answer: "Airtouch — это премиальная техника окрашивания, создающая плавный переход и визуальный объем. Идеально подходит для маскировки седины и редкого обновления." },
+            { question: "Где сделать недорогой маникюр в Кенгарагсе?", answer: "Салон Aneri предлагает качественный маникюр с гель-лаком по доступным ценам. Мы находимся в самом центре Кенгарагса." }
           ]
         }
       ]
@@ -632,12 +689,13 @@ export const contentData: Record<Language, Content> = {
       phoneLabel: "Звонок",
       hoursLabel: "Время работы",
       hours: "Пн-Сб: 09:00 - 20:00 | Вс: 10:00 - 16:00",
-      copyright: "Салон Aneri. Все права защищены.",
+      copyright: "Салон Aneri v2.0. Все права защищены.",
       quickLinks: "Ссылки",
       termsLabel: "Правила",
       privacyLabel: "Приватность",
     },
     cookie: { text: "Мы используем куки для вашего удобства.", btn: "ОК", declineBtn: "Отказаться" },
+    articles: getArticlesForLanguage('ru')
   },
   en: {
     meta: {
@@ -721,6 +779,11 @@ export const contentData: Record<Language, Content> = {
         {
           id: "hair",
           sectionTitle: "1. Hairdressing Services",
+          seoLinks: [
+            { text: "Hair Care After Coloring", url: "/en/article/haircare", articleId: "haircare" },
+            { text: "Causes of Hair Loss", url: "/en/article/hair-loss", articleId: "hair-loss" },
+            { text: "Keratin vs Hair Botox", url: "/en/article/keratin-vs-botox", articleId: "keratin-vs-botox" }
+          ],
           categories: [
             {
               title: "Ladies",
@@ -765,6 +828,7 @@ export const contentData: Record<Language, Content> = {
         {
           id: "nails",
           sectionTitle: "2. Manicure & Pedicure",
+          seoLinks: [{ text: "Secrets to a Long-Lasting Gel Manicure", url: "/en/article/manicure-tips", articleId: "manicure-tips" }, { text: "Why Choose a Hardware Pedicure?", url: "/en/article/hardware-pedicure", articleId: "hardware-pedicure" }],
           categories: [
             {
               title: "Manicure",
@@ -790,6 +854,9 @@ export const contentData: Record<Language, Content> = {
         {
           id: "cosmetology",
           sectionTitle: "3. Cosmetology",
+          seoLinks: [
+            { text: "Why You Need Facial Cleansing", url: "/en/article/facial-cleansing", articleId: "facial-cleansing" }
+          ],
           categories: [
             {
               title: "Procedures",
@@ -813,6 +880,9 @@ export const contentData: Record<Language, Content> = {
         {
           id: "permanent",
           sectionTitle: "4. Permanent Makeup",
+          seoLinks: [
+            { text: "Permanent Makeup Aftercare", url: "/en/article/permanent-makeup-care", articleId: "permanent-makeup-care" }
+          ],
           categories: [
             {
               title: "Procedures",
@@ -828,6 +898,9 @@ export const contentData: Record<Language, Content> = {
         {
           id: "waxing",
           sectionTitle: "5. Waxing",
+          seoLinks: [
+            { text: "Waxing vs. Laser Hair Removal", url: "/en/article/waxing-vs-laser", articleId: "waxing-vs-laser" }
+          ],
           categories: [
             {
               title: "Zones",
@@ -843,6 +916,9 @@ export const contentData: Record<Language, Content> = {
         {
           id: "solarium",
           sectionTitle: "6. Solarium",
+          seoLinks: [
+            { text: "How to Tan Safely in a Solarium", url: "/en/article/solarium-rules", articleId: "solarium-rules" }
+          ],
           categories: [
             {
               title: "Visit / Subscription",
@@ -884,7 +960,13 @@ export const contentData: Record<Language, Content> = {
             { question: "Do you have gift cards?", answer: "Yes, gift cards of any amount are available." },
             { question: "Do you serve children?", answer: "Absolutely! We have great experience with kids of all ages." },
             { question: "Do you do men's manicure?", answer: "Yes, we offer men's manicure, pedicure, and facials." },
-            { question: "Do I need to book?", answer: "Booking 2-3 days in advance is recommended, but walk-ins are welcome if we have free slots. Call +371 27580047!" }
+            { question: "Do I need to book?", answer: "Booking 2-3 days in advance is recommended, but walk-ins are welcome if we have free slots. Call +371 27580047!" },
+            { question: "How long does gel polish last?", answer: "With proper application, our gel polish lasts 3 to 4 weeks, maintaining a perfect shine." },
+            { question: "How to care for hair after keratin treatment?", answer: "It is essential to use sulfate-free shampoos and hydrating masks. Our stylists will recommend the best professional products." },
+            { question: "Do you offer men's pedicures in Riga?", answer: "Yes, we provide professional men's pedicures, including foot care, nail shaping, and a relaxing massage." },
+            { question: "How often should I get a facial cleansing?", answer: "Depending on your skin type, an ultrasonic facial cleansing is recommended every 1-2 months." },
+            { question: "What is Airtouch hair coloring?", answer: "Airtouch is a modern, gentle coloring technique that creates a natural, sun-kissed look with a seamless blend." },
+            { question: "Where to get a good haircut in Kengarags?", answer: "Aneri Salon offers professional haircuts for women, men, and children at affordable prices in the heart of Kengarags." }
           ]
         }
       ] 
@@ -902,5 +984,6 @@ export const contentData: Record<Language, Content> = {
       privacyLabel: "Privacy",
     },
     cookie: { text: "We use cookies for the best experience.", btn: "Accept", declineBtn: "Decline" },
+    articles: getArticlesForLanguage('en')
   },
 };

@@ -65,6 +65,26 @@ const PricePage: React.FC<PricePageProps> = ({ content, setView }) => {
                   </div>
                 ))}
               </div>
+
+              {/* SEO Links - Subtle internal linking for crawlers */}
+              {section.seoLinks && section.seoLinks.length > 0 && (
+                <div className="mt-8 flex flex-wrap gap-4 justify-center opacity-30 hover:opacity-100 transition-opacity">
+                  {section.seoLinks.map((link, idx) => (
+                    <a 
+                      key={idx} 
+                      href={link.url} 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.history.pushState({}, '', link.url);
+                        window.dispatchEvent(new PopStateEvent('popstate'));
+                      }}
+                      className="text-[10px] text-stone-400 hover:text-primary transition-colors"
+                    >
+                      {link.text}
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>

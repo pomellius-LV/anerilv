@@ -1,6 +1,6 @@
 
 export type Language = 'lv' | 'ru' | 'en';
-export type View = 'home' | 'faq' | 'terms' | 'privacy' | 'prices' | 'gallery';
+export type View = 'home' | 'faq' | 'terms' | 'privacy' | 'prices' | 'gallery' | 'article';
 
 export interface ServiceItem {
   id: string; // added for anchor linking
@@ -35,12 +35,25 @@ export interface PriceSection {
   id: string; // added for anchor linking
   sectionTitle: string;
   categories: PriceCategory[];
+  seoLinks?: { text: string; url: string; articleId: string }[];
 }
 
 export interface GalleryCategory {
   id: string; // folder name
   title: string;
   image: string; // cover image for category
+}
+
+export interface Article {
+  id: string;
+  title: string;
+  content: string;
+  metaTitle: string;
+  metaDescription: string;
+  relatedService?: {
+    id: string;
+    text: string;
+  };
 }
 
 export interface Content {
@@ -113,4 +126,5 @@ export interface Content {
     btn: string;
     declineBtn: string; // NEW: Button for declining cookies
   };
+  articles: Article[];
 }
