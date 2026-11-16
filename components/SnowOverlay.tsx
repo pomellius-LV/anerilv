@@ -110,13 +110,23 @@ const TULIP_PALETTES = [
 ];
 
 const AUTUMN_LEAF_PALETTES = [
-  { main: '#EA580C', vein: '#7C2D12', glow: '#FDBA74' }, // Burnt Orange Maple
-  { main: '#DC2626', vein: '#7F1D1D', glow: '#FCA5A5' }, // Crimson Red Maple
-  { main: '#D97706', vein: '#78350F', glow: '#FDE68A' }, // Golden Amber Oak
-  { main: '#CA8A04', vein: '#713F12', glow: '#FEF08A' }, // Yellow Birch
-  { main: '#9A3412', vein: '#431407', glow: '#FDBA74' }, // Warm Chestnut
-  { main: '#BE123C', vein: '#881337', glow: '#FDA4AF' }  // Autumn Berry
-];
+  // 0: Fiery Red-Orange Sugar Maple
+  { base: '#F59E0B', mid: '#EA580C', tip: '#B91C1C', vein: '#7C2D12', spot: '#9A3412', type: 'maple', asym: 1 },
+  // 1: Deep Crimson Red Maple
+  { base: '#FB7185', mid: '#DC2626', tip: '#881337', vein: '#4C0519', spot: '#9F1239', type: 'maple', asym: -1 },
+  // 2: Golden Amber Maple
+  { base: '#FDE047', mid: '#F59E0B', tip: '#C2410C', vein: '#78350F', spot: '#B45309', type: 'maple', asym: 0.6 },
+  // 3: Classic Canadian Scarlet-Gold Maple
+  { base: '#FBBF24', mid: '#E11D48', tip: '#9F1239', vein: '#7F1D1D', spot: '#881337', type: 'maple', asym: -0.7 },
+  // 4: Sunlit Ochre & Cinnamon Maple
+  { base: '#FEF08A', mid: '#D97706', tip: '#9A3412', vein: '#713F12', spot: '#92400E', type: 'maple', asym: 0.4 },
+  // 5: Warm Autumn Oak (Copper-Amber)
+  { base: '#F59E0B', mid: '#B45309', tip: '#78350F', vein: '#451A03', spot: '#92400E', type: 'oak', asym: 1 },
+  // 6: Bright Carrot-Crimson Maple
+  { base: '#FDBA74', mid: '#EA580C', tip: '#991B1B', vein: '#7C2D12', spot: '#7F1D1D', type: 'maple', asym: -0.5 },
+  // 7: Russet Oak (Red-Bronze)
+  { base: '#FB923C', mid: '#C2410C', tip: '#7C2D12', vein: '#431407', spot: '#9A3412', type: 'oak', asym: -1 }
+] as const;
 
 const BIRD_COLORS = ['#1E293B', '#0369A1', '#334155', '#475569', '#312E81'];
 
@@ -338,14 +348,14 @@ function createTulipSprites(dpr: number): HTMLCanvasElement[] {
   });
 }
 
-// 3. AUTUMN SPRITES: 6 crisp Maple, Birch & Oak leaf variants
+// 3. AUTUMN SPRITES: 6 realistic curved botanical Maple leaves (75%) + 2 scalloped Oak leaves (25%)
 function createAutumnLeafSprites(dpr: number): HTMLCanvasElement[] {
-  const logicalSize = 76;
+  const logicalSize = 96;
   const pixelSize = Math.round(logicalSize * dpr);
   const cx = logicalSize / 2;
   const cy = logicalSize / 2;
 
-  return AUTUMN_LEAF_PALETTES.map((palette, idx) => {
+  return AUTUMN_LEAF_PALETTES.map(palette => {
     const offscreen = document.createElement('canvas');
     offscreen.width = pixelSize;
     offscreen.height = pixelSize;
@@ -357,111 +367,171 @@ function createAutumnLeafSprites(dpr: number): HTMLCanvasElement[] {
     octx.lineCap = 'round';
     octx.lineJoin = 'round';
 
-    const shape = idx % 3; // 0: Maple, 1: Birch/Pointed, 2: Oak
+    const a = palette.asym;
 
-    // Stem
-    octx.strokeStyle = palette.vein;
-    octx.lineWidth = 2.2;
+    // Slender curved petiole (stem)
+    octx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+    octx.lineWidth = 3.1;
     octx.beginPath();
-    octx.moveTo(0, 12);
-    octx.quadraticCurveTo(1.5, 22, -1, 29);
+    octx.moveTo(0, 14);
+    octx.quadraticCurveTo(2.4 * a, 25, -1.8 * a, 37);
     octx.stroke();
 
-    octx.fillStyle = palette.main;
-    octx.strokeStyle = 'rgba(255,255,255,0.4)';
-    octx.lineWidth = 1.25;
+    octx.strokeStyle = palette.vein;
+    octx.lineWidth = 1.9;
+    octx.beginPath();
+    octx.moveTo(0, 14);
+    octx.quadraticCurveTo(2.4 * a, 25, -1.8 * a, 37);
+    octx.stroke();
 
-    if (shape === 0) {
-      // Classic 5-lobed Maple leaf
-      octx.beginPath();
-      octx.moveTo(0, -27);
-      octx.lineTo(5, -13);
-      octx.lineTo(15, -18);
-      octx.lineTo(11, -7);
-      octx.lineTo(25, -4);
-      octx.lineTo(14, 4);
-      octx.lineTo(17, 13);
-      octx.lineTo(3, 11);
-      octx.lineTo(0, 14);
-      octx.lineTo(-3, 11);
-      octx.lineTo(-17, 13);
-      octx.lineTo(-14, 4);
-      octx.lineTo(-25, -4);
-      octx.lineTo(-11, -7);
-      octx.lineTo(-15, -18);
-      octx.lineTo(-5, -13);
-      octx.closePath();
-      octx.fill();
-      octx.stroke();
+    // Rich multi-stop autumn foliage gradient (sunlit base -> fiery mid -> deep tip)
+    const grad = octx.createLinearGradient(-12 * a, 22, 8 * a, -38);
+    grad.addColorStop(0, palette.base);
+    grad.addColorStop(0.48, palette.mid);
+    grad.addColorStop(1, palette.tip);
 
-      // Maple veins
-      octx.strokeStyle = palette.vein;
-      octx.lineWidth = 1.15;
-      octx.beginPath();
-      octx.moveTo(0, 13);
-      octx.lineTo(0, -23);
-      octx.moveTo(0, 6);
-      octx.lineTo(20, -3);
-      octx.moveTo(0, 6);
-      octx.lineTo(-20, -3);
-      octx.moveTo(0, 0);
-      octx.lineTo(12, -14);
-      octx.moveTo(0, 0);
-      octx.lineTo(-12, -14);
-      octx.stroke();
-    } else if (shape === 1) {
-      // Pointed Birch/Beech autumn leaf
-      octx.beginPath();
-      octx.moveTo(0, -27);
-      octx.bezierCurveTo(18, -14, 21, 5, 0, 16);
-      octx.bezierCurveTo(-21, 5, -18, -14, 0, -27);
-      octx.closePath();
-      octx.fill();
-      octx.stroke();
+    octx.fillStyle = grad;
 
-      octx.strokeStyle = palette.vein;
-      octx.lineWidth = 1.2;
-      octx.beginPath();
-      octx.moveTo(0, 16);
-      octx.lineTo(0, -24);
-      [-12, -4, 4].forEach((yOffset, vIdx) => {
-        const span = 12 - vIdx * 1.5;
-        octx.moveTo(0, yOffset + 4);
-        octx.lineTo(span, yOffset - 4);
-        octx.moveTo(0, yOffset + 4);
-        octx.lineTo(-span, yOffset - 4);
-      });
-      octx.stroke();
-    } else {
-      // Lobed Oak leaf
-      octx.beginPath();
-      octx.moveTo(0, -26);
-      octx.bezierCurveTo(9, -24, 9, -15, 5, -13);
-      octx.bezierCurveTo(16, -15, 19, -5, 9, -2);
-      octx.bezierCurveTo(19, 1, 17, 11, 7, 10);
-      octx.bezierCurveTo(8, 16, 2, 16, 0, 15);
-      octx.bezierCurveTo(-2, 16, -8, 16, -7, 10);
-      octx.bezierCurveTo(-17, 11, -19, 1, -9, -2);
-      octx.bezierCurveTo(-19, -5, -16, -15, -5, -13);
-      octx.bezierCurveTo(-9, -15, -9, -24, 0, -26);
-      octx.closePath();
-      octx.fill();
-      octx.stroke();
-
-      octx.strokeStyle = palette.vein;
-      octx.lineWidth = 1.15;
+    if (palette.type === 'maple') {
+      // Sculpted botanical 5-lobed Acer maple silhouette with curved U-sinuses & secondary teeth
       octx.beginPath();
       octx.moveTo(0, 15);
-      octx.lineTo(0, -22);
-      octx.moveTo(0, -9);
-      octx.lineTo(10, -10);
-      octx.moveTo(0, -9);
-      octx.lineTo(-10, -10);
-      octx.moveTo(0, 3);
-      octx.lineTo(10, 4);
-      octx.moveTo(0, 3);
-      octx.lineTo(-10, 4);
+      // Bottom-right basal lobe
+      octx.quadraticCurveTo(8, 22, 22 + a, 19);
+      octx.quadraticCurveTo(17, 13, 21, 11);
+      octx.quadraticCurveTo(13, 9, 12, 8);
+      // Middle-right major lobe with lower & upper sharp teeth
+      octx.quadraticCurveTo(20, 10, 30, 8);
+      octx.quadraticCurveTo(26, 2, 39, -3);
+      octx.quadraticCurveTo(29, -6, 27, -11);
+      octx.quadraticCurveTo(18, -9, 13, -10);
+      // Center-top crown lobe with shoulder serrations
+      octx.quadraticCurveTo(17, -17, 17 + a, -23);
+      octx.quadraticCurveTo(10, -21, 10, -27);
+      octx.quadraticCurveTo(4, -30, 0, -40);
+      octx.quadraticCurveTo(-4, -30, -10, -27);
+      octx.quadraticCurveTo(-10, -21, -17 + a, -23);
+      octx.quadraticCurveTo(-17, -17, -13, -10);
+      // Middle-left major lobe
+      octx.quadraticCurveTo(-18, -9, -27, -11);
+      octx.quadraticCurveTo(-29, -6, -39, -3);
+      octx.quadraticCurveTo(-26, 2, -30, 8);
+      octx.quadraticCurveTo(-20, 10, -12, 8);
+      // Bottom-left basal lobe
+      octx.quadraticCurveTo(-13, 9, -21, 11);
+      octx.quadraticCurveTo(-17, 13, -22 + a, 19);
+      octx.quadraticCurveTo(-8, 22, 0, 15);
+      octx.closePath();
+
+      octx.fill();
+      octx.strokeStyle = 'rgba(255, 255, 255, 0.34)';
+      octx.lineWidth = 1.25;
       octx.stroke();
+
+      // Subtle organic autumn freckles inside leaf blade
+      octx.fillStyle = palette.spot;
+      octx.globalAlpha = 0.28;
+      [
+        [6 * a, -14, 1.4],
+        [-8 * a, -4, 1.8],
+        [14, 2, 1.2],
+        [-11, -18, 1.1]
+      ].forEach(([fx, fy, fr]) => {
+        octx.beginPath();
+        octx.arc(fx, fy, fr, 0, Math.PI * 2);
+        octx.fill();
+      });
+      octx.globalAlpha = 1;
+
+      // Delicate palmate maple venation (5 primary radiating ribs + fine secondary veinlets)
+      octx.strokeStyle = palette.vein;
+      octx.globalAlpha = 0.72;
+      octx.lineWidth = 1.35;
+      octx.beginPath();
+      // Center rib
+      octx.moveTo(0, 15);
+      octx.quadraticCurveTo(0.8 * a, -10, 0, -35);
+      // Left & right main lobe ribs
+      octx.moveTo(0, 14);
+      octx.quadraticCurveTo(14, 4, 34, -2);
+      octx.moveTo(0, 14);
+      octx.quadraticCurveTo(-14, 4, -34, -2);
+      // Basal lobe ribs
+      octx.moveTo(0, 14);
+      octx.quadraticCurveTo(10, 17, 19, 17);
+      octx.moveTo(0, 14);
+      octx.quadraticCurveTo(-10, 17, -19, 17);
+      octx.stroke();
+
+      // Fine secondary veins branching out
+      octx.lineWidth = 0.75;
+      octx.globalAlpha = 0.55;
+      octx.beginPath();
+      octx.moveTo(0, -14);
+      octx.lineTo(13, -21);
+      octx.moveTo(0, -14);
+      octx.lineTo(-13, -21);
+      octx.moveTo(0, -24);
+      octx.lineTo(7, -28);
+      octx.moveTo(0, -24);
+      octx.lineTo(-7, -28);
+      octx.moveTo(16, 4);
+      octx.lineTo(25, 7);
+      octx.moveTo(21, 1);
+      octx.lineTo(26, -7);
+      octx.moveTo(-16, 4);
+      octx.lineTo(-25, 7);
+      octx.moveTo(-21, 1);
+      octx.lineTo(-26, -7);
+      octx.stroke();
+      octx.globalAlpha = 1;
+    } else {
+      // Sculpted deep-lobed Autumn Oak leaf (25% variety alongside maple)
+      octx.beginPath();
+      octx.moveTo(0, 16);
+      octx.bezierCurveTo(6, 17, 10, 13, 8, 9);
+      octx.bezierCurveTo(18, 11, 22, 3, 12, -1);
+      octx.bezierCurveTo(24, 1, 27, -10, 13, -13);
+      octx.bezierCurveTo(22, -14, 21, -24, 9, -24);
+      octx.bezierCurveTo(11, -31, 5, -36, 0, -37);
+      octx.bezierCurveTo(-5, -36, -11, -31, -9, -24);
+      octx.bezierCurveTo(-21, -24, -22, -14, -13, -13);
+      octx.bezierCurveTo(-27, -10, -24, 1, -12, -1);
+      octx.bezierCurveTo(-22, 3, -18, 11, -8, 9);
+      octx.bezierCurveTo(-10, 13, -6, 17, 0, 16);
+      octx.closePath();
+
+      octx.fill();
+      octx.strokeStyle = 'rgba(255, 255, 255, 0.32)';
+      octx.lineWidth = 1.2;
+      octx.stroke();
+
+      // Oak midrib & alternating lobe veins
+      octx.strokeStyle = palette.vein;
+      octx.globalAlpha = 0.7;
+      octx.lineWidth = 1.3;
+      octx.beginPath();
+      octx.moveTo(0, 15);
+      octx.quadraticCurveTo(0.8 * a, -10, 0, -33);
+      octx.stroke();
+
+      octx.lineWidth = 0.85;
+      octx.globalAlpha = 0.58;
+      octx.beginPath();
+      octx.moveTo(0, 4);
+      octx.lineTo(14, 4);
+      octx.moveTo(0, 2);
+      octx.lineTo(-14, 3);
+      octx.moveTo(0, -8);
+      octx.lineTo(18, -7);
+      octx.moveTo(0, -10);
+      octx.lineTo(-18, -9);
+      octx.moveTo(0, -20);
+      octx.lineTo(13, -20);
+      octx.moveTo(0, -22);
+      octx.lineTo(-13, -21);
+      octx.stroke();
+      octx.globalAlpha = 1;
     }
 
     return offscreen;
@@ -599,22 +669,41 @@ function spawnParticle(
     };
   }
 
+  if (season === 'autumn') {
+    const leafSize = size * (0.95 + Math.random() * 0.25);
+    return {
+      x: Math.random() * width,
+      y: randomPos ? Math.random() * height : -leafSize - Math.random() * 75,
+      vx: -4 + Math.random() * 16,
+      vy: 26 + Math.random() * 24 + leafSize * 0.14,
+      size: leafSize,
+      // Aerodynamic gliding swing (wide horizontal swoops + pendulum tilt)
+      swayAmp: 34 + Math.random() * 38,
+      swayFreq: 1.05 + Math.random() * 0.85,
+      phase: Math.random() * Math.PI * 2,
+      angle: (Math.random() - 0.5) * 0.8,
+      spinSpeed: (Math.random() - 0.5) * 0.24,
+      opacity: 0.78 + Math.random() * 0.2,
+      spriteIndex: Math.floor(Math.random() * Math.max(1, spriteCount)),
+      dir: 1,
+      // Used here as 3D perspective tumble frequency
+      flapFreq: 1.35 + Math.random() * 1.15,
+      glideAmp: Math.random() * Math.PI * 2,
+      color: '#FFFFFF'
+    };
+  }
+
   return {
     x: Math.random() * width,
     y: randomPos ? Math.random() * height : -size - Math.random() * 64,
-    vx:
-      season === 'autumn'
-        ? (Math.random() - 0.35) * 18 // gentle autumn breeze drift
-        : (Math.random() - 0.5) * 11,
+    vx: (Math.random() - 0.5) * 11,
     vy:
       season === 'spring'
         ? 24 + Math.random() * 28 + size * 0.16
-        : season === 'autumn'
-          ? 28 + Math.random() * 32 + size * 0.18
-          : 26 + Math.random() * 34 + size * 0.2,
+        : 26 + Math.random() * 34 + size * 0.2,
     size,
-    swayAmp: season === 'autumn' ? 18 + Math.random() * 22 : 12 + Math.random() * 18,
-    swayFreq: season === 'autumn' ? 0.9 + Math.random() * 0.9 : 0.65 + Math.random() * 0.85,
+    swayAmp: 12 + Math.random() * 18,
+    swayFreq: 0.65 + Math.random() * 0.85,
     phase: Math.random() * Math.PI * 2,
     angle:
       season === 'spring'
@@ -623,7 +712,7 @@ function spawnParticle(
     spinSpeed:
       season === 'spring'
         ? (Math.random() - 0.5) * 0.55
-        : (Math.random() - 0.5) * 0.95,
+        : (Math.random() - 0.5) * 0.85,
     opacity: 0.64 + Math.random() * 0.32,
     spriteIndex: Math.floor(Math.random() * Math.max(1, spriteCount)),
     dir: 1,
@@ -886,6 +975,12 @@ const SnowOverlay: React.FC<SnowOverlayProps> = ({ config, enabled, lang }) => {
 
       ctx.clearRect(0, 0, width, height);
 
+      // Coherent ambient autumn breeze with soft natural gusts
+      const autumnWind =
+        activeSeason === 'autumn'
+          ? 16 + Math.sin(elapsed * 0.34) * 18 + Math.sin(elapsed * 0.82 + 1.3) * 9
+          : 0;
+
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
@@ -908,13 +1003,53 @@ const SnowOverlay: React.FC<SnowOverlayProps> = ({ config, enabled, lang }) => {
           }
 
           drawFlyingBird(ctx, p, elapsed);
+        } else if (activeSeason === 'autumn') {
+          // True leaf-in-the-wind aerodynamics: wide gliding arcs, air-cushion slowdown at apex, pendulum tilt
+          const glideSwing = Math.cos(elapsed * p.swayFreq + p.phase);
+          const windResponse = 0.65 + (p.size / 42) * 0.35;
+          p.x += (p.vx + autumnWind * windResponse + glideSwing * p.swayAmp) * dt;
+
+          // Air resistance lifts the leaf near horizontal extremes and lets it settle between swings
+          const airCushionLift = 1 - 0.44 * Math.abs(glideSwing);
+          p.y += p.vy * airCushionLift * dt;
+
+          // Leaf banks into its glide arc rather than spinning mechanically like a snowflake
+          const bankAngle =
+            glideSwing * 0.56 + Math.sin(elapsed * 0.55 + p.glideAmp) * 0.34;
+          const perspectiveRoll = 0.62 + 0.38 * Math.cos(elapsed * p.flapFreq + p.glideAmp);
+          const perspectivePitch = 0.84 + 0.16 * Math.sin(elapsed * p.flapFreq * 0.7 + p.phase);
+
+          if (p.y > height + p.size) {
+            particles[i] = spawnParticle(
+              width,
+              height,
+              itemSize,
+              activeSeason,
+              false,
+              spriteCount
+            );
+            continue;
+          } else if (p.x < -p.size) {
+            p.x = width + p.size;
+          } else if (p.x > width + p.size) {
+            p.x = -p.size;
+          }
+
+          const sprite = sprites[p.spriteIndex % sprites.length];
+          const half = p.size / 2;
+          ctx.save();
+          ctx.globalAlpha = p.opacity;
+          ctx.translate(p.x, p.y);
+          ctx.rotate(bankAngle);
+          ctx.scale(perspectivePitch, perspectiveRoll);
+          ctx.drawImage(sprite, -half, -half, p.size, p.size);
+          ctx.restore();
         } else {
           const swayOffset = Math.sin(elapsed * p.swayFreq + p.phase) * p.swayAmp * dt;
           p.x += p.vx * dt + swayOffset;
           p.y += p.vy * dt;
 
           if (activeSeason === 'spring') {
-            // Tulips stay mostly upright while gently rocking like spring blooms on a breeze
             p.angle = Math.sin(elapsed * 1.3 + p.phase) * 0.35;
           } else {
             p.angle += p.spinSpeed * dt;
@@ -942,11 +1077,6 @@ const SnowOverlay: React.FC<SnowOverlayProps> = ({ config, enabled, lang }) => {
           ctx.globalAlpha = p.opacity;
           ctx.translate(p.x, p.y);
           ctx.rotate(p.angle);
-          if (activeSeason === 'autumn') {
-            // Natural fluttering paper/leaf 3D tumble effect
-            const flutterScaleX = 0.58 + 0.42 * Math.cos(elapsed * 2.1 + p.phase);
-            ctx.scale(flutterScaleX, 1);
-          }
           ctx.drawImage(sprite, -half, -half, p.size, p.size);
           ctx.restore();
         }
