@@ -3,7 +3,11 @@ import { Language, View } from '../types';
 import {
   dataService,
   AdminServiceItem,
-  CATALOG_TAXONOMY
+  CATALOG_TAXONOMY,
+  SeasonMode,
+  SeasonType,
+  resolveActiveSeason,
+  getCalendarSeason
 } from '../services/dataService';
 import {
   Lock,
@@ -29,7 +33,11 @@ import {
   Languages,
   Check,
   X,
-  Snowflake
+  Snowflake,
+  Flower2,
+  Bird,
+  Leaf,
+  Calendar
 } from 'lucide-react';
 
 interface AdminPanelProps {
@@ -174,6 +182,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
   const [isD1Live, setIsD1Live] = useState<boolean>(false);
   const [isDownloadingBackup, setIsDownloadingBackup] = useState<boolean>(false);
   const [snowEnabled, setSnowEnabled] = useState<boolean>(() => dataService.getSnowConfig().enabled);
+  const [seasonMode, setSeasonMode] = useState<SeasonMode>(() => dataService.getSnowConfig().seasonMode);
   const [snowSize, setSnowSize] = useState<number>(() => dataService.getSnowConfig().size);
   const [snowColor, setSnowColor] = useState<string>(() => dataService.getSnowConfig().color);
   const [snowCount, setSnowCount] = useState<number>(() => dataService.getSnowConfig().count);
@@ -230,25 +239,28 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
     setIsLoadingServices(false);
   };
 
-  // Load D1 site settings (snow_enabled, snow_size, snow_color, snow_count)
+  // Load D1 site settings (season_mode, snow_enabled, snow_size, snow_color, snow_count)
   const loadAdminSettings = async () => {
     await dataService.fetchAdminSettings();
     const cfg = dataService.getSnowConfig();
     setSnowEnabled(cfg.enabled);
+    setSeasonMode(cfg.seasonMode);
     setSnowSize(cfg.size);
     setSnowColor(cfg.color);
     setSnowCount(cfg.count);
   };
 
-  // Save all snowfall settings atomically to Cloudflare D1
+  // Save all seasonal animation settings atomically to Cloudflare D1
   const handleSaveSnowSettings = async (overrides?: {
     enabled?: boolean;
+    seasonMode?: SeasonMode;
     size?: number;
     color?: string;
     count?: number;
   }) => {
     if (isSavingSnow) return;
     const nextEnabled = overrides?.enabled ?? snowEnabled;
+    const nextSeasonMode = overrides?.seasonMode ?? seasonMode;
     const nextSize = overrides?.size ?? snowSize;
     const nextColor = overrides?.color ?? snowColor;
     const nextCount = overrides?.count ?? snowCount;
@@ -256,6 +268,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
     setIsSavingSnow(true);
     const res = await dataService.updateAdminSettings({
       snow_enabled: nextEnabled ? '1' : '0',
+      season_mode: nextSeasonMode,
       snow_size: String(nextSize),
       snow_color: nextColor,
       snow_count: String(nextCount)
@@ -264,14 +277,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
 
     if (res.ok) {
       setSnowEnabled(nextEnabled);
+      setSeasonMode(nextSeasonMode);
       setSnowSize(nextSize);
       setSnowColor(nextColor);
       setSnowCount(nextCount);
       showSuccess(
-        `Sniega iestatījumi saglabāti D1 (${nextEnabled ? 'Ieslēgts' : 'Izslēgts'}, ${nextSize}px, ${nextCount} gab., ${nextColor}).`
+        `Sezonu efekti saglabāti D1 (${nextEnabled ? 'ON' : 'OFF'}, režīms: ${nextSeasonMode}, ${nextSize}px, ${nextCount} gab.).`
       );
     } else {
-      showError(res.error || 'Neizdevās saglabāt sniega iestatījumus Cloudflare D1.');
+      showError(res.error || 'Neizdevās saglabāt sezonu iestatījumus Cloudflare D1.');
     }
   };
 
@@ -518,7 +532,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
     }
   };
 
-  // 8. Authoritative Server-Side D1 JSON Backup Export (v1.19)
+  // 8. Authoritative Server-Side D1 JSON Backup Export (v1.20)
   const handleExportBackup = async () => {
     setIsDownloadingBackup(true);
     setSaveErrorMsg('');
@@ -529,11 +543,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
 
       if (res.ok && res.data) {
         jsonStr = JSON.stringify(res.data, null, 2);
-        filename = `aneri_d1_backup_${new Date().toISOString().slice(0, 10)}_v1.19.json`;
+        filename = `aneri_d1_backup_${new Date().toISOString().slice(0, 10)}_v1.20.json`;
         showSuccess(`Servera Cloudflare D1 rezerves kopija veiksmīgi iegūta (${res.data.totalRecords || 0} ieraksti).`);
       } else {
         jsonStr = dataService.exportBackupJson();
-        filename = `aneri_catalog_snapshot_${new Date().toISOString().slice(0, 10)}_v1.19.json`;
+        filename = `aneri_catalog_snapshot_${new Date().toISOString().slice(0, 10)}_v1.20.json`;
         showError(`D1 servera brīdinājums: ${res.error || 'D1 bezsaistē'}. Lejupielādēts lokālais kataloga uzņēmums.`);
       }
 
@@ -747,7 +761,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
             <div className="flex items-center gap-2.5">
               <span className="text-2xl font-serif font-bold text-primary">Aneri</span>
               <span className="text-[11px] font-mono uppercase bg-stone-800 text-rose-300 border border-stone-700 px-2 py-0.5 rounded font-semibold">
-                Admin Panel v1.19
+                Admin Panel v1.20
               </span>
             </div>
             <div className="hidden sm:flex items-center gap-2 text-xs text-stone-400 border-l border-stone-800 pl-4">
@@ -762,20 +776,34 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
           </div>
 
           <div className="flex items-center gap-2.5">
-            <button
-              type="button"
-              onClick={handleToggleSnow}
-              disabled={isSavingSnow}
-              title="Ieslēgt / izslēgt Jaungada sniegu vietnē"
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 border ${
-                snowEnabled
-                  ? 'bg-sky-950/70 hover:bg-sky-900 text-sky-200 border-sky-700/70'
-                  : 'bg-stone-800 hover:bg-stone-700 text-stone-300 border-stone-700'
-              }`}
-            >
-              <Snowflake size={14} className={snowEnabled ? 'text-sky-300' : 'text-stone-400'} />
-              <span>{snowEnabled ? 'Sniegs: ON' : 'Sniegs: OFF'}</span>
-            </button>
+            {(() => {
+              const previewSeason = resolveActiveSeason(seasonMode);
+              const seasonNames: Record<SeasonType, string> = {
+                winter: 'Ziema',
+                spring: 'Pavasaris',
+                summer: 'Vasara',
+                autumn: 'Rudens'
+              };
+              return (
+                <button
+                  type="button"
+                  onClick={handleToggleSnow}
+                  disabled={isSavingSnow}
+                  title="Ieslēgt / izslēgt sezonu animāciju vietnē"
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 border ${
+                    snowEnabled
+                      ? 'bg-sky-950/70 hover:bg-sky-900 text-sky-200 border-sky-700/70'
+                      : 'bg-stone-800 hover:bg-stone-700 text-stone-300 border-stone-700'
+                  }`}
+                >
+                  {previewSeason === 'spring' && <Flower2 size={14} className={snowEnabled ? 'text-rose-300' : 'text-stone-400'} />}
+                  {previewSeason === 'summer' && <Bird size={14} className={snowEnabled ? 'text-sky-300' : 'text-stone-400'} />}
+                  {previewSeason === 'autumn' && <Leaf size={14} className={snowEnabled ? 'text-amber-300' : 'text-stone-400'} />}
+                  {previewSeason === 'winter' && <Snowflake size={14} className={snowEnabled ? 'text-sky-300' : 'text-stone-400'} />}
+                  <span>{snowEnabled ? `${seasonNames[previewSeason]}: ON` : 'Efekti: OFF'}</span>
+                </button>
+              );
+            })()}
 
             <div className="hidden md:flex items-center gap-2 text-xs text-stone-300 bg-stone-800/80 px-3 py-1.5 rounded-lg border border-stone-700">
               <ShieldCheck size={14} className="text-emerald-400" />
@@ -1526,11 +1554,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                 </button>
 
                 <a
-                  href="/aneri-v1.19.zip"
-                  download="aneri-v1.19.zip"
+                  href="/aneri-v1.20.zip"
+                  download="aneri-v1.20.zip"
                   className="px-5 py-3 rounded-xl bg-primary hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors shadow-sm"
                 >
-                  <Download size={14} /> Lejupielādēt Koda Arhīvu (aneri-v1.19.zip)
+                  <Download size={14} /> Lejupielādēt Koda Arhīvu (aneri-v1.20.zip)
                 </a>
               </div>
             </div>
@@ -1541,65 +1569,184 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
         {activeTab === 'settings' && (
           <div className="space-y-6 max-w-3xl">
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-200 space-y-6">
-              <div className="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-stone-100">
-                <div className="space-y-1 max-w-lg">
-                  <h2 className="text-lg font-serif font-bold text-stone-900 flex items-center gap-2">
-                    <Snowflake size={18} className="text-primary shrink-0" />
-                    <span>Jaungada sniegpārsliņas (Настройки снега)</span>
-                  </h2>
-                  <p className="text-xs text-stone-600 leading-relaxed">
-                    Sniegpārsliņas lido aiz sākumlapas virsraksta kā aiz skatloga stikla (z-5). Pielāgojiet izmēru, krāsu un daudzumu zemāk un saglabājiet Cloudflare D1 datubāzē.
-                  </p>
-                </div>
+              {(() => {
+                const calendarSeason = getCalendarSeason();
+                const previewSeason = resolveActiveSeason(seasonMode);
+                const seasonLabelsRu: Record<SeasonType, string> = {
+                  winter: 'Зима — Снежинки',
+                  spring: 'Весна — Разноцветные тюльпаны',
+                  summer: 'Лето — Летающие птички',
+                  autumn: 'Осень — Осенние листики'
+                };
 
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={snowEnabled}
-                  onClick={handleToggleSnow}
-                  disabled={isSavingSnow}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 border flex items-center gap-2 ${
-                    snowEnabled
-                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 shadow-sm'
-                      : 'bg-stone-100 hover:bg-stone-200 text-stone-700 border-stone-300'
-                  }`}
-                >
-                  {isSavingSnow ? (
-                    <RefreshCw size={13} className="animate-spin" />
-                  ) : (
-                    <Snowflake size={13} />
-                  )}
-                  <span>{snowEnabled ? 'Ieslēgts (Вкл)' : 'Izslēgts (Выкл)'}</span>
-                </button>
-              </div>
+                return (
+                  <>
+                    <div className="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-stone-100">
+                      <div className="space-y-1 max-w-lg">
+                        <h2 className="text-lg font-serif font-bold text-stone-900 flex items-center gap-2">
+                          <Calendar size={18} className="text-primary shrink-0" />
+                          <span>Sezonu animācija vietnē (Авто-сезоны на сайте)</span>
+                        </h2>
+                        <p className="text-xs text-stone-600 leading-relaxed">
+                          Režīmā <strong>Auto</strong> vietne automātiski pārslēdz elementus pēc kalendāra (Pavasaris: tulpes · Vasara: putniņi · Rudens: lapas · Ziema: sniegpārsliņas). Elementi lido aiz skatloga stikla (z-5).
+                        </p>
+                      </div>
 
-              {/* Live Visual Swatch Preview (Window-glass demo) */}
-              <div className="relative overflow-hidden rounded-2xl bg-stone-900 border border-stone-800 px-6 py-5 flex items-center justify-between gap-4">
-                <div className="relative z-10">
-                  <div className="text-[11px] uppercase tracking-widest text-stone-400 font-semibold mb-0.5">
-                    Priekšskatījums (aiz virsraksta)
-                  </div>
-                  <div className="text-2xl font-serif font-bold text-white tracking-tight">
-                    Salons Aneri
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  {[0.75, 1, 0.88].map((scale, idx) => (
-                    <Snowflake
-                      key={idx}
-                      size={Math.round(snowSize * scale)}
-                      style={{ color: snowColor, opacity: snowEnabled ? 0.9 : 0.25 }}
-                      className="transition-all duration-200"
-                    />
-                  ))}
-                </div>
-              </div>
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={snowEnabled}
+                        onClick={handleToggleSnow}
+                        disabled={isSavingSnow}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 border flex items-center gap-2 ${
+                          snowEnabled
+                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 shadow-sm'
+                            : 'bg-stone-100 hover:bg-stone-200 text-stone-700 border-stone-300'
+                        }`}
+                      >
+                        {isSavingSnow ? (
+                          <RefreshCw size={13} className="animate-spin" />
+                        ) : (
+                          <Calendar size={13} />
+                        )}
+                        <span>{snowEnabled ? 'Ieslēgts (Вкл)' : 'Izslēgts (Выкл)'}</span>
+                      </button>
+                    </div>
 
-              {/* 1. Snowflake Size Slider + Presets */}
+                    {/* Season Selector */}
+                    <div className="space-y-2.5">
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <span className="font-bold text-stone-800">
+                          Sezonas režīms / Режим сезона
+                        </span>
+                        <span className="text-stone-500">
+                          Сейчас по календарю: <strong className="text-stone-800">{seasonLabelsRu[calendarSeason]}</strong>
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
+                        {[
+                          {
+                            id: 'auto' as SeasonMode,
+                            title: 'Auto (Календарь)',
+                            sub: `${seasonLabelsRu[calendarSeason].split(' — ')[0]} сейчас`,
+                            icon: <Calendar size={15} />
+                          },
+                          {
+                            id: 'spring' as SeasonMode,
+                            title: 'Весна (03–05)',
+                            sub: 'Тюльпаны',
+                            icon: <Flower2 size={15} className="text-rose-500" />
+                          },
+                          {
+                            id: 'summer' as SeasonMode,
+                            title: 'Лето (06–08)',
+                            sub: 'Птички',
+                            icon: <Bird size={15} className="text-sky-500" />
+                          },
+                          {
+                            id: 'autumn' as SeasonMode,
+                            title: 'Осень (09–11)',
+                            sub: 'Листики',
+                            icon: <Leaf size={15} className="text-amber-600" />
+                          },
+                          {
+                            id: 'winter' as SeasonMode,
+                            title: 'Зима (12–02)',
+                            sub: 'Снежинки',
+                            icon: <Snowflake size={15} className="text-sky-600" />
+                          }
+                        ].map(opt => {
+                          const selected = seasonMode === opt.id;
+                          return (
+                            <button
+                              key={opt.id}
+                              type="button"
+                              onClick={() => setSeasonMode(opt.id)}
+                              className={`text-left px-3 py-2.5 rounded-xl border transition-colors flex items-center gap-2.5 ${
+                                selected
+                                  ? 'border-primary bg-rose-50/80 text-stone-900 shadow-sm'
+                                  : 'border-stone-200 bg-stone-50/60 hover:bg-stone-100 text-stone-700'
+                              }`}
+                            >
+                              <span className="shrink-0">{opt.icon}</span>
+                              <span className="min-w-0">
+                                <span className="block text-xs font-bold leading-tight truncate">{opt.title}</span>
+                                <span className="block text-[11px] text-stone-500 truncate">{opt.sub}</span>
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Live Visual Preview (Window-glass demo for active/selected season) */}
+                    <div className="relative overflow-hidden rounded-2xl bg-stone-900 border border-stone-800 px-6 py-5 flex items-center justify-between gap-4">
+                      <div className="relative z-10">
+                        <div className="text-[11px] uppercase tracking-widest text-stone-400 font-semibold mb-0.5">
+                          Priekšskatījums · {seasonLabelsRu[previewSeason]}
+                        </div>
+                        <div className="text-2xl font-serif font-bold text-white tracking-tight">
+                          Salons Aneri
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        {[0.75, 1, 0.88].map((scale, idx) => {
+                          const iconSize = Math.round(snowSize * scale);
+                          const tulipPalette = ['#E11D48', '#FBBF24', '#A855F7'];
+                          const autumnPalette = ['#EA580C', '#DC2626', '#F59E0B'];
+                          const birdPalette = ['#38BDF8', '#94A3B8', '#E2E8F0'];
+
+                          if (previewSeason === 'spring') {
+                            return (
+                              <Flower2
+                                key={idx}
+                                size={iconSize}
+                                style={{ color: tulipPalette[idx], opacity: snowEnabled ? 0.92 : 0.25 }}
+                                className="transition-all duration-200"
+                              />
+                            );
+                          }
+                          if (previewSeason === 'summer') {
+                            return (
+                              <Bird
+                                key={idx}
+                                size={iconSize}
+                                style={{ color: birdPalette[idx], opacity: snowEnabled ? 0.92 : 0.25 }}
+                                className="transition-all duration-200"
+                              />
+                            );
+                          }
+                          if (previewSeason === 'autumn') {
+                            return (
+                              <Leaf
+                                key={idx}
+                                size={iconSize}
+                                style={{ color: autumnPalette[idx], opacity: snowEnabled ? 0.92 : 0.25 }}
+                                className="transition-all duration-200"
+                              />
+                            );
+                          }
+                          return (
+                            <Snowflake
+                              key={idx}
+                              size={iconSize}
+                              style={{ color: snowColor, opacity: snowEnabled ? 0.9 : 0.25 }}
+                              className="transition-all duration-200"
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
+
+              {/* 1. Element Size Slider + Presets */}
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between text-xs">
                   <label htmlFor="snow-size-range" className="font-bold text-stone-800">
-                    Izmērs / Размер снежинок
+                    Izmērs / Размер элементов (все сезоны)
                   </label>
                   <span className="font-mono font-bold tabular-nums text-primary">
                     {snowSize} px
@@ -1638,11 +1785,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                 </div>
               </div>
 
-              {/* 2. Snowflake Count Slider + Presets */}
+              {/* 2. Count Slider + Presets */}
               <div className="space-y-2.5 pt-2 border-t border-stone-100">
                 <div className="flex items-center justify-between text-xs">
                   <label htmlFor="snow-count-range" className="font-bold text-stone-800">
-                    Daudzums / Количество снежинок
+                    Daudzums / Количество элементов (все сезоны)
                   </label>
                   <span className="font-mono font-bold tabular-nums text-primary">
                     {snowCount} gab.
@@ -1680,14 +1827,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                 </div>
               </div>
 
-              {/* 3. Snowflake Color Swatches + Custom Color Picker */}
+              {/* 3. Winter Snowflake Color Swatches + Custom Color Picker */}
               <div className="space-y-2.5 pt-2 border-t border-stone-100">
                 <div className="flex items-center justify-between text-xs">
                   <label htmlFor="snow-color-picker" className="font-bold text-stone-800">
-                    Krāsa / Цвет снежинок
+                    Ziemas sniegpārsliņu krāsa / Цвет снежинок зимой
                   </label>
                   <span className="font-mono font-semibold text-stone-600">{snowColor}</span>
                 </div>
+                <p className="text-[11px] text-stone-500">
+                  Pavasarī (tulpes), vasarā (putniņi) un rudenī (lapas) automātiski tiek izmantota dabiskā daudzkrāsu palete.
+                </p>
                 <div className="flex flex-wrap items-center gap-2.5">
                   {[
                     { hex: '#FFFFFF', label: 'Balts (Белый)' },
@@ -1734,11 +1884,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                 <button
                   type="button"
                   onClick={() => {
+                    setSeasonMode('auto');
                     setSnowSize(34);
                     setSnowCount(55);
                     setSnowColor('#FFFFFF');
                     handleSaveSnowSettings({
                       enabled: true,
+                      seasonMode: 'auto',
                       size: 34,
                       count: 55,
                       color: '#FFFFFF'

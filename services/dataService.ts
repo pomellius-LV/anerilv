@@ -46,8 +46,27 @@ export interface CreateServicePayload {
   order_num?: number;
 }
 
+export type SeasonType = 'winter' | 'spring' | 'summer' | 'autumn';
+export type SeasonMode = 'auto' | SeasonType;
+
+export function getCalendarSeason(date: Date = new Date()): SeasonType {
+  const month = date.getMonth() + 1; // 1..12
+  if (month >= 3 && month <= 5) return 'spring';
+  if (month >= 6 && month <= 8) return 'summer';
+  if (month >= 9 && month <= 11) return 'autumn';
+  return 'winter';
+}
+
+export function resolveActiveSeason(mode?: SeasonMode, date: Date = new Date()): SeasonType {
+  if (mode === 'winter' || mode === 'spring' || mode === 'summer' || mode === 'autumn') {
+    return mode;
+  }
+  return getCalendarSeason(date);
+}
+
 export interface SnowConfig {
   enabled: boolean;
+  seasonMode: SeasonMode;
   size: number;
   color: string;
   count: number;
@@ -55,6 +74,7 @@ export interface SnowConfig {
 
 export const DEFAULT_SNOW_CONFIG: SnowConfig = {
   enabled: true,
+  seasonMode: 'auto',
   size: 34,
   color: '#FFFFFF',
   count: 55
@@ -213,6 +233,12 @@ class DataService {
     if (settings.snow_enabled !== undefined) {
       next.enabled = settings.snow_enabled !== '0' && settings.snow_enabled !== 'false';
     }
+    if (settings.season_mode !== undefined) {
+      const m = settings.season_mode.trim().toLowerCase();
+      if (m === 'auto' || m === 'winter' || m === 'spring' || m === 'summer' || m === 'autumn') {
+        next.seasonMode = m;
+      }
+    }
     if (settings.snow_size !== undefined) {
       const parsedSize = Number(settings.snow_size);
       if (Number.isFinite(parsedSize)) {
@@ -264,6 +290,7 @@ class DataService {
         return {
           ok: false,
           settings: {
+            season_mode: this.snowConfig.seasonMode,
             snow_enabled: this.snowConfig.enabled ? '1' : '0',
             snow_size: String(this.snowConfig.size),
             snow_color: this.snowConfig.color,
@@ -280,6 +307,7 @@ class DataService {
       return {
         ok: false,
         settings: {
+          season_mode: this.snowConfig.seasonMode,
           snow_enabled: this.snowConfig.enabled ? '1' : '0',
           snow_size: String(this.snowConfig.size),
           snow_color: this.snowConfig.color,
@@ -925,10 +953,10 @@ class DataService {
     }
   }
 
-  // Export full JSON backup of salon catalog (v1.19)
+  // Export full JSON backup of salon catalog (v1.20)
   public exportBackupJson(): string {
     return JSON.stringify({
-      version: '1.19',
+      version: '1.20',
       exportDate: new Date().toISOString(),
       salon: 'Salons Aneri',
       address: 'Latgales iela 264, Rīga',

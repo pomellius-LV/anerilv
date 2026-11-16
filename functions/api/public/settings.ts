@@ -25,6 +25,7 @@ export const onRequestGet = async (context: { request: Request; env: Env }) => {
     }
 
     // Enabled by default on initial rollout until explicitly configured in /admin
+    if (settings.season_mode === undefined) settings.season_mode = 'auto';
     if (settings.snow_enabled === undefined) settings.snow_enabled = '1';
     if (settings.snow_size === undefined) settings.snow_size = '34';
     if (settings.snow_color === undefined) settings.snow_color = '#FFFFFF';
