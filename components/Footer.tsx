@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Content, View } from '../types';
-import { MapPin, Phone, Clock, Instagram, Facebook, ArrowUpRight } from 'lucide-react';
+import { MapPin, Phone, Clock, Instagram, Facebook, ArrowUpRight, Lock } from 'lucide-react';
 
 interface FooterProps {
   content: Content;
@@ -147,7 +147,18 @@ const Footer: React.FC<FooterProps> = ({ content, setView }) => {
         </div>
         
         <div className="pt-10 border-t border-stone-200 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] uppercase tracking-[0.25em] font-bold text-stone-500">
-           <p>&copy; {new Date().getFullYear()} {footer.copyright} <span className="opacity-50 ml-2 normal-case tracking-normal">v1.09</span></p>
+           <div className="flex items-center gap-2">
+             <span>&copy; {new Date().getFullYear()} {footer.copyright}</span>
+             <span className="opacity-50 normal-case tracking-normal">v1.13</span>
+             <button
+               onClick={() => setView('admin')}
+               title="Administratora panelis"
+               className="opacity-30 hover:opacity-100 hover:text-primary transition-opacity p-1 ml-1 focus:outline-none"
+               aria-label="Admin panel"
+             >
+               <Lock size={12} />
+             </button>
+           </div>
            <div className="flex gap-10">
               <button onClick={() => setView('terms')} className="hover:text-primary transition-colors focus:outline-none">{footer.termsLabel}</button>
               <button onClick={() => setView('privacy')} className="hover:text-primary transition-colors focus:outline-none">{footer.privacyLabel}</button>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View } from '../types';
 import { ArrowLeft } from 'lucide-react';
+import Markdown from 'react-markdown';
 
 interface TermsPageProps {
   title: string;
@@ -20,12 +21,22 @@ const TermsPage: React.FC<TermsPageProps> = ({ title, content, setView, homeLabe
         <h1 className="text-5xl md:text-7xl font-serif font-bold text-stone-900 mb-12 tracking-tight">{title}</h1>
         
         <div className="bg-white p-10 md:p-16 shadow-sm border border-stone-100 rounded-[2rem]">
-          <div className="prose prose-stone max-w-none">
-            {content.split('\n').map((line, i) => (
-              <p key={i} className="text-lg text-stone-600 leading-relaxed mb-6 font-light">
-                {line}
-              </p>
-            ))}
+          <div className="text-lg text-stone-600 leading-relaxed font-light">
+            <Markdown
+              components={{
+                p: ({node, ...props}) => <p className="mb-6" {...props} />,
+                strong: ({node, ...props}) => <strong className="font-semibold text-stone-900" {...props} />,
+                h1: ({node, ...props}) => <h1 className="text-3xl font-serif font-bold mb-6 mt-10 text-stone-900" {...props} />,
+                h2: ({node, ...props}) => <h2 className="text-2xl font-serif font-bold mb-4 mt-8 text-stone-900" {...props} />,
+                h3: ({node, ...props}) => <h3 className="text-xl font-serif font-bold mb-3 mt-6 text-stone-900" {...props} />,
+                ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-6 space-y-2" {...props} />,
+                ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-6 space-y-2" {...props} />,
+                li: ({node, ...props}) => <li className="" {...props} />,
+                a: ({node, ...props}) => <a className="text-primary underline hover:text-accent transition-colors" {...props} />
+              }}
+            >
+              {content}
+            </Markdown>
           </div>
         </div>
       </div>

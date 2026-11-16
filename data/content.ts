@@ -86,6 +86,7 @@ export const contentData: Record<Language, Content> = {
           id: "hair",
           sectionTitle: "1. Frizētavas pakalpojumi",
           seoLinks: [
+            { text: "Skaistumkopšanas salons Ķengaragā: pilns pakalpojumu klāsts", url: "/article/beauty-salon-kengarags", articleId: "beauty-salon-kengarags" },
             { text: "Kā kopt matus pēc krāsošanas?", url: "/article/haircare", articleId: "haircare" },
             { text: "Matu izkrišanas cēloņi", url: "/article/hair-loss", articleId: "hair-loss" },
             { text: "Keratīns vai botokss?", url: "/article/keratin-vs-botox", articleId: "keratin-vs-botox" }
@@ -303,6 +304,7 @@ export const contentData: Record<Language, Content> = {
           categoryTitle: "Atrašanās vieta un transports",
           items: [
             { question: "Kur atrodas frizētava Ķengaragā?", answer: "Mēs atrodamies pašā Ķengaraga centrā, Latgales ielā 264. Tas ir ļoti ērti sasniedzams – blakus ir tirdzniecības centrs Dole un veikals Mego." },
+            { question: "Kur atradās restorāns Ščecina?", answer: "Daudzi vietējie iedzīvotāji šo vietu atceras kā bijušo restorānu «Ščecina». Mūsu salons atrodas šajā pašā vēsturiskajā Ķengaraga rajonā, piedāvājot mūsdienīgus skaistumkopšanas pakalpojumus." },
             { question: "Vai pie salona ir autostāvvieta?", answer: "Jā, tieši pie salona ieejas mūsu klientiem ir pieejama bezmaksas privātā autostāvvieta." },
             { question: "Kā pie Jums nokļūt ar sabiedrisko transportu?", answer: "Pie mums var nokļūt ar 7. tramvaju vai autobusiem 15, 18, 31, 49, 60 (pietura pie TC Dole)." }
           ]
@@ -440,6 +442,7 @@ export const contentData: Record<Language, Content> = {
           id: "hair",
           sectionTitle: "1. Парикмахерские услуги",
           seoLinks: [
+            { text: "Салон красоты в Кенгарагсе: полный спектр услуг", url: "/ru/article/beauty-salon-kengarags", articleId: "beauty-salon-kengarags" },
             { text: "Как сохранить цвет волос после окрашивания?", url: "/ru/article/haircare", articleId: "haircare" },
             { text: "Причины выпадения волос", url: "/ru/article/hair-loss", articleId: "hair-loss" },
             { text: "Кератин или ботокс для волос?", url: "/ru/article/keratin-vs-botox", articleId: "keratin-vs-botox" }
@@ -652,6 +655,7 @@ export const contentData: Record<Language, Content> = {
           categoryTitle: "Локация и транспорт",
           items: [
             { question: "Где находится парикмахерская в Кенгарагсе?", answer: "Мы находимся на ул. Латгалес 264. Ориентир — торговый центр Dole и магазин Mego. Очень удобное расположение и транспортная доступность." },
+            { question: "Где находился ресторан Щецин?", answer: "Многие местные жители помнят это место как бывший ресторан «Щецин». Наш салон находится в этом же историческом районе Кенгарагса, предлагая современные услуги красоты." },
             { question: "Есть ли у вас парковка?", answer: "Да, прямо перед входом в салон для наших клиентов есть бесплатная частная парковка." },
             { question: "Как до вас доехать?", answer: "К нам идет 7-й трамвай или автобусы 15, 18, 31, 49, 60 (остановка ТЦ Доле)." }
           ]
@@ -780,6 +784,7 @@ export const contentData: Record<Language, Content> = {
           id: "hair",
           sectionTitle: "1. Hairdressing Services",
           seoLinks: [
+            { text: "Beauty Salon in Kengarags: A Full Range of Services", url: "/en/article/beauty-salon-kengarags", articleId: "beauty-salon-kengarags" },
             { text: "Hair Care After Coloring", url: "/en/article/haircare", articleId: "haircare" },
             { text: "Causes of Hair Loss", url: "/en/article/hair-loss", articleId: "hair-loss" },
             { text: "Keratin vs Hair Botox", url: "/en/article/keratin-vs-botox", articleId: "keratin-vs-botox" }
@@ -828,7 +833,11 @@ export const contentData: Record<Language, Content> = {
         {
           id: "nails",
           sectionTitle: "2. Manicure & Pedicure",
-          seoLinks: [{ text: "Secrets to a Long-Lasting Gel Manicure", url: "/en/article/manicure-tips", articleId: "manicure-tips" }, { text: "Why Choose a Hardware Pedicure?", url: "/en/article/hardware-pedicure", articleId: "hardware-pedicure" }],
+          seoLinks: [
+            { text: "Secrets to a Long-Lasting Gel Manicure", url: "/en/article/manicure-tips", articleId: "manicure-tips" },
+            { text: "Why Choose a Hardware Pedicure?", url: "/en/article/hardware-pedicure", articleId: "hardware-pedicure" },
+            { text: "Latest Manicure Trends", url: "/en/article/nail-trends", articleId: "nail-trends" }
+          ],
           categories: [
             {
               title: "Manicure",
@@ -941,6 +950,8 @@ export const contentData: Record<Language, Content> = {
         {
           categoryTitle: "Location & Transport",
           items: [
+            { question: "Where is the hair salon in Kengarags?", answer: "We are located right in the center of Kengarags at Latgales iela 264. It is very easy to find – next to Dole shopping center and Mego." },
+            { question: "Where was the Szczecin restaurant?", answer: "Many locals remember this place as the former «Szczecin» restaurant. Our salon is located in this same historical area of Kengarags, offering modern beauty services." },
             { question: "Do you have parking?", answer: "Yes, we have free private parking right in front of the salon for our customers." },
             { question: "How to get to you?", answer: "We are at Latgales iela 264 (near TC Dole and Mego). You can take tram 7 or buses 15, 18, 31, 49, 60." }
           ]

@@ -15,6 +15,8 @@ import SchemaMarkup from './components/SchemaMarkup';
 import GalleryPage from './components/GalleryPage';
 
 import ArticlePage from './components/ArticlePage';
+import AdminPanel from './components/AdminPanel';
+import { dataService } from './services/dataService';
 
 const parseUrl = (pathname: string): { lang: Language; view: View; articleId?: string } => {
   const parts = pathname.split('/').filter(Boolean);
@@ -35,7 +37,7 @@ const parseUrl = (pathname: string): { lang: Language; view: View; articleId?: s
     }
   }
 
-  const validViews: View[] = ['home', 'prices', 'faq', 'gallery', 'terms', 'privacy', 'article'];
+  const validViews: View[] = ['home', 'prices', 'faq', 'gallery', 'terms', 'privacy', 'article', 'admin'];
   const view: View = validViews.includes(viewStr as View) ? (viewStr as View) : 'home';
 
   return { lang, view, articleId };
@@ -137,20 +139,40 @@ const App: React.FC = () => {
     }
   }, [view]);
 
+  // Reactive subscription to live dataService (D1 sync)
+  const [, setContentTick] = useState(0);
+  useEffect(() => {
+    return dataService.subscribe(() => {
+      setContentTick(t => t + 1);
+    });
+  }, []);
+
+  useEffect(() => {
+    dataService.fetchLiveServices(lang);
+  }, [lang]);
+
   // Handle SEO Metadata and Scroll Restoration on View Change
   useEffect(() => {
-    const data = contentData[lang];
+    const data = dataService.getMergedContent(lang);
     if (!data) return; // Safety check
 
     let pageTitle = data.meta.title;
     let pageDesc = data.meta.description;
     
-    if (view === 'faq') pageTitle = `${data.faq.title} | Salons Aneri`;
-    if (view === 'prices') pageTitle = `${data.prices.title} | Salons Aneri`;
-    if (view === 'gallery') pageTitle = `${data.gallery.title} | Salons Aneri`;
-    if (view === 'terms') pageTitle = `${data.terms.title} | Salons Aneri`;
-    if (view === 'privacy') pageTitle = `${data.privacy.title} | Salons Aneri`;
-    if (view === 'article' && articleId) {
+    if (view === 'admin') {
+      pageTitle = 'Salons Aneri — Slēgtā Administratora Sistēma | aneri.lv';
+      pageDesc = 'Salons Aneri administrācijas sistēma: pakalpojumu, cenu un satura pārvaldība.';
+    } else if (view === 'faq') {
+      pageTitle = `${data.faq.title} | Salons Aneri`;
+    } else if (view === 'prices') {
+      pageTitle = `${data.prices.title} | Salons Aneri`;
+    } else if (view === 'gallery') {
+      pageTitle = `${data.gallery.title} | Salons Aneri`;
+    } else if (view === 'terms') {
+      pageTitle = `${data.terms.title} | Salons Aneri`;
+    } else if (view === 'privacy') {
+      pageTitle = `${data.privacy.title} | Salons Aneri`;
+    } else if (view === 'article' && articleId) {
       const article = data.articles?.find(a => a.id === articleId);
       if (article) {
         pageTitle = article.metaTitle;
@@ -161,54 +183,79 @@ const App: React.FC = () => {
     document.title = pageTitle;
     document.documentElement.lang = lang;
 
+    // Meta Description & Keywords
     let metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) metaDesc.setAttribute('content', pageDesc);
 
     let metaKeywords = document.querySelector('meta[name="keywords"]');
     if (metaKeywords) metaKeywords.setAttribute('content', data.meta.keywords);
 
-    // --- DYNAMIC HREFLANG & CANONICAL ---
-    const baseUrl = 'https://aneri.lv';
-    
-    // Remove old alternate links
-    document.querySelectorAll('link[rel="alternate"]').forEach(el => el.remove());
-
-    // Add new alternate links for each language
-    const languages: Language[] = ['lv', 'ru', 'en'];
-    languages.forEach(l => {
-      const link = document.createElement('link');
-      link.setAttribute('rel', 'alternate');
-      link.setAttribute('hreflang', l);
-      link.setAttribute('href', baseUrl + generateUrl(l, view, articleId));
-      document.head.appendChild(link);
-    });
-    
-    // Add x-default
-    const xDefault = document.createElement('link');
-    xDefault.setAttribute('rel', 'alternate');
-    xDefault.setAttribute('hreflang', 'x-default');
-    xDefault.setAttribute('href', baseUrl + generateUrl('lv', view, articleId));
-    document.head.appendChild(xDefault);
-
-    let canonical = document.querySelector('link[rel="canonical"]');
-    if (!canonical) {
-      canonical = document.createElement('link');
-      canonical.setAttribute('rel', 'canonical');
-      document.head.appendChild(canonical);
+    // Robots meta (disallow admin indexing)
+    let metaRobots = document.querySelector('meta[name="robots"]');
+    if (!metaRobots) {
+      metaRobots = document.createElement('meta');
+      metaRobots.setAttribute('name', 'robots');
+      document.head.appendChild(metaRobots);
     }
-    canonical.setAttribute('href', baseUrl + generateUrl(lang, view, articleId));
+    metaRobots.setAttribute('content', view === 'admin' ? 'noindex, nofollow' : 'index, follow');
+
+    // --- DYNAMIC OPEN GRAPH & TWITTER TAGS ---
+    const baseUrl = 'https://aneri.lv';
+    const currentUrl = baseUrl + generateUrl(lang, view, articleId);
+
+    const updateOrCreateMeta = (property: string, content: string, isName = false) => {
+      const selector = isName ? `meta[name="${property}"]` : `meta[property="${property}"]`;
+      let el = document.querySelector(selector);
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute(isName ? 'name' : 'property', property);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    };
+
+    updateOrCreateMeta('og:title', pageTitle);
+    updateOrCreateMeta('og:description', pageDesc);
+    updateOrCreateMeta('og:url', currentUrl);
+    updateOrCreateMeta('twitter:title', pageTitle, true);
+    updateOrCreateMeta('twitter:description', pageDesc, true);
+
+    // --- DYNAMIC HREFLANG & CANONICAL ---
+    if (view !== 'admin') {
+      document.querySelectorAll('link[rel="alternate"]').forEach(el => el.remove());
+
+      const languages: Language[] = ['lv', 'ru', 'en'];
+      languages.forEach(l => {
+        const link = document.createElement('link');
+        link.setAttribute('rel', 'alternate');
+        link.setAttribute('hreflang', l);
+        link.setAttribute('href', baseUrl + generateUrl(l, view, articleId));
+        document.head.appendChild(link);
+      });
+      
+      const xDefault = document.createElement('link');
+      xDefault.setAttribute('rel', 'alternate');
+      xDefault.setAttribute('hreflang', 'x-default');
+      xDefault.setAttribute('href', baseUrl + generateUrl('lv', view, articleId));
+      document.head.appendChild(xDefault);
+
+      let canonical = document.querySelector('link[rel="canonical"]');
+      if (!canonical) {
+        canonical = document.createElement('link');
+        canonical.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonical);
+      }
+      canonical.setAttribute('href', currentUrl);
+    }
 
     // --- SCROLL LOGIC ---
     if (view === 'home' && prevViewRef.current !== 'home') {
-       // Restore scroll on home with a tiny delay to ensure paint
        setTimeout(() => {
          window.scrollTo({ top: homeScrollRef.current, behavior: 'auto' });
        }, 0);
     } else if (view !== 'home') {
-       // Scroll to top for new pages
        window.scrollTo(0, 0);
     } else if (view === 'home' && prevViewRef.current === 'home') {
-       // Scroll to top if clicking home logo while on home
        window.scrollTo(0, 0);
     }
     
@@ -216,7 +263,11 @@ const App: React.FC = () => {
 
   }, [lang, view, articleId]);
 
-  const currentContent = contentData[lang];
+  if (view === 'admin') {
+    return <AdminPanel setView={setView} />;
+  }
+
+  const currentContent = dataService.getMergedContent(lang);
   if (!currentContent) return null;
 
   return (

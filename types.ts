@@ -1,6 +1,6 @@
 
 export type Language = 'lv' | 'ru' | 'en';
-export type View = 'home' | 'faq' | 'terms' | 'privacy' | 'prices' | 'gallery' | 'article';
+export type View = 'home' | 'faq' | 'terms' | 'privacy' | 'prices' | 'gallery' | 'article' | 'admin';
 
 export interface ServiceItem {
   id: string; // added for anchor linking

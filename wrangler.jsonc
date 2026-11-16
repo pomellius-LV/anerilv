@@ -1,0 +1,40 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "anerilv",
+  "compatibility_date": "2026-11-01",
+  "pages_build_output_dir": "dist",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  // Production Cloudflare D1 Database binding
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "aneri-production-db",
+      "database_id": "e356eee0-ed72-4c96-a0bf-d87f44834d6e"
+    }
+  ],
+  // Cloudflare Access Zero Trust configurations
+  "vars": {
+    "CF_ACCESS_TEAM_DOMAIN": "pomellius.cloudflareaccess.com",
+    "CF_ACCESS_AUD": "a6cc569ad92df94d2c74c638b459162620794b1a4867578c357fffeebb5b3969",
+    "APP_VERSION": "1.13"
+  },
+  // Isolated Preview Environment
+  "env": {
+    "preview": {
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "aneri-preview-db",
+          "database_id": "a4a300d9-a006-48b5-9a64-a6e70859a775"
+        }
+      ],
+      "vars": {
+        "CF_ACCESS_TEAM_DOMAIN": "pomellius.cloudflareaccess.com",
+        "CF_ACCESS_AUD": "a6cc569ad92df94d2c74c638b459162620794b1a4867578c357fffeebb5b3969",
+        "APP_VERSION": "1.13-preview"
+      }
+    }
+  }
+}

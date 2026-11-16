@@ -1,7 +1,7 @@
-
 User-agent: *
 Allow: /
-Disallow: /api/
+Disallow: /admin
+Disallow: /api/admin/
 
 Sitemap: https://aneri.lv/sitemap.xml
 Host: https://aneri.lv

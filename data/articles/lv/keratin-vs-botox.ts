@@ -9,5 +9,11 @@ export const article: Article = {
     id: 'hair',
     text: 'Skatīt friziera pakalpojumu cenas'
   },
-  content: `Daudzas sievietes sapņo par gludiem, spīdīgiem un veselīgiem matiem. Divas populārākās procedūras šī mērķa sasniegšanai ir keratīna taisnošana un matu botokss. Bet kāda ir atšķirība? Keratīna taisnošana ir ideāli piemērota cirtainiem, nepaklausīgiem matiem. Tā iztaisno matu struktūru, novērš pūkošanos un piešķir intensīvu spīdumu, kas saglabājas vairākus mēnešus. Savukārt matu botokss ir dziļi atjaunojoša procedūra. Tā neiztaisno matus tik intensīvi kā keratīns, bet gan piepilda matu struktūru ar barības vielām, aminoskābēm un vitamīniem, padarot tos biezākus, elastīgākus un veselīgākus. Botokss ir lieliska izvēle bojātiem, sausiem un balinātiem matiem. Mūsu skaistumkopšanas salonā Ķengaragā meistari novērtēs jūsu matu stāvokli un ieteiks piemērotāko procedūru, lai sasniegtu labāko rezultātu.`
+  content: `Daudzas sievietes sapņo par gludiem, spīdīgiem un veselīgiem matiem. Divas populārākās procedūras šī mērķa sasniegšanai ir keratīna taisnošana un matu botokss. Bet kāda ir atšķirība? 
+
+**Keratīna taisnošana** ir ideāli piemērota cirtainiem, nepaklausīgiem matiem. Tā iztaisno matu struktūru, novērš pūkošanos un piešķir intensīvu spīdumu, kas saglabājas vairākus mēnešus. 
+
+Savukārt **matu botokss** ir dziļi atjaunojoša procedūra. Tā neiztaisno matus tik intensīvi kā keratīns, bet gan piepilda matu struktūru ar barības vielām, aminoskābēm un vitamīniem, padarot tos biezākus, elastīgākus un veselīgākus. Botokss ir lieliska izvēle bojātiem, sausiem un balinātiem matiem. 
+
+Mūsu skaistumkopšanas salonā Ķengaragā meistari novērtēs jūsu matu stāvokli un ieteiks piemērotāko procedūru, lai sasniegtu labāko rezultātu.`
 };

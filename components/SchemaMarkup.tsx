@@ -113,6 +113,37 @@ const SchemaMarkup: React.FC<SchemaMarkupProps> = ({ content, lang }) => {
     }))
   };
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": content.nav.home,
+        "item": "https://aneri.lv"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": content.nav.prices,
+        "item": "https://aneri.lv/prices"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": content.nav.gallery,
+        "item": "https://aneri.lv/gallery"
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "name": content.nav.faq,
+        "item": "https://aneri.lv/faq"
+      }
+    ]
+  };
+
   return (
     <>
       <script
@@ -122,6 +153,10 @@ const SchemaMarkup: React.FC<SchemaMarkupProps> = ({ content, lang }) => {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
     </>
   );

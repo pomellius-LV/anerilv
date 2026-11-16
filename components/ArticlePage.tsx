@@ -1,6 +1,7 @@
 import React from 'react';
 import { Article, Content, View } from '../types';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import Markdown from 'react-markdown';
 
 interface ArticlePageProps {
   articleId: string;
@@ -50,10 +51,22 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ articleId, content, setView }
             {article.title}
           </h1>
           <div className="h-px w-24 bg-primary/20 mb-8"></div>
-          <div className="prose prose-stone prose-lg max-w-none text-stone-600 font-light leading-relaxed">
-            {article.content.split('\n').map((paragraph, idx) => (
-              <p key={idx} className="mb-6">{paragraph}</p>
-            ))}
+          <div className="text-stone-600 font-light leading-relaxed text-lg">
+            <Markdown
+              components={{
+                p: ({node, ...props}) => <p className="mb-6" {...props} />,
+                strong: ({node, ...props}) => <strong className="font-semibold text-stone-900" {...props} />,
+                h1: ({node, ...props}) => <h1 className="text-3xl font-serif font-bold mb-6 mt-10 text-stone-900" {...props} />,
+                h2: ({node, ...props}) => <h2 className="text-2xl font-serif font-bold mb-4 mt-8 text-stone-900" {...props} />,
+                h3: ({node, ...props}) => <h3 className="text-xl font-serif font-bold mb-3 mt-6 text-stone-900" {...props} />,
+                ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-6 space-y-2" {...props} />,
+                ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-6 space-y-2" {...props} />,
+                li: ({node, ...props}) => <li className="" {...props} />,
+                a: ({node, ...props}) => <a className="text-primary underline hover:text-accent transition-colors" {...props} />
+              }}
+            >
+              {article.content}
+            </Markdown>
           </div>
 
           {article.relatedService && (
