@@ -23,9 +23,16 @@ export const onRequestGet = async (context: { env: Env }) => {
         settings[row.key] = row.value;
       });
     }
+    if (settings.snow_enabled === undefined) settings.snow_enabled = '1';
+    if (settings.snow_size === undefined) settings.snow_size = '34';
+    if (settings.snow_color === undefined) settings.snow_color = '#FFFFFF';
+    if (settings.snow_count === undefined) settings.snow_count = '55';
     return new Response(JSON.stringify({ status: 'ok', settings }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json; charset=utf-8' }
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'no-store'
+      }
     });
   } catch (e: any) {
     return new Response(JSON.stringify({ error: e.message }), {

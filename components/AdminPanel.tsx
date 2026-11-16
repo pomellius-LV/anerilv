@@ -28,7 +28,8 @@ import {
   EyeOff,
   Languages,
   Check,
-  X
+  X,
+  Snowflake
 } from 'lucide-react';
 
 interface AdminPanelProps {
@@ -169,9 +170,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
   const [saveErrorMsg, setSaveErrorMsg] = useState<string>('');
   const [isSyncingId, setIsSyncingId] = useState<string | null>(null);
 
-  // Diagnostic State
+  // Diagnostic & Site Settings State
   const [isD1Live, setIsD1Live] = useState<boolean>(false);
   const [isDownloadingBackup, setIsDownloadingBackup] = useState<boolean>(false);
+  const [snowEnabled, setSnowEnabled] = useState<boolean>(() => dataService.getSnowConfig().enabled);
+  const [snowSize, setSnowSize] = useState<number>(() => dataService.getSnowConfig().size);
+  const [snowColor, setSnowColor] = useState<string>(() => dataService.getSnowConfig().color);
+  const [snowCount, setSnowCount] = useState<number>(() => dataService.getSnowConfig().count);
+  const [isSavingSnow, setIsSavingSnow] = useState<boolean>(false);
 
   // Articles State
   const [articlesList, setArticlesList] = useState<any[]>([]);
@@ -189,6 +195,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
         setIsAuthenticated(true);
         setAdminEmail(auth.email);
         loadServices();
+        loadAdminSettings();
       } else {
         setIsAuthenticated(false);
         setAuthReason(auth.reason);
@@ -221,6 +228,57 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
       }
     }
     setIsLoadingServices(false);
+  };
+
+  // Load D1 site settings (snow_enabled, snow_size, snow_color, snow_count)
+  const loadAdminSettings = async () => {
+    await dataService.fetchAdminSettings();
+    const cfg = dataService.getSnowConfig();
+    setSnowEnabled(cfg.enabled);
+    setSnowSize(cfg.size);
+    setSnowColor(cfg.color);
+    setSnowCount(cfg.count);
+  };
+
+  // Save all snowfall settings atomically to Cloudflare D1
+  const handleSaveSnowSettings = async (overrides?: {
+    enabled?: boolean;
+    size?: number;
+    color?: string;
+    count?: number;
+  }) => {
+    if (isSavingSnow) return;
+    const nextEnabled = overrides?.enabled ?? snowEnabled;
+    const nextSize = overrides?.size ?? snowSize;
+    const nextColor = overrides?.color ?? snowColor;
+    const nextCount = overrides?.count ?? snowCount;
+
+    setIsSavingSnow(true);
+    const res = await dataService.updateAdminSettings({
+      snow_enabled: nextEnabled ? '1' : '0',
+      snow_size: String(nextSize),
+      snow_color: nextColor,
+      snow_count: String(nextCount)
+    });
+    setIsSavingSnow(false);
+
+    if (res.ok) {
+      setSnowEnabled(nextEnabled);
+      setSnowSize(nextSize);
+      setSnowColor(nextColor);
+      setSnowCount(nextCount);
+      showSuccess(
+        `Sniega iestatījumi saglabāti D1 (${nextEnabled ? 'Ieslēgts' : 'Izslēgts'}, ${nextSize}px, ${nextCount} gab., ${nextColor}).`
+      );
+    } else {
+      showError(res.error || 'Neizdevās saglabāt sniega iestatījumus Cloudflare D1.');
+    }
+  };
+
+  const handleToggleSnow = async () => {
+    const nextEnabled = !snowEnabled;
+    setSnowEnabled(nextEnabled);
+    await handleSaveSnowSettings({ enabled: nextEnabled });
   };
 
   // 3. Load Articles for diagnostic review
@@ -460,7 +518,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
     }
   };
 
-  // 8. Authoritative Server-Side D1 JSON Backup Export (v1.16)
+  // 8. Authoritative Server-Side D1 JSON Backup Export (v1.19)
   const handleExportBackup = async () => {
     setIsDownloadingBackup(true);
     setSaveErrorMsg('');
@@ -471,11 +529,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
 
       if (res.ok && res.data) {
         jsonStr = JSON.stringify(res.data, null, 2);
-        filename = `aneri_d1_backup_${new Date().toISOString().slice(0, 10)}_v1.16.json`;
+        filename = `aneri_d1_backup_${new Date().toISOString().slice(0, 10)}_v1.19.json`;
         showSuccess(`Servera Cloudflare D1 rezerves kopija veiksmīgi iegūta (${res.data.totalRecords || 0} ieraksti).`);
       } else {
         jsonStr = dataService.exportBackupJson();
-        filename = `aneri_catalog_snapshot_${new Date().toISOString().slice(0, 10)}_v1.16.json`;
+        filename = `aneri_catalog_snapshot_${new Date().toISOString().slice(0, 10)}_v1.19.json`;
         showError(`D1 servera brīdinājums: ${res.error || 'D1 bezsaistē'}. Lejupielādēts lokālais kataloga uzņēmums.`);
       }
 
@@ -689,7 +747,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
             <div className="flex items-center gap-2.5">
               <span className="text-2xl font-serif font-bold text-primary">Aneri</span>
               <span className="text-[11px] font-mono uppercase bg-stone-800 text-rose-300 border border-stone-700 px-2 py-0.5 rounded font-semibold">
-                Admin Panel v1.16
+                Admin Panel v1.19
               </span>
             </div>
             <div className="hidden sm:flex items-center gap-2 text-xs text-stone-400 border-l border-stone-800 pl-4">
@@ -704,6 +762,21 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
           </div>
 
           <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={handleToggleSnow}
+              disabled={isSavingSnow}
+              title="Ieslēgt / izslēgt Jaungada sniegu vietnē"
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 border ${
+                snowEnabled
+                  ? 'bg-sky-950/70 hover:bg-sky-900 text-sky-200 border-sky-700/70'
+                  : 'bg-stone-800 hover:bg-stone-700 text-stone-300 border-stone-700'
+              }`}
+            >
+              <Snowflake size={14} className={snowEnabled ? 'text-sky-300' : 'text-stone-400'} />
+              <span>{snowEnabled ? 'Sniegs: ON' : 'Sniegs: OFF'}</span>
+            </button>
+
             <div className="hidden md:flex items-center gap-2 text-xs text-stone-300 bg-stone-800/80 px-3 py-1.5 rounded-lg border border-stone-700">
               <ShieldCheck size={14} className="text-emerald-400" />
               <span className="font-mono">{adminEmail}</span>
@@ -1453,11 +1526,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                 </button>
 
                 <a
-                  href="/aneri-v1.16.zip"
-                  download="aneri-v1.16.zip"
+                  href="/aneri-v1.19.zip"
+                  download="aneri-v1.19.zip"
                   className="px-5 py-3 rounded-xl bg-primary hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors shadow-sm"
                 >
-                  <Download size={14} /> Lejupielādēt Koda Arhīvu (aneri-v1.16.zip)
+                  <Download size={14} /> Lejupielādēt Koda Arhīvu (aneri-v1.19.zip)
                 </a>
               </div>
             </div>
@@ -1466,35 +1539,263 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
 
         {/* Tab 4: Settings */}
         {activeTab === 'settings' && (
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-200 max-w-2xl space-y-4">
-            <h2 className="text-lg font-serif font-bold text-stone-900">Salona Rekvizīti &amp; Saziņa</h2>
-            <div className="space-y-3 text-xs">
-              <div>
-                <label className="block text-stone-400 font-bold uppercase mb-1">Tālrunis</label>
-                <input
-                  type="text"
-                  readOnly
-                  value="+371 27580047"
-                  className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-800"
-                />
+          <div className="space-y-6 max-w-3xl">
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-200 space-y-6">
+              <div className="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-stone-100">
+                <div className="space-y-1 max-w-lg">
+                  <h2 className="text-lg font-serif font-bold text-stone-900 flex items-center gap-2">
+                    <Snowflake size={18} className="text-primary shrink-0" />
+                    <span>Jaungada sniegpārsliņas (Настройки снега)</span>
+                  </h2>
+                  <p className="text-xs text-stone-600 leading-relaxed">
+                    Sniegpārsliņas lido aiz sākumlapas virsraksta kā aiz skatloga stikla (z-5). Pielāgojiet izmēru, krāsu un daudzumu zemāk un saglabājiet Cloudflare D1 datubāzē.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={snowEnabled}
+                  onClick={handleToggleSnow}
+                  disabled={isSavingSnow}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 border flex items-center gap-2 ${
+                    snowEnabled
+                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 shadow-sm'
+                      : 'bg-stone-100 hover:bg-stone-200 text-stone-700 border-stone-300'
+                  }`}
+                >
+                  {isSavingSnow ? (
+                    <RefreshCw size={13} className="animate-spin" />
+                  ) : (
+                    <Snowflake size={13} />
+                  )}
+                  <span>{snowEnabled ? 'Ieslēgts (Вкл)' : 'Izslēgts (Выкл)'}</span>
+                </button>
               </div>
-              <div>
-                <label className="block text-stone-400 font-bold uppercase mb-1">Adrese</label>
-                <input
-                  type="text"
-                  readOnly
-                  value="Latgales iela 264, Rīga, Ķengarags (t/c Mego)"
-                  className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-800"
-                />
+
+              {/* Live Visual Swatch Preview (Window-glass demo) */}
+              <div className="relative overflow-hidden rounded-2xl bg-stone-900 border border-stone-800 px-6 py-5 flex items-center justify-between gap-4">
+                <div className="relative z-10">
+                  <div className="text-[11px] uppercase tracking-widest text-stone-400 font-semibold mb-0.5">
+                    Priekšskatījums (aiz virsraksta)
+                  </div>
+                  <div className="text-2xl font-serif font-bold text-white tracking-tight">
+                    Salons Aneri
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  {[0.75, 1, 0.88].map((scale, idx) => (
+                    <Snowflake
+                      key={idx}
+                      size={Math.round(snowSize * scale)}
+                      style={{ color: snowColor, opacity: snowEnabled ? 0.9 : 0.25 }}
+                      className="transition-all duration-200"
+                    />
+                  ))}
+                </div>
               </div>
-              <div>
-                <label className="block text-stone-400 font-bold uppercase mb-1">Darba Laiks</label>
+
+              {/* 1. Snowflake Size Slider + Presets */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between text-xs">
+                  <label htmlFor="snow-size-range" className="font-bold text-stone-800">
+                    Izmērs / Размер снежинок
+                  </label>
+                  <span className="font-mono font-bold tabular-nums text-primary">
+                    {snowSize} px
+                  </span>
+                </div>
                 <input
-                  type="text"
-                  readOnly
-                  value="Pirmdiena - Sestdiena: 09:00 - 20:00 | Svētdiena: 10:00 - 16:00"
-                  className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-800"
+                  id="snow-size-range"
+                  type="range"
+                  min={16}
+                  max={60}
+                  step={2}
+                  value={snowSize}
+                  onChange={(e) => setSnowSize(Number(e.target.value))}
+                  className="w-full accent-primary cursor-pointer"
                 />
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { label: 'Mazs (22px)', val: 22 },
+                    { label: 'Vidējs (34px)', val: 34 },
+                    { label: 'Liels (46px)', val: 46 },
+                    { label: 'Lielisks (56px)', val: 56 }
+                  ].map(preset => (
+                    <button
+                      key={preset.val}
+                      type="button"
+                      onClick={() => setSnowSize(preset.val)}
+                      className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${
+                        snowSize === preset.val
+                          ? 'bg-primary text-white border-primary'
+                          : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border-stone-200'
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 2. Snowflake Count Slider + Presets */}
+              <div className="space-y-2.5 pt-2 border-t border-stone-100">
+                <div className="flex items-center justify-between text-xs">
+                  <label htmlFor="snow-count-range" className="font-bold text-stone-800">
+                    Daudzums / Количество снежинок
+                  </label>
+                  <span className="font-mono font-bold tabular-nums text-primary">
+                    {snowCount} gab.
+                  </span>
+                </div>
+                <input
+                  id="snow-count-range"
+                  type="range"
+                  min={10}
+                  max={120}
+                  step={5}
+                  value={snowCount}
+                  onChange={(e) => setSnowCount(Number(e.target.value))}
+                  className="w-full accent-primary cursor-pointer"
+                />
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { label: 'Viegls (25)', val: 25 },
+                    { label: 'Vidējs (55)', val: 55 },
+                    { label: 'Bagātīgs (90)', val: 90 }
+                  ].map(preset => (
+                    <button
+                      key={preset.val}
+                      type="button"
+                      onClick={() => setSnowCount(preset.val)}
+                      className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${
+                        snowCount === preset.val
+                          ? 'bg-primary text-white border-primary'
+                          : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border-stone-200'
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 3. Snowflake Color Swatches + Custom Color Picker */}
+              <div className="space-y-2.5 pt-2 border-t border-stone-100">
+                <div className="flex items-center justify-between text-xs">
+                  <label htmlFor="snow-color-picker" className="font-bold text-stone-800">
+                    Krāsa / Цвет снежинок
+                  </label>
+                  <span className="font-mono font-semibold text-stone-600">{snowColor}</span>
+                </div>
+                <div className="flex flex-wrap items-center gap-2.5">
+                  {[
+                    { hex: '#FFFFFF', label: 'Balts (Белый)' },
+                    { hex: '#BAE6FD', label: 'Ledus zils (Ледяной)' },
+                    { hex: '#FFE4E6', label: 'Maigi rozā (Нежно-розовый)' },
+                    { hex: '#FDE68A', label: 'Zelts (Золотой)' },
+                    { hex: '#CBD5E1', label: 'Sudrabs (Серебро)' },
+                    { hex: '#BE123C', label: 'Bordo (Бордо Aneri)' }
+                  ].map(swatch => (
+                    <button
+                      key={swatch.hex}
+                      type="button"
+                      onClick={() => setSnowColor(swatch.hex)}
+                      title={swatch.label}
+                      className={`inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-colors ${
+                        snowColor.toUpperCase() === swatch.hex
+                          ? 'border-primary bg-rose-50 text-stone-900 font-semibold'
+                          : 'border-stone-200 bg-white hover:bg-stone-50 text-stone-700'
+                      }`}
+                    >
+                      <span
+                        className="w-4 h-4 rounded-full border border-stone-300 shrink-0"
+                        style={{ backgroundColor: swatch.hex }}
+                      />
+                      <span>{swatch.label}</span>
+                    </button>
+                  ))}
+
+                  <label className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-stone-200 bg-stone-50 hover:bg-stone-100 text-xs font-medium text-stone-700 cursor-pointer">
+                    <input
+                      id="snow-color-picker"
+                      type="color"
+                      value={snowColor}
+                      onChange={(e) => setSnowColor(e.target.value.toUpperCase())}
+                      className="w-5 h-5 border-0 bg-transparent p-0 cursor-pointer"
+                    />
+                    <span>Cita krāsa</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Save Action Row */}
+              <div className="pt-4 border-t border-stone-100 flex flex-wrap items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSnowSize(34);
+                    setSnowCount(55);
+                    setSnowColor('#FFFFFF');
+                    handleSaveSnowSettings({
+                      enabled: true,
+                      size: 34,
+                      count: 55,
+                      color: '#FFFFFF'
+                    });
+                  }}
+                  disabled={isSavingSnow}
+                  className="px-3.5 py-2 rounded-xl border border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-600 text-xs font-semibold transition-colors"
+                >
+                  Atjaunot sākotnējos
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleSaveSnowSettings()}
+                  disabled={isSavingSnow}
+                  className="px-5 py-2.5 rounded-xl bg-primary hover:bg-rose-700 disabled:opacity-60 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors shadow-sm"
+                >
+                  {isSavingSnow ? (
+                    <RefreshCw size={14} className="animate-spin" />
+                  ) : (
+                    <Check size={14} />
+                  )}
+                  <span>Saglabāt iestatījumus D1</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-200 space-y-4">
+              <h2 className="text-lg font-serif font-bold text-stone-900">Salona Rekvizīti &amp; Saziņa</h2>
+              <div className="space-y-3 text-xs">
+                <div>
+                  <label className="block text-stone-400 font-bold uppercase mb-1">Tālrunis</label>
+                  <input
+                    type="text"
+                    readOnly
+                    value="+371 27580047"
+                    className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-800"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-400 font-bold uppercase mb-1">Adrese</label>
+                  <input
+                    type="text"
+                    readOnly
+                    value="Latgales iela 264, Rīga, Ķengarags (t/c Mego)"
+                    className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-800"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-400 font-bold uppercase mb-1">Darba Laiks</label>
+                  <input
+                    type="text"
+                    readOnly
+                    value="Pirmdiena - Sestdiena: 09:00 - 20:00 | Svētdiena: 10:00 - 16:00"
+                    className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-800"
+                  />
+                </div>
               </div>
             </div>
           </div>

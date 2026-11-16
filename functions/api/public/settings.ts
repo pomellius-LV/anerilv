@@ -24,6 +24,12 @@ export const onRequestGet = async (context: { request: Request; env: Env }) => {
       });
     }
 
+    // Enabled by default on initial rollout until explicitly configured in /admin
+    if (settings.snow_enabled === undefined) settings.snow_enabled = '1';
+    if (settings.snow_size === undefined) settings.snow_size = '34';
+    if (settings.snow_color === undefined) settings.snow_color = '#FFFFFF';
+    if (settings.snow_count === undefined) settings.snow_count = '55';
+
     return new Response(JSON.stringify({
       status: 'ok',
       settings
@@ -31,7 +37,7 @@ export const onRequestGet = async (context: { request: Request; env: Env }) => {
       status: 200,
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
-        'Cache-Control': 'public, max-age=300'
+        'Cache-Control': 'public, max-age=15, must-revalidate'
       }
     });
   } catch (error: any) {

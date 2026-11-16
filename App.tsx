@@ -1,7 +1,12 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Language, View } from './types';
-import { contentData } from './data/content';
+import {
+  parseSeoRoute,
+  buildSeoUrl,
+  THEMATIC_SERVICES_SEO,
+  STATIC_PAGES_SEO,
+  ServiceSectionId
+} from './data/seoRoutes';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Services from './components/Services';
@@ -13,56 +18,30 @@ import Footer from './components/Footer';
 import CookieConsent from './components/CookieConsent';
 import SchemaMarkup from './components/SchemaMarkup';
 import GalleryPage from './components/GalleryPage';
-
 import ArticlePage from './components/ArticlePage';
+import ServiceLandingPage from './components/ServiceLandingPage';
 import AdminPanel from './components/AdminPanel';
+import SnowOverlay from './components/SnowOverlay';
 import { dataService } from './services/dataService';
 
-const parseUrl = (pathname: string): { lang: Language; view: View; articleId?: string } => {
-  const parts = pathname.split('/').filter(Boolean);
-  let lang: Language = 'lv';
-  let viewStr = '';
-  let articleId = '';
-
-  if (parts[0] === 'ru' || parts[0] === 'en' || parts[0] === 'lv') {
-    lang = parts[0] as Language;
-    viewStr = parts[1] || 'home';
-    if (viewStr === 'article') {
-      articleId = parts[2] || '';
-    }
-  } else {
-    viewStr = parts[0] || 'home';
-    if (viewStr === 'article') {
-      articleId = parts[1] || '';
-    }
-  }
-
-  const validViews: View[] = ['home', 'prices', 'faq', 'gallery', 'terms', 'privacy', 'article', 'admin'];
-  const view: View = validViews.includes(viewStr as View) ? (viewStr as View) : 'home';
-
-  return { lang, view, articleId };
-};
-
-export const generateUrl = (lang: Language, view: View, articleId?: string): string => {
-  const langPrefix = lang === 'lv' ? '' : `/${lang}`;
-  let viewPath = view === 'home' ? '' : `/${view}`;
-  if (view === 'article' && articleId) {
-    viewPath += `/${articleId}`;
-  }
-  return `${langPrefix}${viewPath}` || '/';
+export const generateUrl = (
+  lang: Language,
+  view: View,
+  articleId?: string,
+  serviceId?: ServiceSectionId
+): string => {
+  return buildSeoUrl(lang, view, { articleId, serviceId });
 };
 
 const App: React.FC = () => {
-  const initialRoute = parseUrl(typeof window !== 'undefined' ? window.location.pathname : '/');
+  const initialRoute = parseSeoRoute(typeof window !== 'undefined' ? window.location.pathname : '/');
   const [lang, setLangInternal] = useState<Language>(initialRoute.lang);
   const [view, setViewInternal] = useState<View>(initialRoute.view);
   const [articleId, setArticleId] = useState<string | undefined>(initialRoute.articleId);
-  
-  // Ref to store the scroll position of the home page
+  const [serviceId, setServiceId] = useState<ServiceSectionId | undefined>(initialRoute.serviceId);
+
   const homeScrollRef = useRef(0);
-  // Ref to track the previous view to determine scroll behavior
   const prevViewRef = useRef<View>('home');
-  // Ref to track if history has been initialized
   const isHistoryInitialized = useRef(false);
 
   // Initial History Setup
@@ -70,67 +49,89 @@ const App: React.FC = () => {
     if (!isHistoryInitialized.current && typeof window !== 'undefined' && window.history) {
       try {
         if (!window.history.state) {
-          const url = generateUrl(lang, view, articleId);
-          window.history.replaceState({ view, lang }, '', url);
+          const url = buildSeoUrl(lang, view, { articleId, serviceId });
+          window.history.replaceState({ view, lang, articleId, serviceId }, '', url);
         }
-      } catch (e) {
+      } catch {
         console.warn('History API not available or restricted');
       }
       isHistoryInitialized.current = true;
     }
-  }, [lang, view, articleId]);
+  }, [lang, view, articleId, serviceId]);
 
-  // Wrapper for setView that handles History API and Scroll Saving
-  const setView = (newView: View) => {
-    if (newView === view) return;
+  const navigateTo = (
+    newView: View,
+    options?: { serviceId?: ServiceSectionId; articleId?: string }
+  ) => {
+    const nextServiceId = newView === 'service' ? options?.serviceId : undefined;
+    const nextArticleId = newView === 'article' ? options?.articleId : undefined;
 
-    // If we are leaving the home page, save the current scroll position
+    if (
+      newView === view &&
+      nextServiceId === serviceId &&
+      nextArticleId === articleId
+    ) {
+      return;
+    }
+
     if (view === 'home') {
       homeScrollRef.current = window.scrollY;
     }
 
-    // Push the new state to the browser history
     if (typeof window !== 'undefined' && window.history) {
       try {
-        const url = generateUrl(lang, newView);
-        window.history.pushState({ view: newView, lang }, '', url);
-      } catch (e) {
+        const url = buildSeoUrl(lang, newView, {
+          serviceId: nextServiceId,
+          articleId: nextArticleId
+        });
+        window.history.pushState(
+          { view: newView, lang, serviceId: nextServiceId, articleId: nextArticleId },
+          '',
+          url
+        );
+      } catch {
         console.warn('History pushState failed');
       }
     }
 
-    // Update internal state
+    setServiceId(nextServiceId);
+    setArticleId(nextArticleId);
     setViewInternal(newView);
+  };
+
+  // Backwards-compatible view setter
+  const setView = (newView: View) => {
+    navigateTo(newView);
   };
 
   const setLang = (newLang: Language) => {
     if (newLang === lang) return;
-    
+
     if (typeof window !== 'undefined' && window.history) {
       try {
-        const url = generateUrl(newLang, view, articleId);
-        window.history.pushState({ view, lang: newLang }, '', url);
-      } catch (e) {
+        const url = buildSeoUrl(newLang, view, { serviceId, articleId });
+        window.history.pushState({ view, lang: newLang, serviceId, articleId }, '', url);
+      } catch {
         console.warn('History pushState failed');
       }
     }
-    
+
     setLangInternal(newLang);
   };
 
-  // Handle the native browser "Back" button (popstate event)
+  // Handle browser Back/Forward
   useEffect(() => {
-    const handlePopState = (event: PopStateEvent) => {
-      const { lang: newLang, view: newView, articleId: newArticleId } = parseUrl(window.location.pathname);
-      
-      // If we are currently at home and leaving via Back button (or forward), save scroll
+    const handlePopState = () => {
+      const parsed = parseSeoRoute(window.location.pathname);
+
       if (view === 'home') {
         homeScrollRef.current = window.scrollY;
       }
 
-      setLangInternal(newLang);
-      setViewInternal(newView);
-      setArticleId(newArticleId);
+      setLangInternal(parsed.lang);
+      setViewInternal(parsed.view);
+      setArticleId(parsed.articleId);
+      setServiceId(parsed.serviceId);
     };
 
     if (typeof window !== 'undefined') {
@@ -151,27 +152,42 @@ const App: React.FC = () => {
     dataService.fetchLiveServices(lang);
   }, [lang]);
 
-  // Handle SEO Metadata and Scroll Restoration on View Change
+  useEffect(() => {
+    dataService.fetchPublicSettings();
+  }, []);
+
+  // Dynamic Client SEO Metadata & Scroll Restoration
   useEffect(() => {
     const data = dataService.getMergedContent(lang);
-    if (!data) return; // Safety check
+    if (!data) return;
 
-    let pageTitle = data.meta.title;
-    let pageDesc = data.meta.description;
-    
+    let pageTitle = STATIC_PAGES_SEO.home[lang].title;
+    let pageDesc = STATIC_PAGES_SEO.home[lang].description;
+    let pageKeywords = data.meta.keywords;
+
     if (view === 'admin') {
       pageTitle = 'Salons Aneri — Slēgtā Administratora Sistēma | aneri.lv';
       pageDesc = 'Salons Aneri administrācijas sistēma: pakalpojumu, cenu un satura pārvaldība.';
+    } else if (view === 'service' && serviceId && THEMATIC_SERVICES_SEO[serviceId]) {
+      const svcSeo = THEMATIC_SERVICES_SEO[serviceId];
+      pageTitle = svcSeo.titles[lang];
+      pageDesc = svcSeo.descriptions[lang];
+      pageKeywords = svcSeo.keywords[lang];
     } else if (view === 'faq') {
-      pageTitle = `${data.faq.title} | Salons Aneri`;
+      pageTitle = STATIC_PAGES_SEO.faq[lang].title;
+      pageDesc = STATIC_PAGES_SEO.faq[lang].description;
     } else if (view === 'prices') {
-      pageTitle = `${data.prices.title} | Salons Aneri`;
+      pageTitle = STATIC_PAGES_SEO.prices[lang].title;
+      pageDesc = STATIC_PAGES_SEO.prices[lang].description;
     } else if (view === 'gallery') {
-      pageTitle = `${data.gallery.title} | Salons Aneri`;
+      pageTitle = STATIC_PAGES_SEO.gallery[lang].title;
+      pageDesc = STATIC_PAGES_SEO.gallery[lang].description;
     } else if (view === 'terms') {
-      pageTitle = `${data.terms.title} | Salons Aneri`;
+      pageTitle = STATIC_PAGES_SEO.terms[lang].title;
+      pageDesc = STATIC_PAGES_SEO.terms[lang].description;
     } else if (view === 'privacy') {
-      pageTitle = `${data.privacy.title} | Salons Aneri`;
+      pageTitle = STATIC_PAGES_SEO.privacy[lang].title;
+      pageDesc = STATIC_PAGES_SEO.privacy[lang].description;
     } else if (view === 'article' && articleId) {
       const article = data.articles?.find(a => a.id === articleId);
       if (article) {
@@ -179,29 +195,9 @@ const App: React.FC = () => {
         pageDesc = article.metaDescription;
       }
     }
-    
+
     document.title = pageTitle;
     document.documentElement.lang = lang;
-
-    // Meta Description & Keywords
-    let metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) metaDesc.setAttribute('content', pageDesc);
-
-    let metaKeywords = document.querySelector('meta[name="keywords"]');
-    if (metaKeywords) metaKeywords.setAttribute('content', data.meta.keywords);
-
-    // Robots meta (disallow admin indexing)
-    let metaRobots = document.querySelector('meta[name="robots"]');
-    if (!metaRobots) {
-      metaRobots = document.createElement('meta');
-      metaRobots.setAttribute('name', 'robots');
-      document.head.appendChild(metaRobots);
-    }
-    metaRobots.setAttribute('content', view === 'admin' ? 'noindex, nofollow' : 'index, follow');
-
-    // --- DYNAMIC OPEN GRAPH & TWITTER TAGS ---
-    const baseUrl = 'https://aneri.lv';
-    const currentUrl = baseUrl + generateUrl(lang, view, articleId);
 
     const updateOrCreateMeta = (property: string, content: string, isName = false) => {
       const selector = isName ? `meta[name="${property}"]` : `meta[property="${property}"]`;
@@ -214,13 +210,20 @@ const App: React.FC = () => {
       el.setAttribute('content', content);
     };
 
+    updateOrCreateMeta('description', pageDesc, true);
+    updateOrCreateMeta('keywords', pageKeywords, true);
+    updateOrCreateMeta('robots', view === 'admin' ? 'noindex, nofollow' : 'index, follow', true);
+
+    const baseUrl = 'https://aneri.lv';
+    const currentUrl = baseUrl + buildSeoUrl(lang, view, { serviceId, articleId });
+
     updateOrCreateMeta('og:title', pageTitle);
     updateOrCreateMeta('og:description', pageDesc);
     updateOrCreateMeta('og:url', currentUrl);
     updateOrCreateMeta('twitter:title', pageTitle, true);
     updateOrCreateMeta('twitter:description', pageDesc, true);
+    updateOrCreateMeta('twitter:url', currentUrl, true);
 
-    // --- DYNAMIC HREFLANG & CANONICAL ---
     if (view !== 'admin') {
       document.querySelectorAll('link[rel="alternate"]').forEach(el => el.remove());
 
@@ -229,14 +232,14 @@ const App: React.FC = () => {
         const link = document.createElement('link');
         link.setAttribute('rel', 'alternate');
         link.setAttribute('hreflang', l);
-        link.setAttribute('href', baseUrl + generateUrl(l, view, articleId));
+        link.setAttribute('href', baseUrl + buildSeoUrl(l, view, { serviceId, articleId }));
         document.head.appendChild(link);
       });
-      
+
       const xDefault = document.createElement('link');
       xDefault.setAttribute('rel', 'alternate');
       xDefault.setAttribute('hreflang', 'x-default');
-      xDefault.setAttribute('href', baseUrl + generateUrl('lv', view, articleId));
+      xDefault.setAttribute('href', baseUrl + buildSeoUrl('lv', view, { serviceId, articleId }));
       document.head.appendChild(xDefault);
 
       let canonical = document.querySelector('link[rel="canonical"]');
@@ -248,20 +251,18 @@ const App: React.FC = () => {
       canonical.setAttribute('href', currentUrl);
     }
 
-    // --- SCROLL LOGIC ---
     if (view === 'home' && prevViewRef.current !== 'home') {
-       setTimeout(() => {
-         window.scrollTo({ top: homeScrollRef.current, behavior: 'auto' });
-       }, 0);
+      setTimeout(() => {
+        window.scrollTo({ top: homeScrollRef.current, behavior: 'auto' });
+      }, 0);
     } else if (view !== 'home') {
-       window.scrollTo(0, 0);
+      window.scrollTo(0, 0);
     } else if (view === 'home' && prevViewRef.current === 'home') {
-       window.scrollTo(0, 0);
+      window.scrollTo(0, 0);
     }
-    
-    prevViewRef.current = view;
 
-  }, [lang, view, articleId]);
+    prevViewRef.current = view;
+  }, [lang, view, articleId, serviceId]);
 
   if (view === 'admin') {
     return <AdminPanel setView={setView} />;
@@ -272,33 +273,75 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-stone-50 selection:bg-rose-200">
-      <SchemaMarkup content={currentContent} lang={lang} />
-      <Header 
-        lang={lang} 
-        setLang={setLang} 
-        content={currentContent} 
+      <SchemaMarkup
+        content={currentContent}
+        lang={lang}
+        view={view}
+        serviceId={serviceId}
+        articleId={articleId}
+      />
+      <Header
+        lang={lang}
+        setLang={setLang}
+        content={currentContent}
         view={view}
         setView={setView}
+        serviceId={serviceId}
+        articleId={articleId}
       />
-      
+
       <main id="main-content">
         {view === 'home' && (
           <>
             <Hero content={currentContent} lang={lang} />
-            <Services content={currentContent} setView={setView} />
+            <Services lang={lang} content={currentContent} onNavigate={navigateTo} />
             <Advantages content={currentContent} />
           </>
         )}
-        {view === 'prices' && <PricePage content={currentContent} setView={setView} />}
-        {view === 'faq' && <FAQPage content={currentContent} setView={setView} />}
-        {view === 'gallery' && <GalleryPage content={currentContent} setView={setView} />}
-        {view === 'article' && articleId && <ArticlePage articleId={articleId} content={currentContent} setView={setView} />}
-        {view === 'terms' && <TermsPage title={currentContent.terms.title} content={currentContent.terms.content} setView={setView} homeLabel={currentContent.nav.home} />}
-        {view === 'privacy' && <TermsPage title={currentContent.privacy.title} content={currentContent.privacy.content} setView={setView} homeLabel={currentContent.nav.home} />}
+        {view === 'service' && serviceId && (
+          <ServiceLandingPage
+            serviceId={serviceId}
+            lang={lang}
+            content={currentContent}
+            onNavigate={navigateTo}
+          />
+        )}
+        {view === 'prices' && (
+          <PricePage lang={lang} content={currentContent} onNavigate={navigateTo} />
+        )}
+        {view === 'faq' && <FAQPage lang={lang} content={currentContent} setView={setView} />}
+        {view === 'gallery' && <GalleryPage lang={lang} content={currentContent} setView={setView} />}
+        {view === 'article' && articleId && (
+          <ArticlePage
+            articleId={articleId}
+            lang={lang}
+            content={currentContent}
+            onNavigate={navigateTo}
+          />
+        )}
+        {view === 'terms' && (
+          <TermsPage
+            lang={lang}
+            title={currentContent.terms.title}
+            content={currentContent.terms.content}
+            setView={setView}
+            homeLabel={currentContent.nav.home}
+          />
+        )}
+        {view === 'privacy' && (
+          <TermsPage
+            lang={lang}
+            title={currentContent.privacy.title}
+            content={currentContent.privacy.content}
+            setView={setView}
+            homeLabel={currentContent.nav.home}
+          />
+        )}
       </main>
-      
-      <Footer content={currentContent} setView={setView} />
+
+      <Footer lang={lang} content={currentContent} onNavigate={navigateTo} />
       <CookieConsent content={currentContent} />
+      <SnowOverlay config={dataService.getSnowConfig()} lang={lang} />
     </div>
   );
 };

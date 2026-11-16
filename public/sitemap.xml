@@ -1,44 +1,655 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- LV (Default) -->
-  <url><loc>https://aneri.lv/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://aneri.lv/prices</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://aneri.lv/gallery</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://aneri.lv/faq</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://aneri.lv/terms</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://aneri.lv/privacy</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://aneri.lv/article/haircare</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://aneri.lv/article/hair-loss</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://aneri.lv/article/keratin-vs-botox</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://aneri.lv/article/manicure-tips</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://aneri.lv/article/hardware-pedicure</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://aneri.lv/article/nail-trends</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- ============================= -->
+  <!-- 1. STATIC CORE PAGES (18 URLs) -->
+  <!-- ============================= -->
+  <url>
+    <loc>https://aneri.lv/</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/" />
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/" />
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/" />
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
 
-  <!-- RU -->
-  <url><loc>https://aneri.lv/ru/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://aneri.lv/ru/prices</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://aneri.lv/ru/gallery</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://aneri.lv/ru/faq</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://aneri.lv/ru/terms</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://aneri.lv/ru/privacy</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://aneri.lv/ru/article/haircare</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://aneri.lv/ru/article/hair-loss</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://aneri.lv/ru/article/keratin-vs-botox</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://aneri.lv/ru/article/manicure-tips</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://aneri.lv/ru/article/hardware-pedicure</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://aneri.lv/ru/article/nail-trends</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url>
+    <loc>https://aneri.lv/prices</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/prices" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/prices" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/prices" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/prices" />
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/prices</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/prices" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/prices" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/prices" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/prices" />
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/prices</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/prices" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/prices" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/prices" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/prices" />
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
 
-  <!-- EN -->
-  <url><loc>https://aneri.lv/en/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://aneri.lv/en/prices</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://aneri.lv/en/gallery</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://aneri.lv/en/faq</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://aneri.lv/en/terms</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://aneri.lv/en/privacy</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://aneri.lv/en/article/haircare</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://aneri.lv/en/article/hair-loss</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://aneri.lv/en/article/keratin-vs-botox</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://aneri.lv/en/article/manicure-tips</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://aneri.lv/en/article/hardware-pedicure</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://aneri.lv/en/article/nail-trends</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url>
+    <loc>https://aneri.lv/gallery</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/gallery" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/gallery" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/gallery" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/gallery" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/gallery</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/gallery" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/gallery" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/gallery" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/gallery" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/gallery</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/gallery" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/gallery" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/gallery" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/gallery" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/faq</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/faq" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/faq" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/faq" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/faq" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/faq</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/faq" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/faq" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/faq" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/faq" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/faq</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/faq" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/faq" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/faq" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/faq" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/terms</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/terms" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/terms" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/terms" />
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/terms</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/terms" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/terms" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/terms" />
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/terms</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/terms" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/terms" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/terms" />
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/privacy" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/privacy" />
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/privacy" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/privacy" />
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/privacy" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/privacy" />
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- ========================================== -->
+  <!-- 2. THEMATIC RIGA SERVICE LANDINGS (18 URLs) -->
+  <!-- ========================================== -->
+  <url>
+    <loc>https://aneri.lv/frizetava-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/frizetava-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/parikmaherskaya-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/hair-salon-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/frizetava-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/parikmaherskaya-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/frizetava-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/parikmaherskaya-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/hair-salon-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/frizetava-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/hair-salon-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/frizetava-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/parikmaherskaya-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/hair-salon-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/frizetava-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/manikirs-pedikirs-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/manikirs-pedikirs-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/manikyur-pedikyur-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/manicure-pedicure-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/manikirs-pedikirs-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/manikyur-pedikyur-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/manikirs-pedikirs-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/manikyur-pedikyur-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/manicure-pedicure-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/manikirs-pedikirs-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/manicure-pedicure-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/manikirs-pedikirs-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/manikyur-pedikyur-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/manicure-pedicure-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/manikirs-pedikirs-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/kosmetologija-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/kosmetologija-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/kosmetologiya-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/cosmetology-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/kosmetologija-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/kosmetologiya-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/kosmetologija-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/kosmetologiya-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/cosmetology-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/kosmetologija-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/cosmetology-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/kosmetologija-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/kosmetologiya-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/cosmetology-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/kosmetologija-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/permanentais-grims-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/permanentais-grims-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/permanentnyj-makiyazh-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/permanent-makeup-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/permanentais-grims-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/permanentnyj-makiyazh-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/permanentais-grims-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/permanentnyj-makiyazh-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/permanent-makeup-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/permanentais-grims-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/permanent-makeup-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/permanentais-grims-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/permanentnyj-makiyazh-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/permanent-makeup-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/permanentais-grims-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/vaksacija-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/vaksacija-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/vaksaciya-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/waxing-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/vaksacija-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/vaksaciya-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/vaksacija-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/vaksaciya-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/waxing-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/vaksacija-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/waxing-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/vaksacija-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/vaksaciya-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/waxing-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/vaksacija-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/solarijs-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/solarijs-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/solyarij-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/solarium-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/solarijs-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/solyarij-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/solarijs-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/solyarij-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/solarium-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/solarijs-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/solarium-riga</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/solarijs-riga" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/solyarij-riga" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/solarium-riga" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/solarijs-riga" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <!-- ================================== -->
+  <!-- 3. ALL 11 SEO ARTICLES (33 URLs)   -->
+  <!-- ================================== -->
+  <url>
+    <loc>https://aneri.lv/article/beauty-salon-kengarags</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/beauty-salon-kengarags" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/beauty-salon-kengarags" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/beauty-salon-kengarags" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/beauty-salon-kengarags" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/article/beauty-salon-kengarags</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/beauty-salon-kengarags" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/beauty-salon-kengarags" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/beauty-salon-kengarags" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/beauty-salon-kengarags" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/article/beauty-salon-kengarags</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/beauty-salon-kengarags" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/beauty-salon-kengarags" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/beauty-salon-kengarags" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/beauty-salon-kengarags" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/article/haircare</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/haircare" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/haircare" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/haircare" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/haircare" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/article/haircare</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/haircare" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/haircare" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/haircare" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/haircare" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/article/haircare</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/haircare" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/haircare" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/haircare" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/haircare" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/article/hair-loss</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/hair-loss" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/hair-loss" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/hair-loss" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/hair-loss" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/article/hair-loss</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/hair-loss" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/hair-loss" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/hair-loss" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/hair-loss" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/article/hair-loss</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/hair-loss" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/hair-loss" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/hair-loss" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/hair-loss" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/article/keratin-vs-botox</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/keratin-vs-botox" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/keratin-vs-botox" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/keratin-vs-botox" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/keratin-vs-botox" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/article/keratin-vs-botox</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/keratin-vs-botox" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/keratin-vs-botox" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/keratin-vs-botox" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/keratin-vs-botox" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/article/keratin-vs-botox</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/keratin-vs-botox" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/keratin-vs-botox" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/keratin-vs-botox" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/keratin-vs-botox" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/article/manicure-tips</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/manicure-tips" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/manicure-tips" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/manicure-tips" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/manicure-tips" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/article/manicure-tips</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/manicure-tips" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/manicure-tips" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/manicure-tips" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/manicure-tips" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/article/manicure-tips</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/manicure-tips" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/manicure-tips" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/manicure-tips" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/manicure-tips" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/article/hardware-pedicure</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/hardware-pedicure" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/hardware-pedicure" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/hardware-pedicure" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/hardware-pedicure" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/article/hardware-pedicure</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/hardware-pedicure" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/hardware-pedicure" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/hardware-pedicure" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/hardware-pedicure" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/article/hardware-pedicure</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/hardware-pedicure" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/hardware-pedicure" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/hardware-pedicure" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/hardware-pedicure" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/article/nail-trends</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/nail-trends" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/nail-trends" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/nail-trends" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/nail-trends" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/article/nail-trends</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/nail-trends" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/nail-trends" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/nail-trends" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/nail-trends" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/article/nail-trends</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/nail-trends" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/nail-trends" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/nail-trends" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/nail-trends" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/article/facial-cleansing</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/facial-cleansing" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/facial-cleansing" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/facial-cleansing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/facial-cleansing" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/article/facial-cleansing</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/facial-cleansing" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/facial-cleansing" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/facial-cleansing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/facial-cleansing" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/article/facial-cleansing</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/facial-cleansing" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/facial-cleansing" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/facial-cleansing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/facial-cleansing" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/article/permanent-makeup-care</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/permanent-makeup-care" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/permanent-makeup-care" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/permanent-makeup-care" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/permanent-makeup-care" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/article/permanent-makeup-care</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/permanent-makeup-care" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/permanent-makeup-care" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/permanent-makeup-care" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/permanent-makeup-care" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/article/permanent-makeup-care</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/permanent-makeup-care" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/permanent-makeup-care" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/permanent-makeup-care" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/permanent-makeup-care" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/article/waxing-vs-laser</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/waxing-vs-laser" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/waxing-vs-laser" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/waxing-vs-laser" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/waxing-vs-laser" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/article/waxing-vs-laser</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/waxing-vs-laser" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/waxing-vs-laser" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/waxing-vs-laser" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/waxing-vs-laser" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/article/waxing-vs-laser</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/waxing-vs-laser" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/waxing-vs-laser" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/waxing-vs-laser" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/waxing-vs-laser" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://aneri.lv/article/solarium-rules</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/solarium-rules" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/solarium-rules" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/solarium-rules" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/solarium-rules" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/ru/article/solarium-rules</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/solarium-rules" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/solarium-rules" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/solarium-rules" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/solarium-rules" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://aneri.lv/en/article/solarium-rules</loc>
+    <xhtml:link rel="alternate" hreflang="lv" href="https://aneri.lv/article/solarium-rules" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aneri.lv/ru/article/solarium-rules" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://aneri.lv/en/article/solarium-rules" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aneri.lv/article/solarium-rules" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
 </urlset>

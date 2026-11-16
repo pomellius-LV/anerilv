@@ -1,6 +1,17 @@
 User-agent: *
 Allow: /
 Disallow: /admin
+Disallow: /ru/admin
+Disallow: /en/admin
+Disallow: /lv/admin
+Disallow: /api/admin/
+
+User-agent: Googlebot
+Allow: /
+Disallow: /admin
+Disallow: /ru/admin
+Disallow: /en/admin
+Disallow: /lv/admin
 Disallow: /api/admin/
 
 Sitemap: https://aneri.lv/sitemap.xml

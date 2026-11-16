@@ -46,6 +46,20 @@ export interface CreateServicePayload {
   order_num?: number;
 }
 
+export interface SnowConfig {
+  enabled: boolean;
+  size: number;
+  color: string;
+  count: number;
+}
+
+export const DEFAULT_SNOW_CONFIG: SnowConfig = {
+  enabled: true,
+  size: 34,
+  color: '#FFFFFF',
+  count: 55
+};
+
 export interface TaxonomyCategory {
   key: string;
   titles: Record<Language, string>;
@@ -183,6 +197,134 @@ class DataService {
   public isUsingFallback = true;
   public lastSyncTime: Date | null = null;
   public d1Error: string | null = null;
+  public snowConfig: SnowConfig = { ...DEFAULT_SNOW_CONFIG };
+
+  public getSnowEnabled(): boolean {
+    return this.snowConfig.enabled;
+  }
+
+  public getSnowConfig(): SnowConfig {
+    return this.snowConfig;
+  }
+
+  private applySettingsMap(settings: Record<string, string>) {
+    const next: SnowConfig = { ...this.snowConfig };
+
+    if (settings.snow_enabled !== undefined) {
+      next.enabled = settings.snow_enabled !== '0' && settings.snow_enabled !== 'false';
+    }
+    if (settings.snow_size !== undefined) {
+      const parsedSize = Number(settings.snow_size);
+      if (Number.isFinite(parsedSize)) {
+        next.size = Math.min(60, Math.max(14, Math.round(parsedSize)));
+      }
+    }
+    if (settings.snow_count !== undefined) {
+      const parsedCount = Number(settings.snow_count);
+      if (Number.isFinite(parsedCount)) {
+        next.count = Math.min(120, Math.max(8, Math.round(parsedCount)));
+      }
+    }
+    if (settings.snow_color !== undefined && /^#[0-9a-fA-F]{6}$/.test(settings.snow_color.trim())) {
+      next.color = settings.snow_color.trim().toUpperCase();
+    }
+
+    this.snowConfig = next;
+    this.notify();
+  }
+
+  public async fetchPublicSettings(): Promise<Record<string, string>> {
+    try {
+      const res = await fetch('/api/public/settings', {
+        headers: { Accept: 'application/json' },
+        cache: 'no-cache'
+      });
+      if (!res.ok) return {};
+      const data = await res.json();
+      const settings: Record<string, string> = data?.settings || {};
+      this.applySettingsMap(settings);
+      return settings;
+    } catch {
+      return {};
+    }
+  }
+
+  public async fetchAdminSettings(): Promise<{
+    ok: boolean;
+    settings: Record<string, string>;
+    error?: string;
+  }> {
+    try {
+      const res = await fetch('/api/admin/settings', {
+        headers: { Accept: 'application/json' },
+        cache: 'no-cache'
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        return {
+          ok: false,
+          settings: {
+            snow_enabled: this.snowConfig.enabled ? '1' : '0',
+            snow_size: String(this.snowConfig.size),
+            snow_color: this.snowConfig.color,
+            snow_count: String(this.snowConfig.count)
+          },
+          error: err.error || err.message || `HTTP ${res.status}`
+        };
+      }
+      const data = await res.json();
+      const settings: Record<string, string> = data?.settings || {};
+      this.applySettingsMap(settings);
+      return { ok: true, settings };
+    } catch (e: any) {
+      return {
+        ok: false,
+        settings: {
+          snow_enabled: this.snowConfig.enabled ? '1' : '0',
+          snow_size: String(this.snowConfig.size),
+          snow_color: this.snowConfig.color,
+          snow_count: String(this.snowConfig.count)
+        },
+        error: e?.message || 'Savienojuma kļūda'
+      };
+    }
+  }
+
+  public async updateAdminSettings(
+    updates: Record<string, string>
+  ): Promise<{ ok: boolean; error?: string }> {
+    try {
+      const res = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify(updates)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
+        return {
+          ok: false,
+          error: data.error || data.message || `Kļūda ${res.status}`
+        };
+      }
+      this.applySettingsMap(updates);
+      return { ok: true };
+    } catch (e: any) {
+      return {
+        ok: false,
+        error: e?.message || 'Tīkla kļūda saglabājot iestatījumu'
+      };
+    }
+  }
+
+  public async updateAdminSetting(
+    key: string,
+    value: string
+  ): Promise<{ ok: boolean; error?: string }> {
+    return this.updateAdminSettings({ [key]: value });
+  }
 
   public subscribe(listener: () => void) {
     this.listeners.add(listener);
@@ -783,10 +925,10 @@ class DataService {
     }
   }
 
-  // Export full JSON backup of salon catalog (v1.16)
+  // Export full JSON backup of salon catalog (v1.19)
   public exportBackupJson(): string {
     return JSON.stringify({
-      version: '1.16',
+      version: '1.19',
       exportDate: new Date().toISOString(),
       salon: 'Salons Aneri',
       address: 'Latgales iela 264, Rīga',

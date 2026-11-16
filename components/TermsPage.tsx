@@ -1,22 +1,32 @@
 import React from 'react';
-import { View } from '../types';
+import { Language, View } from '../types';
+import { buildSeoUrl } from '../data/seoRoutes';
 import { ArrowLeft } from 'lucide-react';
 import Markdown from 'react-markdown';
 
 interface TermsPageProps {
+  lang: Language;
   title: string;
   content: string;
   setView: (view: View) => void;
   homeLabel: string;
 }
 
-const TermsPage: React.FC<TermsPageProps> = ({ title, content, setView, homeLabel }) => {
+const TermsPage: React.FC<TermsPageProps> = ({ lang, title, content, setView, homeLabel }) => {
   return (
     <section className="pt-40 pb-32 min-h-screen bg-stone-50">
       <div className="container mx-auto px-4 max-w-3xl">
-        <button onClick={() => setView('home')} className="flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest mb-12">
+        <a
+          href={buildSeoUrl(lang, 'home')}
+          onClick={(e) => {
+            if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+            e.preventDefault();
+            setView('home');
+          }}
+          className="inline-flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest mb-12"
+        >
           <ArrowLeft size={16} /> {homeLabel}
-        </button>
+        </a>
 
         <h1 className="text-5xl md:text-7xl font-serif font-bold text-stone-900 mb-12 tracking-tight">{title}</h1>
         

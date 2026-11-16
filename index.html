@@ -34,7 +34,7 @@
     </script>
 
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="index, follow" />
     <meta name="author" content="Salons Aneri" />
     <title>Salons Aneri - Frizētava un Manikīrs Ķengarāgā | aneri.lv</title>
@@ -67,7 +67,7 @@
     <link rel="alternate" hreflang="x-default" href="https://aneri.lv/" />
     
     <!-- PWA Settings -->
-    <link rel="manifest" href="./manifest.json" />
+    <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#9F1239" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -75,7 +75,7 @@
     
     <!-- Performance Optimizations -->
     <!-- 1. Preload Hero Image (Fixes LCP) -->
-    <link rel="preload" as="image" href="photos/facade.jpg" />
+    <link rel="preload" as="image" href="/photos/facade.jpg" />
     
     <!-- Icons (Cloudflare Hosted) -->
     <link rel="icon" type="image/png" href="https://aneri-icon.pages.dev/fav/favicon-32x32.png" />
@@ -143,13 +143,13 @@
     <!-- End Google Tag Manager (noscript) -->
 
     <div id="root"></div>
-    <script type="module" src="./index.tsx"></script>
+    <script type="module" src="/index.tsx"></script>
     
     <!-- PWA Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js')
+          navigator.serviceWorker.register('/sw.js')
             .then(registration => {
               console.log('ServiceWorker registration successful');
             })

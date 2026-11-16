@@ -10,7 +10,7 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ content, lang }) => {
   const { hero } = content;
-  const bgImage = "url('photos/facade.jpg')";
+  const bgImage = "url('/photos/facade.jpg')";
   const mapUrl = "https://www.google.com/maps/place/56%C2%B054'30.6%22N+24%C2%B010'56.3%22E/@56.9085003,24.1822941,17z/";
 
   const mapLabels: Record<Language, string> = {

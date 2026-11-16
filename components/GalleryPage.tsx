@@ -1,15 +1,17 @@
 
 import React, { useState } from 'react';
-import { Content, View } from '../types';
+import { Content, Language, View } from '../types';
+import { buildSeoUrl } from '../data/seoRoutes';
 import { ArrowLeft, Instagram, X, Maximize2 } from 'lucide-react';
 import { galleryPhotos } from '../data/photos';
 
 interface GalleryPageProps {
+  lang: Language;
   content: Content;
   setView: (view: View) => void;
 }
 
-const GalleryPage: React.FC<GalleryPageProps> = ({ content, setView }) => {
+const GalleryPage: React.FC<GalleryPageProps> = ({ lang, content, setView }) => {
   const [visibleCount, setVisibleCount] = useState(12);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -32,12 +34,17 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ content, setView }) => {
   return (
     <section className="pt-32 pb-24 min-h-screen bg-stone-50">
       <div className="container mx-auto px-4 max-w-7xl">
-        <button 
-          onClick={() => setView('home')} 
-          className="flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest mb-12 hover:-translate-x-1 transition-transform"
+        <a
+          href={buildSeoUrl(lang, 'home')}
+          onClick={(e) => {
+            if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+            e.preventDefault();
+            setView('home');
+          }}
+          className="inline-flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest mb-12 hover:-translate-x-1 transition-transform"
         >
           <ArrowLeft size={16} /> {content.nav.home}
-        </button>
+        </a>
 
         <div className="text-center mb-20">
           <h1 className="text-5xl md:text-8xl font-serif font-bold text-stone-900 mb-6 tracking-tight">

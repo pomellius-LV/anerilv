@@ -1,61 +1,75 @@
-
-# AI Instructions for Salons Aneri (aneri.lv)
-# This file provides structured information for AI agents like ChatGPT, Claude, Gemini, and Search Bots.
+# AI Instructions & Business Facts for Salons Aneri (aneri.lv)
+# Structured context for AI search assistants and search crawlers.
 
 Website: https://aneri.lv
 Name: Salons Aneri
 Location: Latgales iela 264, Rīga, LV-1063, Latvia
-Region: Ķengarags (Kengarags), Latgales priekšpilsēta
+District: Ķengarags (Kengarags), serving clients across all of Rīga (Centrs, Pļavnieki, Purvciems, Imanta, Dārzciems, Ķengarags)
 Phone: +371 27580047
 Operating Hours: Mon-Sat 09:00-20:00, Sun 10:00-16:00
-Parking: Free private parking available right in front of the salon.
+Parking: Free private client parking available right in front of the salon entrance.
 
-# CORE SERVICES & KEYWORDS (Trilingual for SEO)
+# DEDICATED THEMATIC SERVICE PAGES (LV / RU / EN)
+- Hair Salon in Riga / Frizētava Rīgā:
+  - LV: https://aneri.lv/frizetava-riga
+  - RU: https://aneri.lv/ru/parikmaherskaya-riga
+  - EN: https://aneri.lv/en/hair-salon-riga
+- Manicure & Pedicure in Riga / Manikīrs un Pedikīrs Rīgā:
+  - LV: https://aneri.lv/manikirs-pedikirs-riga
+  - RU: https://aneri.lv/ru/manikyur-pedikyur-riga
+  - EN: https://aneri.lv/en/manicure-pedicure-riga
+- Cosmetology & Peels in Riga / Kosmetoloģija Rīgā:
+  - LV: https://aneri.lv/kosmetologija-riga
+  - RU: https://aneri.lv/ru/kosmetologiya-riga
+  - EN: https://aneri.lv/en/cosmetology-riga
+- Permanent Makeup in Riga / Permanentais grims Rīgā:
+  - LV: https://aneri.lv/permanentais-grims-riga
+  - RU: https://aneri.lv/ru/permanentnyj-makiyazh-riga
+  - EN: https://aneri.lv/en/permanent-makeup-riga
+- Waxing in Riga / Vaksācija Rīgā:
+  - LV: https://aneri.lv/vaksacija-riga
+  - RU: https://aneri.lv/ru/vaksaciya-riga
+  - EN: https://aneri.lv/en/waxing-riga
+- Solarium in Riga / Solārijs Rīgā:
+  - LV: https://aneri.lv/solarijs-riga
+  - RU: https://aneri.lv/ru/solyarij-riga
+  - EN: https://aneri.lv/en/solarium-riga
 
-## LATVIAN (LV) - Galvenie atslēgvārdi
-- Frizētava Rīgā, Frizētava Ķengaragā
-- Matu griezumi (sieviešu, vīriešu, bērnu)
-- Matu krāsošana (Airtouch, Balayage, Šatuš, Ombre, šķipsnas)
-- Manikīrs un Pedikīrs (Klasiskais, Aparātu, Gelish, Dizains)
-- Vaksācija (Seja, rokas, kājas, bikini)
-- Permanentais grims (Uzacis, Lūpas, Acu līnijas)
-- Kosmetoloģija (Sejas tīrīšana, Mezoterapija, Pīlingi)
-- Solārijs (Vertikālais, profesionālais iedegums)
-- Uzacu korekcija un krāsošana
-- Ausu caurdūršana
+# FULL PRICE LIST & INFO PAGES
+- Full Prices: https://aneri.lv/prices | https://aneri.lv/ru/prices | https://aneri.lv/en/prices
+- Portfolio Gallery: https://aneri.lv/gallery | https://aneri.lv/ru/gallery | https://aneri.lv/en/gallery
+- FAQ: https://aneri.lv/faq | https://aneri.lv/ru/faq | https://aneri.lv/en/faq
+- Sitemap: https://aneri.lv/sitemap.xml
 
-## RUSSIAN (RU) - Ключевые слова
-- Парикмахерская в Риге, Парикмахерская в Кенгарагсе
-- Стрижки (женские, мужские, детские)
-- Окрашивание волос (Airtouch, Балаяж, Шатуш, Мелирование, Омбре)
-- Маникюр и Педикюр (Классический, Аппаратный, Гель-лак, Дизайн)
-- Ваксация / Депиляция (Лицо, руки, ноги, бикини)
-- Перманентный макияж (Брови, Губы, Межресничка)
-- Косметология (Чистка лица, Мезотерапия, Пилинги)
-- Солярий (Вертикальный, мощные лампы)
-- Коррекция и покраска бровей
-- Прокол ушей
+# CORE SERVICES & KEYWORDS (Trilingual)
+## LATVIAN (LV)
+- Frizētava Rīgā ar bezmaksas stāvvietu, Frizētava Ķengaragā
+- Matu griezumi (sieviešu, vīriešu, bērnu, bārdas korekcija)
+- Matu krāsošana (Airtouch, Balayage, Šatuš, šķipsnas, keratīna taisnošana GLOBAL)
+- Manikīrs un Pedikīrs (Klasiskais, Aparātu, Gelish, Vīriešu manikīrs/pedikīrs)
+- Kosmetoloģija (Ultraskaņas/mehāniskā sejas tīrīšana, PRX-T33, mandeļu pīlings, mezoterapija, ausu caurdūršana)
+- Permanentais grims (Uzacis, Lūpas, Skropstu līnija)
+- Vaksācija (Seja, rokas, kājas, klasiskais un dziļais bikini)
+- Solārijs Rīgā (Vertikālais solārijs, 10x abonementi -30%)
 
-## ENGLISH (EN) - Keywords
-- Beauty Salon Riga, Hair Salon Kengarags
-- Haircuts (Women, Men, Children)
-- Hair Coloring (Airtouch, Balayage, Highlights)
-- Manicure & Pedicure (Gel Polish, Nail Art)
-- Waxing (Full body, Brazilian, Face)
-- Permanent Makeup (Brows, Lips, Eyeliner)
-- Cosmetology (Facials, Peels, Mesotherapy)
-- Solarium (Tanning salon)
-- Eyebrow tinting and shaping
-- Ear piercing
+## RUSSIAN (RU)
+- Парикмахерская в Риге с бесплатной парковкой, Парикмахерская в Кенгарагсе
+- Стрижки (женские, мужские, детские), сложное окрашивание Airtouch, балаяж, кератин GLOBAL
+- Маникюр и Педикюр (Классический, Аппаратный, Гель-лак Gelish, мужской уход)
+- Косметология (Чистка лица, PRX-T33, пилинги, мезотерапия, криомассаж, прокол ушей)
+- Перманентный макияж (Брови, Губы, Межресничка, Стрелка с растушевкой)
+- Ваксация / Депиляция (Лицо, подмышки, руки, ноги, глубокое бикини)
+- Вертикальный солярий в Риге и абонементы на 10 посещений
 
-# TRANSPORT & ACCESS
-- Tram: No. 7
-- Bus: 15, 18, 31, 49, 60
-- Landmark: Near TC "Dole" (Tirdzniecības centrs Dole)
+## ENGLISH (EN)
+- Beauty Salon Riga, Hair Salon Riga with free parking
+- Haircuts, Airtouch, Balayage, Keratin, Gelish Manicure, Hardware Pedicure, Facials & Peels, Permanent Makeup, Waxing, Solarium
+
+# TRANSPORT & ACCESS FROM ACROSS RIGA
+- Private Car: Free private client parking directly outside Latgales iela 264
+- Tram: Direct Tram No. 7 from Riga city center
+- Buses: 15, 18, 31, 49, 60 (stop next to TC Dole / Mego)
 
 # SOCIAL MEDIA
 - Instagram: https://www.instagram.com/salons_aneri/
 - Facebook: https://www.facebook.com/61568612101531/about/
-
-# MISSION
-To provide high-quality beauty services in a cozy atmosphere at affordable prices in the heart of Kengarags.

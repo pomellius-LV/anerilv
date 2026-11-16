@@ -10,7 +10,7 @@ const Advantages: React.FC<AdvantagesProps> = ({ content }) => {
   return (
     <section id="advantages" className="py-20 bg-white">
       <div className="container mx-auto px-4">
-         <div className="text-center mb-16">
+         <div className="relative z-10 text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-serif font-bold text-slate-800 mb-4">{content.advantages.title}</h2>
           <div className="w-24 h-1 bg-accent mx-auto rounded-full"></div>
         </div>

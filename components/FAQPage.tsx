@@ -1,22 +1,32 @@
 import React, { useState } from 'react';
-import { Content, View } from '../types';
+import { Content, Language, View } from '../types';
+import { buildSeoUrl } from '../data/seoRoutes';
 import { ChevronDown, MapPin, Bus, Navigation, ArrowLeft, TramFront } from 'lucide-react';
 
 interface FAQPageProps {
+  lang: Language;
   content: Content;
   setView: (view: View) => void;
 }
 
-const FAQPage: React.FC<FAQPageProps> = ({ content, setView }) => {
+const FAQPage: React.FC<FAQPageProps> = ({ lang, content, setView }) => {
   const [openId, setOpenId] = useState<string | null>(null);
   const mapUrl = "https://www.google.com/maps/place/56%C2%B054'30.6%22N+24%C2%B010'56.3%22E/@56.9085003,24.1822941,17z/";
 
   return (
     <section className="pt-32 pb-24 min-h-screen bg-stone-50">
       <div className="container mx-auto px-4 max-w-6xl">
-        <button onClick={() => setView('home')} className="flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest mb-12 hover:-translate-x-1 transition-transform">
+        <a
+          href={buildSeoUrl(lang, 'home')}
+          onClick={(e) => {
+            if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+            e.preventDefault();
+            setView('home');
+          }}
+          className="inline-flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest mb-12 hover:-translate-x-1 transition-transform"
+        >
           <ArrowLeft size={16} /> {content.nav.home}
-        </button>
+        </a>
 
         <div className="text-center mb-20">
           <h1 className="text-5xl md:text-8xl font-serif font-bold text-stone-900 mb-6 tracking-tight">{content.faq.title}</h1>

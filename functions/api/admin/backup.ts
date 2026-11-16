@@ -63,7 +63,7 @@ export const onRequestGet = async (context: {
       ok: true,
       status: 'ok',
       source: 'Cloudflare D1 (Production/Preview)',
-      version: '1.16',
+      version: '1.19',
       timestamp: new Date().toISOString(),
       requestedBy: data?.adminEmail || 'pomellius@gmail.com',
       totalRecords: Object.values(tableCounts).reduce((a, b) => a + b, 0),
@@ -76,7 +76,7 @@ export const onRequestGet = async (context: {
       status: 200,
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
-        'Content-Disposition': `attachment; filename="aneri_d1_backup_${dateStr}_v1.16.json"`,
+        'Content-Disposition': `attachment; filename="aneri_d1_backup_${dateStr}_v1.19.json"`,
         'Cache-Control': 'no-store, no-cache, must-revalidate'
       }
     });
