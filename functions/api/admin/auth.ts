@@ -25,7 +25,7 @@ export const onRequestGet = async (context: {
         }),
         {
           status: auth.status || 401,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json; charset=utf-8' }
         }
       );
     }
@@ -44,7 +44,7 @@ export const onRequestGet = async (context: {
     }),
     {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json; charset=utf-8' }
     }
   );
 };

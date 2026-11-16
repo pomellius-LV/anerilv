@@ -1,7 +1,7 @@
 -- ====================================================================
 -- SALONS ANERI: CLOUDFLARE D1 FULL CATALOG SEED
 -- Migration: 0002_seed_full_catalog.sql
--- Description: Complete 100% catalog seed of all 6 salon sections and 82 services with full LV, RU, EN translations
+-- Description: Complete 100% catalog seed of all 6 salon sections and 83 services with full LV, RU, EN translations
 -- Safety: Uses INSERT OR IGNORE to prevent overwriting admin modifications
 -- ====================================================================
 
@@ -64,12 +64,13 @@ INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, p
 INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('hair_kungiem_matu_veidosana', 'hair', 'Kungiem', 20, '6.00 - 8.00 €', NULL, NULL, 1);
 INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('hair_kungiem_griezums_uz_nulliti', 'hair', 'Kungiem', 21, '12.00 - 14.00 €', NULL, NULL, 1);
 INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('hair_kungiem_griezums_ar_masiniti', 'hair', 'Kungiem', 22, '14.00 - 16.00 €', NULL, NULL, 1);
-INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('hair_pensionariem_no_65_gadiem_matu_griezums', 'hair', 'Pensionāriem (no 65 gadiem)', 23, '14.00 - 15.00 €', NULL, NULL, 1);
-INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('hair_pensionariem_no_65_gadiem_matu_veidosana', 'hair', 'Pensionāriem (no 65 gadiem)', 24, '14.00 - 15.00 €', NULL, NULL, 1);
-INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('hair_pensionariem_no_65_gadiem_kimiskie_ilgvilni', 'hair', 'Pensionāriem (no 65 gadiem)', 25, '35.00 - 50.00 €', NULL, NULL, 1);
-INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('hair_pensionariem_no_65_gadiem_matu_krasosana', 'hair', 'Pensionāriem (no 65 gadiem)', 26, '15.00 - 20.00 €', NULL, NULL, 1);
-INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('hair_berniem_pirmsskolas_vecuma_berniem', 'hair', 'Bērniem', 27, '14.00 €', NULL, NULL, 1);
-INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('hair_berniem_skolniekiem_lidz_16_gadiem', 'hair', 'Bērniem', 28, '15.00 €', NULL, NULL, 1);
+INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('hair_kungiem_bardas_korekcija', 'hair', 'Kungiem', 23, '5.00 - 10.00 €', NULL, NULL, 1);
+INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('hair_pensionariem_no_65_gadiem_matu_griezums', 'hair', 'Pensionāriem (no 65 gadiem)', 24, '14.00 - 15.00 €', NULL, NULL, 1);
+INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('hair_pensionariem_no_65_gadiem_matu_veidosana', 'hair', 'Pensionāriem (no 65 gadiem)', 25, '14.00 - 15.00 €', NULL, NULL, 1);
+INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('hair_pensionariem_no_65_gadiem_kimiskie_ilgvilni', 'hair', 'Pensionāriem (no 65 gadiem)', 26, '35.00 - 50.00 €', NULL, NULL, 1);
+INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('hair_pensionariem_no_65_gadiem_matu_krasosana', 'hair', 'Pensionāriem (no 65 gadiem)', 27, '15.00 - 20.00 €', NULL, NULL, 1);
+INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('hair_berniem_pirmsskolas_vecuma_berniem', 'hair', 'Bērniem', 28, '14.00 €', NULL, NULL, 1);
+INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('hair_berniem_skolniekiem_lidz_16_gadiem', 'hair', 'Bērniem', 29, '15.00 €', NULL, NULL, 1);
 INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('nails_manikirs_klasiskais_bez_lakas', 'nails', 'Manikīrs', 1, '16.00 €', NULL, NULL, 1);
 INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('nails_manikirs_klasiskais_ar_laku', 'nails', 'Manikīrs', 2, '18.00 €', NULL, NULL, 1);
 INSERT OR IGNORE INTO services (id, category_id, subcategory_title, order_num, price, old_price, duration, is_active) VALUES ('nails_manikirs_viriesu_manikirs', 'nails', 'Manikīrs', 3, '20.00 €', NULL, NULL, 1);
@@ -192,6 +193,9 @@ INSERT OR IGNORE INTO service_translations (service_id, lang, name, subcategory_
 INSERT OR IGNORE INTO service_translations (service_id, lang, name, subcategory_title_localized, description) VALUES ('hair_kungiem_griezums_ar_masiniti', 'lv', 'Griezums ar mašīnīti', 'Kungiem', '');
 INSERT OR IGNORE INTO service_translations (service_id, lang, name, subcategory_title_localized, description) VALUES ('hair_kungiem_griezums_ar_masiniti', 'ru', 'Стрижка машинкой', 'Мужчинам', '');
 INSERT OR IGNORE INTO service_translations (service_id, lang, name, subcategory_title_localized, description) VALUES ('hair_kungiem_griezums_ar_masiniti', 'en', 'Griezums ar mašīnīti', 'Gentlemen', '');
+INSERT OR IGNORE INTO service_translations (service_id, lang, name, subcategory_title_localized, description) VALUES ('hair_kungiem_bardas_korekcija', 'lv', 'Bārdas korekcija', 'Kungiem', '');
+INSERT OR IGNORE INTO service_translations (service_id, lang, name, subcategory_title_localized, description) VALUES ('hair_kungiem_bardas_korekcija', 'ru', 'Коррекция бороды', 'Мужчинам', '');
+INSERT OR IGNORE INTO service_translations (service_id, lang, name, subcategory_title_localized, description) VALUES ('hair_kungiem_bardas_korekcija', 'en', 'Beard trim & shaping', 'Gentlemen', '');
 INSERT OR IGNORE INTO service_translations (service_id, lang, name, subcategory_title_localized, description) VALUES ('hair_pensionariem_no_65_gadiem_matu_griezums', 'lv', 'Matu griezums', 'Pensionāriem (no 65 gadiem)', '');
 INSERT OR IGNORE INTO service_translations (service_id, lang, name, subcategory_title_localized, description) VALUES ('hair_pensionariem_no_65_gadiem_matu_griezums', 'ru', 'Стрижка', 'Пенсионерам (от 65 лет)', '');
 INSERT OR IGNORE INTO service_translations (service_id, lang, name, subcategory_title_localized, description) VALUES ('hair_pensionariem_no_65_gadiem_matu_griezums', 'en', 'Matu griezums', 'Pensioners (65+)', '');

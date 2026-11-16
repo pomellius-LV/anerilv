@@ -11,7 +11,7 @@ export const onRequestGet = async (context: { env: Env }) => {
   if (!env.DB) {
     return new Response(JSON.stringify({ status: 'offline', articles: [] }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json; charset=utf-8' }
     });
   }
 
@@ -41,23 +41,32 @@ export const onRequestGet = async (context: { env: Env }) => {
 
     return new Response(JSON.stringify({ status: 'ok', articles: results || [] }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json; charset=utf-8' }
     });
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+    return new Response(JSON.stringify({ error: e.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json; charset=utf-8' }
+    });
   }
 };
 
 export const onRequestPut = async (context: { request: Request; env: Env }) => {
   const { request, env } = context;
 
-  if (!env.DB) return new Response(JSON.stringify({ status: 'offline' }), { status: 500 });
+  if (!env.DB) return new Response(JSON.stringify({ status: 'offline' }), {
+    status: 500,
+    headers: { 'Content-Type': 'application/json; charset=utf-8' }
+  });
 
   try {
     const body: any = await request.json();
     const { id, is_published, title_lv, title_ru, title_en, meta_title_lv, meta_desc_lv } = body;
 
-    if (!id) return new Response(JSON.stringify({ error: 'Missing article ID' }), { status: 400 });
+    if (!id) return new Response(JSON.stringify({ error: 'Missing article ID' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json; charset=utf-8' }
+    });
 
     if (is_published !== undefined) {
       await env.DB.prepare('UPDATE articles SET is_published = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
@@ -72,8 +81,14 @@ export const onRequestPut = async (context: { request: Request; env: Env }) => {
       `).bind(title_lv, meta_title_lv || null, meta_desc_lv || null, id).run();
     }
 
-    return new Response(JSON.stringify({ ok: true, id }), { status: 200 });
+    return new Response(JSON.stringify({ ok: true, id }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json; charset=utf-8' }
+    });
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+    return new Response(JSON.stringify({ error: e.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json; charset=utf-8' }
+    });
   }
 };

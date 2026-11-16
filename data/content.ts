@@ -122,6 +122,7 @@ export const contentData: Record<Language, Content> = {
                 { name: "Matu veidošana", price: "6.00 - 8.00 €" },
                 { name: "Griezums uz nullīti", price: "12.00 - 14.00 €" },
                 { name: "Griezums ar mašīnīti", price: "14.00 - 16.00 €" },
+                { name: "Bārdas korekcija", price: "5.00 - 10.00 €" },
               ]
             },
             {
@@ -478,6 +479,7 @@ export const contentData: Record<Language, Content> = {
                 { name: "Укладка волос", price: "6.00 - 8.00 €" },
                 { name: "Стрижка под ноль", price: "12.00 - 14.00 €" },
                 { name: "Стрижка машинкой", price: "14.00 - 16.00 €" },
+                { name: "Коррекция бороды", price: "5.00 - 10.00 €" },
               ]
             },
             {
@@ -812,6 +814,7 @@ export const contentData: Record<Language, Content> = {
                 { name: "Men's haircut", price: "16.00 - 18.00 €" },
                 { name: "Machine cut", price: "14.00 - 16.00 €" },
                 { name: "Zero cut", price: "12.00 - 14.00 €" },
+                { name: "Beard trim & shaping", price: "5.00 - 10.00 €" },
               ]
             },
             {

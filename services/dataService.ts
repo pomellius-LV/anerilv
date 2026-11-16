@@ -20,6 +20,126 @@ export interface AdminServiceItem {
   updated_at?: string;
 }
 
+export interface UpdateServicePayload {
+  id: string;
+  price?: string;
+  name_lv?: string;
+  name_ru?: string;
+  name_en?: string;
+  subcategory_lv?: string;
+  subcategory_ru?: string;
+  subcategory_en?: string;
+  is_active?: number;
+  order_num?: number;
+}
+
+export interface CreateServicePayload {
+  category_id: string;
+  subcategory_title: string;
+  subcategory_lv?: string;
+  subcategory_ru?: string;
+  subcategory_en?: string;
+  price: string;
+  name_lv?: string;
+  name_ru?: string;
+  name_en?: string;
+  order_num?: number;
+}
+
+export interface TaxonomyCategory {
+  key: string;
+  titles: Record<Language, string>;
+}
+
+export interface TaxonomySection {
+  id: string;
+  titles: Record<Language, string>;
+  categories: TaxonomyCategory[];
+}
+
+export const CATALOG_TAXONOMY: TaxonomySection[] = [
+  {
+    id: 'hair',
+    titles: {
+      lv: '1. Frizētavas pakalpojumi',
+      ru: '1. Парикмахерские услуги',
+      en: '1. Hairdressing Services'
+    },
+    categories: [
+      { key: 'Dāmām', titles: { lv: 'Dāmām', ru: 'Дамам', en: 'Ladies' } },
+      { key: 'Kungiem', titles: { lv: 'Kungiem', ru: 'Мужчинам', en: 'Gentlemen' } },
+      {
+        key: 'Pensionāriem (no 65 gadiem)',
+        titles: { lv: 'Pensionāriem (no 65 gadiem)', ru: 'Пенсионерам (от 65 лет)', en: 'Pensioners (65+)' }
+      },
+      { key: 'Bērniem', titles: { lv: 'Bērniem', ru: 'Детям', en: 'Kids' } }
+    ]
+  },
+  {
+    id: 'nails',
+    titles: {
+      lv: '2. Manikīrs un Pedikīrs',
+      ru: '2. Маникюр и Педикюр',
+      en: '2. Manicure & Pedicure'
+    },
+    categories: [
+      { key: 'Manikīrs', titles: { lv: 'Manikīrs', ru: 'Маникюр', en: 'Manicure' } },
+      { key: 'Pedikīrs', titles: { lv: 'Pedikīrs', ru: 'Педикюр', en: 'Pedicure' } }
+    ]
+  },
+  {
+    id: 'cosmetology',
+    titles: {
+      lv: '3. Kosmetoloģija un Pīlingi',
+      ru: '3. Косметология и Пилинги',
+      en: '3. Cosmetology & Peels'
+    },
+    categories: [
+      {
+        key: 'Kosmētiskās procedūras',
+        titles: { lv: 'Kosmētiskās procedūras', ru: 'Косметические процедуры', en: 'Cosmetic Procedures' }
+      },
+      { key: 'Pīlingi', titles: { lv: 'Pīlingi', ru: 'Пилинги', en: 'Peels' } }
+    ]
+  },
+  {
+    id: 'permanent',
+    titles: {
+      lv: '4. Permanentais grims',
+      ru: '4. Перманентный макияж',
+      en: '4. Permanent Makeup'
+    },
+    categories: [
+      { key: 'Procedūras', titles: { lv: 'Procedūras', ru: 'Процедуры', en: 'Procedures' } }
+    ]
+  },
+  {
+    id: 'waxing',
+    titles: {
+      lv: '5. Vaksācija',
+      ru: '5. Ваксация (Депиляция)',
+      en: '5. Waxing'
+    },
+    categories: [
+      { key: 'Zonas', titles: { lv: 'Zonas', ru: 'Зоны', en: 'Zones' } }
+    ]
+  },
+  {
+    id: 'solarium',
+    titles: {
+      lv: '6. Solārijs',
+      ru: '6. Солярий',
+      en: '6. Solarium'
+    },
+    categories: [
+      {
+        key: 'Apmeklējums / Abonements',
+        titles: { lv: 'Apmeklējums / Abonements', ru: 'Посещение / Абонемент', en: 'Visit / Subscription' }
+      }
+    ]
+  }
+];
+
 // Deterministic ID generator matching 0002_seed_full_catalog.sql
 export function generateDeterministicServiceId(sectionId: string, categoryTitle: string, serviceName: string): string {
   const clean = (text: string) => text
@@ -47,11 +167,18 @@ export function generateDeterministicServiceId(sectionId: string, categoryTitle:
 
 class DataService {
   private listeners: Set<() => void> = new Set();
-  // Real service ID -> updated price string
   private livePriceById: Record<string, string> = {};
-  // Real service name -> updated price string (for quick name lookups)
   private livePriceByName: Record<string, string> = {};
-  
+  private liveServicesByLang: Partial<Record<Language, Array<{
+    id: string;
+    category_id: string;
+    subcategory_title: string;
+    subcategory_localized?: string;
+    order_num?: number;
+    name: string;
+    price: string;
+  }>>> = {};
+
   public isD1Connected = false;
   public isUsingFallback = true;
   public lastSyncTime: Date | null = null;
@@ -91,6 +218,8 @@ class DataService {
         this.lastSyncTime = new Date();
         this.d1Error = null;
 
+        this.liveServicesByLang[lang] = data.services;
+
         data.services.forEach((srv: any) => {
           if (srv.id && srv.price) {
             this.livePriceById[srv.id] = srv.price;
@@ -103,7 +232,6 @@ class DataService {
         this.notify();
         return true;
       } else {
-        // D1 database table exists but is empty or unseeded
         this.isD1Connected = data.status === 'ok';
         this.isUsingFallback = true;
         this.notify();
@@ -154,7 +282,6 @@ class DataService {
       if (data.status === 'ok' && Array.isArray(data.services)) {
         this.isD1Connected = true;
         this.isUsingFallback = false;
-        // Cache prices
         data.services.forEach((srv: AdminServiceItem) => {
           if (srv.id && srv.price) {
             this.livePriceById[srv.id] = srv.price;
@@ -186,18 +313,19 @@ class DataService {
     }
   }
 
-  // Save price override to Cloudflare D1
-  // Strictly requires real serviceId, verifies response, and NEVER fakes success
-  public async updatePrice(
-    serviceId: string,
-    newPrice: string,
-    nameLv?: string
-  ): Promise<{ ok: boolean; id?: string; price?: string; error?: string; message?: string }> {
-    if (!serviceId || serviceId.trim() === '') {
+  // Full service update (price, localized names, visibility)
+  public async updateService(payload: UpdateServicePayload): Promise<{
+    ok: boolean;
+    id?: string;
+    price?: string;
+    service?: AdminServiceItem | null;
+    error?: string;
+    message?: string;
+  }> {
+    if (!payload.id || payload.id.trim() === '') {
       return { ok: false, error: 'Pakalpojuma ID trūkst. Saglabāšana apturēta.' };
     }
-
-    if (!newPrice || newPrice.trim() === '') {
+    if (payload.price !== undefined && payload.price.trim() === '') {
       return { ok: false, error: 'Cenas vērtība nevar būt tukša.' };
     }
 
@@ -209,38 +337,150 @@ class DataService {
           'Accept': 'application/json'
         },
         body: JSON.stringify({
-          id: serviceId.trim(),
-          price: newPrice.trim(),
-          name_lv: nameLv
+          ...payload,
+          id: payload.id.trim(),
+          price: payload.price !== undefined ? payload.price.trim() : undefined
         })
       });
 
       const data = await res.json().catch(() => ({}));
-
       if (!res.ok || !data.ok) {
         return {
           ok: false,
-          error: data.error || data.message || `Kļūda ${res.status}: Neizdevās saglabāt cenu D1 datubāzē.`
+          error: data.error || data.message || `Kļūda ${res.status}: Neizdevās saglabāt izmaiņas D1 datubāzē.`
         };
       }
 
-      // Successful D1 write confirmed! Update memory cache and notify public UI
-      this.livePriceById[serviceId.trim()] = newPrice.trim();
-      if (nameLv) {
-        this.livePriceByName[nameLv] = newPrice.trim();
+      if (data.price) {
+        this.livePriceById[payload.id.trim()] = data.price;
       }
+      if (payload.name_lv && data.price) {
+        this.livePriceByName[payload.name_lv] = data.price;
+      }
+      // Clear cached public lists so next render pulls fresh D1 data
+      this.liveServicesByLang = {};
       this.notify();
 
       return {
         ok: true,
-        id: serviceId.trim(),
-        price: newPrice.trim(),
-        message: data.message || 'Cena veiksmīgi saglabāta Cloudflare D1 datubāzē.'
+        id: payload.id.trim(),
+        price: data.price,
+        service: data.service || null,
+        message: data.message || 'Izmaiņas veiksmīgi saglabātas Cloudflare D1 datubāzē.'
       };
     } catch (e: any) {
       return {
         ok: false,
         error: `Tīkla kļūda: ${e.message}. Izmaiņas netika saglabātas D1 datubāzē.`
+      };
+    }
+  }
+
+  // Backwards-compatible wrapper for price updates
+  public async updatePrice(
+    serviceId: string,
+    newPrice: string,
+    nameLv?: string
+  ): Promise<{ ok: boolean; id?: string; price?: string; error?: string; message?: string }> {
+    return this.updateService({
+      id: serviceId,
+      price: newPrice,
+      name_lv: nameLv
+    });
+  }
+
+  // Create a brand new service in D1
+  public async createService(payload: CreateServicePayload): Promise<{
+    ok: boolean;
+    id?: string;
+    service?: AdminServiceItem | null;
+    error?: string;
+    message?: string;
+  }> {
+    if (!payload.category_id || !payload.price?.trim()) {
+      return { ok: false, error: 'Kategorija un cena ir obligātas.' };
+    }
+    const primary = payload.name_lv?.trim() || payload.name_ru?.trim() || payload.name_en?.trim();
+    if (!primary) {
+      return { ok: false, error: 'Pakalpojuma nosaukums ir obligāts.' };
+    }
+
+    try {
+      const res = await fetch('/api/admin/services', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
+        return {
+          ok: false,
+          error: data.error || data.message || `Kļūda ${res.status}: Neizdevās pievienot pakalpojumu.`
+        };
+      }
+
+      if (data.id && payload.price) {
+        this.livePriceById[data.id] = payload.price.trim();
+      }
+      this.liveServicesByLang = {};
+      this.notify();
+
+      return {
+        ok: true,
+        id: data.id,
+        service: data.service || null,
+        message: data.message || 'Jauns pakalpojums pievienots D1 datubāzei.'
+      };
+    } catch (e: any) {
+      return {
+        ok: false,
+        error: `Tīkla kļūda: ${e.message}`
+      };
+    }
+  }
+
+  // Delete service from D1
+  public async deleteService(serviceId: string): Promise<{
+    ok: boolean;
+    deleted?: string;
+    error?: string;
+    message?: string;
+  }> {
+    if (!serviceId || !serviceId.trim()) {
+      return { ok: false, error: 'Trūkst pakalpojuma ID.' };
+    }
+
+    try {
+      const res = await fetch(`/api/admin/services?id=${encodeURIComponent(serviceId.trim())}`, {
+        method: 'DELETE',
+        headers: { 'Accept': 'application/json' }
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
+        return {
+          ok: false,
+          error: data.error || data.message || `Kļūda ${res.status}: Neizdevās dzēst pakalpojumu.`
+        };
+      }
+
+      delete this.livePriceById[serviceId.trim()];
+      this.liveServicesByLang = {};
+      this.notify();
+
+      return {
+        ok: true,
+        deleted: data.deleted || serviceId.trim(),
+        message: data.message || 'Pakalpojums dzēsts no Cloudflare D1 datubāzes.'
+      };
+    } catch (e: any) {
+      return {
+        ok: false,
+        error: `Tīkla kļūda: ${e.message}`
       };
     }
   }
@@ -270,7 +510,6 @@ class DataService {
         redirect: 'manual'
       });
 
-      // Cloudflare Access login redirect intercepted on browser fetch
       if (res.type === 'opaqueredirect' || (res.status >= 300 && res.status < 400)) {
         return {
           authenticated: false,
@@ -318,28 +557,112 @@ class DataService {
     }
   }
 
-  // Merges bundled contentData with live D1 prices
+  // Merges bundled contentData with live D1 prices, renames, additions, and deletions
   public getMergedContent(lang: Language): Content {
     const baseContent = contentData[lang];
     if (!baseContent) return contentData['lv'];
 
-    const updatedSections: PriceSection[] = baseContent.prices.sections.map(section => ({
-      ...section,
-      categories: section.categories.map(cat => ({
-        ...cat,
-        services: cat.services.map(service => {
-          const serviceId = generateDeterministicServiceId(section.id, cat.title, service.name);
-          const overridePrice = this.livePriceById[serviceId] || this.livePriceByName[service.name];
-          if (overridePrice) {
-            return {
+    const liveForLang = this.liveServicesByLang[lang];
+    const hasLiveD1 = !!(this.isD1Connected && liveForLang && liveForLang.length > 0);
+    const liveByIdMap = new Map((liveForLang || []).map(s => [s.id, s]));
+
+    const lvSections = contentData.lv.prices.sections;
+
+    // Build set of static LV service IDs so EN preserves its curated layout while still showing newly added D1 items
+    const staticLvIds = new Set<string>();
+    lvSections.forEach(sec => {
+      sec.categories.forEach(cat => {
+        cat.services.forEach(srv => {
+          staticLvIds.add(generateDeterministicServiceId(sec.id, cat.title, srv.name));
+        });
+      });
+    });
+
+    const updatedSections: PriceSection[] = baseContent.prices.sections.map((section, sIdx) => {
+      const lvSection = lvSections.find(s => s.id === section.id) || lvSections[sIdx];
+
+      return {
+        ...section,
+        categories: section.categories.map((cat, cIdx) => {
+          const lvCat = lvSection?.categories[cIdx];
+          const lvCatTitle = lvCat?.title || cat.title;
+
+          const matchedD1Ids = new Set<string>();
+          const updatedServices: Array<{ name: string; price: string }> = [];
+
+          cat.services.forEach((service, srvIdx) => {
+            // For LV and RU, rows align 1:1 with LV canonical IDs
+            const lvSrv = (lang === 'lv' || lang === 'ru') ? lvCat?.services[srvIdx] : undefined;
+            const canonicalId = lvSrv
+              ? generateDeterministicServiceId(section.id, lvCatTitle, lvSrv.name)
+              : generateDeterministicServiceId(section.id, cat.title, service.name);
+
+            const liveById = liveByIdMap.get(canonicalId);
+
+            if (hasLiveD1 && (lang === 'lv' || lang === 'ru')) {
+              if (!liveById) {
+                // Service was deleted or hidden (is_active = 0) in D1
+                return;
+              }
+              matchedD1Ids.add(liveById.id);
+              updatedServices.push({
+                name: liveById.name || service.name,
+                price: liveById.price || service.price
+              });
+              return;
+            }
+
+            if (liveById) {
+              matchedD1Ids.add(liveById.id);
+              updatedServices.push({
+                name: liveById.name || service.name,
+                price: liveById.price || service.price
+              });
+              return;
+            }
+
+            const overridePrice = this.livePriceById[canonicalId] || this.livePriceByName[service.name];
+            updatedServices.push({
               ...service,
-              price: overridePrice
-            };
+              price: overridePrice || service.price
+            });
+          });
+
+          // Append any new D1 services belonging to this category
+          if (liveForLang && liveForLang.length > 0) {
+            const existingNames = new Set(updatedServices.map(s => s.name.trim().toLowerCase()));
+
+            const matchingD1 = liveForLang.filter(srv => {
+              if (srv.category_id !== section.id) return false;
+              const subMatch =
+                srv.subcategory_title?.trim().toLowerCase() === lvCatTitle.trim().toLowerCase() ||
+                srv.subcategory_title?.trim().toLowerCase() === cat.title.trim().toLowerCase() ||
+                srv.subcategory_localized?.trim().toLowerCase() === cat.title.trim().toLowerCase();
+              if (!subMatch) return false;
+              if (matchedD1Ids.has(srv.id) || existingNames.has(srv.name.trim().toLowerCase())) {
+                return false;
+              }
+              if (lang === 'en' && staticLvIds.has(srv.id)) {
+                return false;
+              }
+              return true;
+            });
+
+            matchingD1.forEach(srv => {
+              updatedServices.push({
+                name: srv.name,
+                price: srv.price
+              });
+            });
           }
-          return service;
+
+          return {
+            ...cat,
+            services: updatedServices
+          };
         })
-      }))
-    }));
+      };
+    });
 
     return {
       ...baseContent,
@@ -348,6 +671,51 @@ class DataService {
         sections: updatedSections
       }
     };
+  }
+
+  // Returns all services across LV/RU/EN for offline fallback in AdminPanel
+  public getFallbackAdminCatalog(): AdminServiceItem[] {
+    const lvSections = contentData.lv.prices.sections;
+    const ruSections = contentData.ru.prices.sections;
+    const enSections = contentData.en.prices.sections;
+
+    const list: AdminServiceItem[] = [];
+    let orderCounter = 1;
+
+    lvSections.forEach((sec, sIdx) => {
+      const ruSec = ruSections[sIdx];
+      const enSec = enSections[sIdx];
+
+      sec.categories.forEach((cat, cIdx) => {
+        const ruCat = ruSec?.categories[cIdx];
+        const enCat = enSec?.categories[cIdx];
+
+        cat.services.forEach((srv, iIdx) => {
+          const realId = generateDeterministicServiceId(sec.id, cat.title, srv.name);
+          const currentPrice = this.livePriceById[realId] || this.livePriceByName[srv.name] || srv.price;
+          const ruSrv = ruCat?.services[iIdx];
+          const enSrv = enCat?.services[iIdx];
+
+          list.push({
+            id: realId,
+            category_id: sec.id,
+            subcategory_title: cat.title,
+            subcategory_lv: cat.title,
+            subcategory_ru: ruCat?.title || cat.title,
+            subcategory_en: enCat?.title || cat.title,
+            order_num: orderCounter++,
+            price: currentPrice,
+            is_active: 1,
+            name: srv.name,
+            name_lv: srv.name,
+            name_ru: ruSrv?.name || srv.name,
+            name_en: enSrv?.name || srv.name
+          });
+        });
+      });
+    });
+
+    return list;
   }
 
   // Returns all services with deterministic real IDs
@@ -415,10 +783,10 @@ class DataService {
     }
   }
 
-  // Export full JSON backup of salon catalog (v1.13)
+  // Export full JSON backup of salon catalog (v1.16)
   public exportBackupJson(): string {
     return JSON.stringify({
-      version: '1.13',
+      version: '1.16',
       exportDate: new Date().toISOString(),
       salon: 'Salons Aneri',
       address: 'Latgales iela 264, Rīga',

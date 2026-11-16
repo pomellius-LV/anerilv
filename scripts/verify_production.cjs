@@ -16,8 +16,8 @@ console.log('  ✓ 0001_initial_schema.sql contains all necessary tables and mig
 const seed002 = fs.readFileSync('migrations/0002_seed_full_catalog.sql', 'utf8');
 const servicesMatches = (seed002.match(/INSERT OR IGNORE INTO services/g) || []).length;
 const transMatches = (seed002.match(/INSERT OR IGNORE INTO service_translations/g) || []).length;
-assert.strictEqual(servicesMatches, 82, `Expected 82 services in 0002 seed, found ${servicesMatches}`);
-assert.strictEqual(transMatches, 246, `Expected 246 translations in 0002 seed, found ${transMatches}`);
+assert.strictEqual(servicesMatches, 83, `Expected 83 services in 0002 seed, found ${servicesMatches}`);
+assert.strictEqual(transMatches, 249, `Expected 249 translations in 0002 seed, found ${transMatches}`);
 console.log(`  ✓ 0002_seed_full_catalog.sql contains exactly ${servicesMatches} services and ${transMatches} translations`);
 
 const seed003 = fs.readFileSync('migrations/0003_seed_all_articles.sql', 'utf8');
@@ -124,18 +124,18 @@ assert(!authCode.includes('2640'), 'Auth endpoint must NOT check PIN 2640');
 console.log('  ✓ Fake Math.random() session generator removed from functions/api/admin/auth.ts');
 
 // Test 4: Check version bumps across files
-console.log('\n[TEST 4] Checking version v1.13 bump across files...');
+console.log('\n[TEST 4] Checking version v1.16 bump across files...');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-assert(pkg.name.includes('1.13'), 'package.json name must reflect 1.13');
+assert(pkg.name.includes('1.16'), 'package.json name must reflect 1.16');
 
 const footerCode = fs.readFileSync('components/Footer.tsx', 'utf8');
-assert(footerCode.includes('v1.13'), 'Footer.tsx must display v1.13');
+assert(footerCode.includes('v1.16'), 'Footer.tsx must display v1.16');
 
 const wranglerCode = fs.readFileSync('wrangler.jsonc', 'utf8');
 assert(!wranglerCode.includes('REPLACE_WITH_YOUR_PRODUCTION_D1_ID'), 'wrangler.jsonc must not contain dummy REPLACE_WITH_... strings');
 assert(wranglerCode.includes('e356eee0-ed72-4c96-a0bf-d87f44834d6e'), 'wrangler.jsonc must contain real production database_id');
 assert(wranglerCode.includes('pomellius.cloudflareaccess.com'), 'wrangler.jsonc must use pomellius.cloudflareaccess.com');
-console.log('  ✓ Version bumped to 1.13 in package.json and Footer.tsx');
+console.log('  ✓ Version bumped to 1.16 in package.json and Footer.tsx');
 console.log('  ✓ wrangler.jsonc configured with real database IDs and pomellius.cloudflareaccess.com');
 
 console.log('\n=== ALL PRODUCTION HARDENING TESTS PASSED! ===');

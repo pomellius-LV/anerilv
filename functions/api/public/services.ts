@@ -19,7 +19,7 @@ export const onRequestGet = async (context: { request: Request; env: Env }) => {
     }), {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
         'Cache-Control': 'no-cache'
       }
     });
@@ -56,7 +56,7 @@ export const onRequestGet = async (context: { request: Request; env: Env }) => {
     }), {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
         'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600'
       }
     });
@@ -67,7 +67,7 @@ export const onRequestGet = async (context: { request: Request; env: Env }) => {
       services: []
     }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json; charset=utf-8' }
     });
   }
 };

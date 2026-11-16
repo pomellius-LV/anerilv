@@ -38,7 +38,7 @@ export const onRequestGet = async (context: {
       }),
       {
         status: 503,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json; charset=utf-8' }
       }
     );
   }
@@ -63,7 +63,7 @@ export const onRequestGet = async (context: {
       ok: true,
       status: 'ok',
       source: 'Cloudflare D1 (Production/Preview)',
-      version: '1.13',
+      version: '1.16',
       timestamp: new Date().toISOString(),
       requestedBy: data?.adminEmail || 'pomellius@gmail.com',
       totalRecords: Object.values(tableCounts).reduce((a, b) => a + b, 0),
@@ -75,8 +75,8 @@ export const onRequestGet = async (context: {
     return new Response(JSON.stringify(snapshot, null, 2), {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
-        'Content-Disposition': `attachment; filename="aneri_d1_backup_${dateStr}_v1.13.json"`,
+        'Content-Type': 'application/json; charset=utf-8',
+        'Content-Disposition': `attachment; filename="aneri_d1_backup_${dateStr}_v1.16.json"`,
         'Cache-Control': 'no-store, no-cache, must-revalidate'
       }
     });
@@ -90,7 +90,7 @@ export const onRequestGet = async (context: {
       }),
       {
         status: 500,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json; charset=utf-8' }
       }
     );
   }

@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View } from '../types';
-import { dataService, AdminServiceItem } from '../services/dataService';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Language, View } from '../types';
+import {
+  dataService,
+  AdminServiceItem,
+  CATALOG_TAXONOMY
+} from '../services/dataService';
 import {
   Lock,
   LogOut,
@@ -11,14 +15,20 @@ import {
   FileText,
   Settings as SettingsIcon,
   Search,
-  Save,
   Download,
   AlertCircle,
   ExternalLink,
   ShieldCheck,
   RefreshCw,
   Info,
-  Server
+  Server,
+  Plus,
+  Trash2,
+  Eye,
+  EyeOff,
+  Languages,
+  Check,
+  X
 } from 'lucide-react';
 
 interface AdminPanelProps {
@@ -26,6 +36,107 @@ interface AdminPanelProps {
 }
 
 type AdminTab = 'services' | 'articles' | 'settings' | 'database';
+
+interface RowEditDraft {
+  price?: string;
+  name_lv?: string;
+  name_ru?: string;
+  name_en?: string;
+}
+
+interface NewServiceDraft {
+  name_lv: string;
+  name_ru: string;
+  name_en: string;
+  price: string;
+  showAllLangs: boolean;
+}
+
+const UI_COPY: Record<Language, {
+  searchPlaceholder: string;
+  allSections: string;
+  refreshBtn: string;
+  backupBtn: string;
+  addBtn: string;
+  namePlaceholder: string;
+  pricePlaceholder: string;
+  saveOk: string;
+  cancelBtn: string;
+  confirmDelete: string;
+  yes: string;
+  no: string;
+  hiddenLabel: string;
+  moreLangs: string;
+  hideLangs: string;
+  emptyCategory: string;
+  editHint: string;
+}> = {
+  lv: {
+    searchPlaceholder: 'Meklēt pakalpojumu vai ID...',
+    allSections: 'Visas nodaļas (6)',
+    refreshBtn: 'Atjaunināt',
+    backupBtn: 'Kopija (JSON)',
+    addBtn: 'Pievienot pozīciju',
+    namePlaceholder: 'Pakalpojuma nosaukums...',
+    pricePlaceholder: 'piem., 25.00 €',
+    saveOk: 'OK',
+    cancelBtn: 'Atcelt',
+    confirmDelete: 'Dzēst?',
+    yes: 'Jā',
+    no: 'Nē',
+    hiddenLabel: 'Slēpts',
+    moreLangs: 'LV / RU / EN',
+    hideLangs: 'Aizvērt tulkojumus',
+    emptyCategory: 'Nav atbilstošu pakalpojumu',
+    editHint: 'Rediģējiet nosaukumu vai cenu tieši kartītē un spiediet OK'
+  },
+  ru: {
+    searchPlaceholder: 'Поиск услуги или ID...',
+    allSections: 'Все разделы (6)',
+    refreshBtn: 'Обновить',
+    backupBtn: 'Бэкап (JSON)',
+    addBtn: 'Добавить позицию',
+    namePlaceholder: 'Название услуги...',
+    pricePlaceholder: 'напр., 5.00 - 10.00 €',
+    saveOk: 'OK',
+    cancelBtn: 'Отмена',
+    confirmDelete: 'Удалить?',
+    yes: 'Да',
+    no: 'Нет',
+    hiddenLabel: 'Скрыто',
+    moreLangs: 'LV / RU / EN',
+    hideLangs: 'Скрыть переводы',
+    emptyCategory: 'Нет подходящих услуг',
+    editHint: 'Меняйте название или цену прямо в карточке и нажимайте OK'
+  },
+  en: {
+    searchPlaceholder: 'Search service or ID...',
+    allSections: 'All sections (6)',
+    refreshBtn: 'Refresh',
+    backupBtn: 'Backup (JSON)',
+    addBtn: 'Add service',
+    namePlaceholder: 'Service name...',
+    pricePlaceholder: 'e.g. 25.00 €',
+    saveOk: 'OK',
+    cancelBtn: 'Cancel',
+    confirmDelete: 'Delete?',
+    yes: 'Yes',
+    no: 'No',
+    hiddenLabel: 'Hidden',
+    moreLangs: 'LV / RU / EN',
+    hideLangs: 'Hide translations',
+    emptyCategory: 'No matching services',
+    editHint: 'Edit name or price directly on any card and press OK'
+  }
+};
+
+const EMPTY_NEW_DRAFT: NewServiceDraft = {
+  name_lv: '',
+  name_ru: '',
+  name_en: '',
+  price: '',
+  showAllLangs: false
+};
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
   // Authentication State strictly driven by server Cloudflare Access verification
@@ -35,16 +146,24 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
   const [authError, setAuthError] = useState<string>('');
   const [authReason, setAuthReason] = useState<'preview_env' | 'access_redirect' | 'unauthorized' | 'network' | undefined>(undefined);
 
-  // Active Tab
+  // Active Tab & Editor Language
   const [activeTab, setActiveTab] = useState<AdminTab>('services');
+  const [editorLang, setEditorLang] = useState<Language>('lv');
 
   // Services Editor State
   const [servicesList, setServicesList] = useState<AdminServiceItem[]>([]);
   const [isLoadingServices, setIsLoadingServices] = useState<boolean>(false);
   const [selectedSection, setSelectedSection] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [editingPrices, setEditingPrices] = useState<Record<string, string>>({});
-  
+  const [rowDrafts, setRowDrafts] = useState<Record<string, RowEditDraft>>({});
+  const [expandedTransId, setExpandedTransId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+  // Inline Create New Service State per Category Card (key: `${sectionId}::${catKey}`)
+  const [addingCardKey, setAddingCardKey] = useState<string | null>(null);
+  const [newDraft, setNewDraft] = useState<NewServiceDraft>(EMPTY_NEW_DRAFT);
+  const [isCreating, setIsCreating] = useState<boolean>(false);
+
   // Feedback Messages
   const [saveSuccessMsg, setSaveSuccessMsg] = useState<string>('');
   const [saveErrorMsg, setSaveErrorMsg] = useState<string>('');
@@ -56,6 +175,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
 
   // Articles State
   const [articlesList, setArticlesList] = useState<any[]>([]);
+
+  const ui = UI_COPY[editorLang];
 
   // 1. Verify Cloudflare Access Authentication on mount
   const verifyAccess = async () => {
@@ -94,20 +215,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
     if (result.ok && result.services.length > 0) {
       setServicesList(result.services);
     } else {
-      // Fallback: Populate flat list from local catalog with real deterministic D1 IDs
-      const flat = dataService.getAllServicesFlat('lv');
-      const formatted: AdminServiceItem[] = flat.map((s, idx) => ({
-        id: s.id,
-        category_id: s.sectionId,
-        subcategory_title: s.categoryTitle,
-        order_num: idx + 1,
-        price: s.price,
-        is_active: 1,
-        name_lv: s.name,
-        name_ru: '',
-        name_en: ''
-      }));
-      setServicesList(formatted);
+      setServicesList(dataService.getFallbackAdminCatalog());
       if (result.error && !result.isD1Connected) {
         setSaveErrorMsg(`D1 savienojums: ${result.error}`);
       }
@@ -129,44 +237,230 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
     }
   }, [isAuthenticated]);
 
-  const handlePriceInputChange = (serviceId: string, val: string) => {
-    setEditingPrices(prev => ({
+  const showSuccess = (msg: string) => {
+    setSaveErrorMsg('');
+    setSaveSuccessMsg(msg);
+    setTimeout(() => setSaveSuccessMsg(''), 5000);
+  };
+
+  const showError = (msg: string) => {
+    setSaveSuccessMsg('');
+    setSaveErrorMsg(msg);
+    setTimeout(() => setSaveErrorMsg(''), 8000);
+  };
+
+  // Helper to get active display name in current language
+  const getServiceDisplayName = (s: AdminServiceItem, lang: Language): string => {
+    if (lang === 'lv') return s.name_lv || s.name || s.name_en || s.name_ru || s.id;
+    if (lang === 'ru') return s.name_ru || s.name_lv || s.name || s.id;
+    return s.name_en || s.name_lv || s.name || s.id;
+  };
+
+  const handleDraftChange = (serviceId: string, field: keyof RowEditDraft, value: string) => {
+    setRowDrafts(prev => ({
       ...prev,
-      [serviceId]: val
+      [serviceId]: {
+        ...(prev[serviceId] || {}),
+        [field]: value
+      }
     }));
   };
 
-  // 4. Save Price to D1 using real permanent ID
-  const handleSavePrice = async (service: AdminServiceItem) => {
-    const newPrice = editingPrices[service.id];
-    if (!newPrice || newPrice.trim() === '') return;
+  const getActiveNameField = (lang: Language): 'name_lv' | 'name_ru' | 'name_en' => {
+    if (lang === 'ru') return 'name_ru';
+    if (lang === 'en') return 'name_en';
+    return 'name_lv';
+  };
+
+  const isRowDirty = (s: AdminServiceItem): boolean => {
+    const draft = rowDrafts[s.id];
+    if (!draft) return false;
+    if (draft.price !== undefined && draft.price.trim() !== (s.price || '').trim()) return true;
+    if (draft.name_lv !== undefined && draft.name_lv.trim() !== (s.name_lv || '').trim()) return true;
+    if (draft.name_ru !== undefined && draft.name_ru.trim() !== (s.name_ru || '').trim()) return true;
+    if (draft.name_en !== undefined && draft.name_en.trim() !== (s.name_en || '').trim()) return true;
+    return false;
+  };
+
+  // 4. Save Inline Edits (Name(s) + Price) to D1
+  const handleSaveRow = async (service: AdminServiceItem) => {
+    const draft = rowDrafts[service.id];
+    if (!draft || !isRowDirty(service)) return;
+
+    const nextPrice = draft.price !== undefined ? draft.price.trim() : service.price;
+    if (!nextPrice) {
+      showError('Cena nevar būt tukša.');
+      return;
+    }
+
+    const payload: {
+      id: string;
+      price: string;
+      name_lv?: string;
+      name_ru?: string;
+      name_en?: string;
+    } = {
+      id: service.id,
+      price: nextPrice
+    };
+
+    if (draft.name_lv !== undefined && draft.name_lv.trim() !== (service.name_lv || '').trim()) {
+      if (!draft.name_lv.trim()) {
+        showError('Nosaukums (LV) nevar būt tukšs.');
+        return;
+      }
+      payload.name_lv = draft.name_lv.trim();
+    }
+    if (draft.name_ru !== undefined && draft.name_ru.trim() !== (service.name_ru || '').trim()) {
+      if (!draft.name_ru.trim()) {
+        showError('Название (RU) не может быть пустым.');
+        return;
+      }
+      payload.name_ru = draft.name_ru.trim();
+    }
+    if (draft.name_en !== undefined && draft.name_en.trim() !== (service.name_en || '').trim()) {
+      if (!draft.name_en.trim()) {
+        showError('Name (EN) cannot be empty.');
+        return;
+      }
+      payload.name_en = draft.name_en.trim();
+    }
 
     setIsSyncingId(service.id);
-    setSaveSuccessMsg('');
-    setSaveErrorMsg('');
-
-    const res = await dataService.updatePrice(service.id, newPrice, service.name_lv);
+    const res = await dataService.updateService(payload);
     setIsSyncingId(null);
 
     if (res.ok) {
-      setSaveSuccessMsg(`Cena pakalpojumam "${service.name_lv || service.id}" veiksmīgi saglabāta D1 datubāzē: ${newPrice}`);
-      // Update local state in service list
-      setServicesList(prev => prev.map(s => s.id === service.id ? { ...s, price: newPrice } : s));
-      // Remove from pending edit
-      setEditingPrices(prev => {
+      const updatedItem: AdminServiceItem = res.service
+        ? res.service
+        : {
+            ...service,
+            price: nextPrice,
+            name_lv: payload.name_lv ?? service.name_lv,
+            name_ru: payload.name_ru ?? service.name_ru,
+            name_en: payload.name_en ?? service.name_en
+          };
+
+      setServicesList(prev => prev.map(s => (s.id === service.id ? updatedItem : s)));
+      setRowDrafts(prev => {
         const copy = { ...prev };
         delete copy[service.id];
         return copy;
       });
-      setTimeout(() => setSaveSuccessMsg(''), 5000);
+      const shownName = getServiceDisplayName(updatedItem, editorLang);
+      showSuccess(`"${shownName}" → ${nextPrice} saglabāts D1 datubāzē.`);
     } else {
-      // Strictly report server failure
-      setSaveErrorMsg(res.error || 'Neizdevās saglabāt izmaiņas Cloudflare D1 datubāzē.');
-      setTimeout(() => setSaveErrorMsg(''), 8000);
+      showError(res.error || 'Neizdevās saglabāt izmaiņas Cloudflare D1 datubāzē.');
     }
   };
 
-  // 5. Authoritative Server-Side D1 JSON Backup Export (v1.12)
+  // 5. Toggle Active / Hidden visibility in D1
+  const handleToggleActive = async (service: AdminServiceItem) => {
+    const nextActive = service.is_active ? 0 : 1;
+    setIsSyncingId(service.id);
+    const res = await dataService.updateService({
+      id: service.id,
+      price: service.price,
+      is_active: nextActive
+    });
+    setIsSyncingId(null);
+
+    if (res.ok) {
+      setServicesList(prev =>
+        prev.map(s => (s.id === service.id ? { ...s, is_active: nextActive } : s))
+      );
+      showSuccess(
+        nextActive
+          ? `"${getServiceDisplayName(service, editorLang)}" tagad redzams publiskajā cenrādī.`
+          : `"${getServiceDisplayName(service, editorLang)}" paslēpts no publiskā cenrāža.`
+      );
+    } else {
+      showError(res.error || 'Neizdevās mainīt redzamību.');
+    }
+  };
+
+  // 6. Delete Service from D1 (inline confirm, no browser alert/confirm)
+  const handleDeleteService = async (service: AdminServiceItem) => {
+    setIsSyncingId(service.id);
+    const res = await dataService.deleteService(service.id);
+    setIsSyncingId(null);
+    setConfirmDeleteId(null);
+
+    if (res.ok) {
+      setServicesList(prev => prev.filter(s => s.id !== service.id));
+      showSuccess(`"${getServiceDisplayName(service, editorLang)}" dzēsts no D1 datubāzes.`);
+    } else {
+      showError(res.error || 'Neizdevās dzēst pakalpojumu.');
+    }
+  };
+
+  // 7. Create New Service inside specific Category Card
+  const handleOpenAddForm = (cardKey: string) => {
+    setAddingCardKey(cardKey);
+    setNewDraft({ ...EMPTY_NEW_DRAFT });
+  };
+
+  const handleCreateService = async (
+    sectionId: string,
+    categoryKey: string,
+    titles: Record<Language, string>
+  ) => {
+    const primaryName =
+      newDraft.name_lv.trim() ||
+      newDraft.name_ru.trim() ||
+      newDraft.name_en.trim();
+
+    if (!primaryName) {
+      showError('Ievadiet jaunā pakalpojuma nosaukumu.');
+      return;
+    }
+    if (!newDraft.price.trim()) {
+      showError('Ievadiet cenu (piemēram, 5.00 - 10.00 €).');
+      return;
+    }
+
+    setIsCreating(true);
+    const res = await dataService.createService({
+      category_id: sectionId,
+      subcategory_title: categoryKey,
+      subcategory_lv: titles.lv,
+      subcategory_ru: titles.ru,
+      subcategory_en: titles.en,
+      price: newDraft.price.trim(),
+      name_lv: newDraft.name_lv.trim() || primaryName,
+      name_ru: newDraft.name_ru.trim() || primaryName,
+      name_en: newDraft.name_en.trim() || primaryName
+    });
+    setIsCreating(false);
+
+    if (res.ok) {
+      const createdItem: AdminServiceItem = res.service
+        ? res.service
+        : {
+            id: res.id || `${sectionId}_${Date.now()}`,
+            category_id: sectionId,
+            subcategory_title: categoryKey,
+            subcategory_lv: titles.lv,
+            subcategory_ru: titles.ru,
+            subcategory_en: titles.en,
+            order_num: 999,
+            price: newDraft.price.trim(),
+            is_active: 1,
+            name_lv: newDraft.name_lv.trim() || primaryName,
+            name_ru: newDraft.name_ru.trim() || primaryName,
+            name_en: newDraft.name_en.trim() || primaryName
+          };
+
+      setServicesList(prev => [...prev, createdItem]);
+      setAddingCardKey(null);
+      setNewDraft({ ...EMPTY_NEW_DRAFT });
+      showSuccess(`Jauna pozīcija "${primaryName}" (${newDraft.price.trim()}) pievienota D1!`);
+    } else {
+      showError(res.error || 'Neizdevās pievienot jaunu pozīciju D1.');
+    }
+  };
+
+  // 8. Authoritative Server-Side D1 JSON Backup Export (v1.16)
   const handleExportBackup = async () => {
     setIsDownloadingBackup(true);
     setSaveErrorMsg('');
@@ -177,15 +471,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
 
       if (res.ok && res.data) {
         jsonStr = JSON.stringify(res.data, null, 2);
-        filename = `aneri_d1_backup_${new Date().toISOString().slice(0, 10)}_v1.13.json`;
-        setSaveSuccessMsg(`Servera Cloudflare D1 rezerves kopija veiksmīgi iegūta (${res.data.totalRecords || 0} ieraksti).`);
-        setTimeout(() => setSaveSuccessMsg(''), 6000);
+        filename = `aneri_d1_backup_${new Date().toISOString().slice(0, 10)}_v1.16.json`;
+        showSuccess(`Servera Cloudflare D1 rezerves kopija veiksmīgi iegūta (${res.data.totalRecords || 0} ieraksti).`);
       } else {
-        // Fallback to local snapshot if D1 binding is offline
         jsonStr = dataService.exportBackupJson();
-        filename = `aneri_catalog_snapshot_${new Date().toISOString().slice(0, 10)}_v1.13.json`;
-        setSaveErrorMsg(`D1 servera brīdinājums: ${res.error || 'D1 bezsaistē'}. Lejupielādēts lokālais kataloga uzņēmums.`);
-        setTimeout(() => setSaveErrorMsg(''), 8000);
+        filename = `aneri_catalog_snapshot_${new Date().toISOString().slice(0, 10)}_v1.16.json`;
+        showError(`D1 servera brīdinājums: ${res.error || 'D1 bezsaistē'}. Lejupielādēts lokālais kataloga uzņēmums.`);
       }
 
       const blob = new Blob([jsonStr], { type: 'application/json' });
@@ -198,24 +489,60 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (e: any) {
-      setSaveErrorMsg(`Kļūda sagatavojot rezerves kopiju: ${e.message}`);
+      showError(`Kļūda sagatavojot rezerves kopiju: ${e.message}`);
     } finally {
       setIsDownloadingBackup(false);
     }
   };
 
-  // Filter services
-  const filteredServices = servicesList.filter(s => {
-    const matchesSection = selectedSection === 'all' || s.category_id === selectedSection;
-    const q = searchQuery.toLowerCase();
-    const matchesSearch = 
-      (s.name_lv && s.name_lv.toLowerCase().includes(q)) ||
-      (s.name_ru && s.name_ru.toLowerCase().includes(q)) ||
-      (s.name_en && s.name_en.toLowerCase().includes(q)) ||
-      (s.subcategory_title && s.subcategory_title.toLowerCase().includes(q)) ||
-      s.id.toLowerCase().includes(q);
-    return matchesSection && matchesSearch;
-  });
+  // Filter services by search & section
+  const filteredServices = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return servicesList.filter(s => {
+      if (selectedSection !== 'all' && s.category_id !== selectedSection) return false;
+      if (!q) return true;
+      return (
+        (s.name_lv && s.name_lv.toLowerCase().includes(q)) ||
+        (s.name_ru && s.name_ru.toLowerCase().includes(q)) ||
+        (s.name_en && s.name_en.toLowerCase().includes(q)) ||
+        (s.subcategory_title && s.subcategory_title.toLowerCase().includes(q)) ||
+        (s.subcategory_ru && s.subcategory_ru.toLowerCase().includes(q)) ||
+        (s.subcategory_en && s.subcategory_en.toLowerCase().includes(q)) ||
+        s.price.toLowerCase().includes(q) ||
+        s.id.toLowerCase().includes(q)
+      );
+    });
+  }, [servicesList, selectedSection, searchQuery]);
+
+  // Visible taxonomy sections
+  const visibleSections = useMemo(() => {
+    return CATALOG_TAXONOMY.filter(sec => selectedSection === 'all' || sec.id === selectedSection);
+  }, [selectedSection]);
+
+  // Helper: collect services for a category card
+  const getServicesForCategory = (sectionId: string, categoryKey: string) => {
+    const normalizedKey = categoryKey.trim().toLowerCase();
+    return filteredServices.filter(s => {
+      if (s.category_id !== sectionId) return false;
+      return (s.subcategory_title || '').trim().toLowerCase() === normalizedKey;
+    });
+  };
+
+  // Helper: collect any orphan services in section that don't match known taxonomy categories
+  const getExtraCategoriesForSection = (sectionId: string, knownKeys: string[]) => {
+    const knownSet = new Set(knownKeys.map(k => k.trim().toLowerCase()));
+    const extraGroups = new Map<string, AdminServiceItem[]>();
+    filteredServices.forEach(s => {
+      if (s.category_id !== sectionId) return;
+      const sub = (s.subcategory_title || 'Citi').trim();
+      if (!knownSet.has(sub.toLowerCase())) {
+        const list = extraGroups.get(sub) || [];
+        list.push(s);
+        extraGroups.set(sub, list);
+      }
+    });
+    return Array.from(extraGroups.entries());
+  };
 
   // =========================================================================
   // Screen A: Cloudflare Access Gateway (When not authenticated)
@@ -228,7 +555,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
       <div className="min-h-screen bg-stone-900 flex items-center justify-center p-4 selection:bg-rose-900 selection:text-white">
         <div className="max-w-xl w-full bg-stone-800 border border-stone-700/80 rounded-[2rem] p-8 md:p-10 shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent" />
-          
+
           <div className="text-center mb-6">
             <div className="w-14 h-14 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center mx-auto mb-4 text-primary">
               <ShieldCheck size={28} />
@@ -273,7 +600,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                   </p>
                   {isPreview && (
                     <p className="text-[11px] text-amber-200/80 leading-relaxed">
-                      Šajā priekšskatījuma logā nav aktīvs Cloudflare Zero Trust un D1 datubāze. Lai ieietu panelī, atveriet produkcijas adresi <span className="font-mono text-white">aneri.lv/admin</span> pēc noteikuma izveides Cloudflare One konsolē, vai atsūtiet cenu izmaiņas čatā.
+                      Šajā priekšskatījuma logā nav aktīvs Cloudflare Zero Trust un D1 datubāze. Lai ieietu panelī, atveriet produkcijas adresi <span className="font-mono text-white">aneri.lv/admin</span>, vai atsūtiet cenu izmaiņas čatā.
                     </p>
                   )}
                 </div>
@@ -314,11 +641,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
             <button
               onClick={verifyAccess}
               disabled={isCheckingAuth}
-              className={`w-full font-bold py-3.5 rounded-xl text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 ${
-                isPreview
-                  ? 'bg-stone-900 hover:bg-stone-700 text-stone-200 border border-stone-700'
-                  : 'bg-stone-900 hover:bg-stone-700 text-stone-200 border border-stone-700'
-              }`}
+              className="w-full font-bold py-3.5 rounded-xl text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 bg-stone-900 hover:bg-stone-700 text-stone-200 border border-stone-700"
             >
               {isCheckingAuth ? (
                 <>
@@ -355,37 +678,40 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
   }
 
   // =========================================================================
-  // Screen B: Authenticated Administration Dashboard
+  // Screen B: Authenticated Visual WYSIWYG Administration Dashboard
   // =========================================================================
   return (
-    <div className="min-h-screen bg-stone-100 text-stone-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-stone-50 text-stone-800 flex flex-col font-sans">
       {/* Top Admin Navbar */}
-      <header className="bg-stone-900 text-white border-b border-stone-800 sticky top-0 z-50 shadow-md">
-        <div className="container mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      <header className="bg-stone-900 text-white border-b border-stone-800 sticky top-0 z-50 shadow-sm">
+        <div className="container mx-auto px-4 max-w-7xl py-3 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <span className="text-2xl font-serif font-bold text-primary">Aneri</span>
-              <span className="text-xs font-mono uppercase bg-primary/20 text-rose-300 border border-primary/30 px-2 py-0.5 rounded-full font-bold">
-                Admin Panel v1.13
+              <span className="text-[11px] font-mono uppercase bg-stone-800 text-rose-300 border border-stone-700 px-2 py-0.5 rounded font-semibold">
+                Admin Panel v1.16
               </span>
             </div>
             <div className="hidden sm:flex items-center gap-2 text-xs text-stone-400 border-l border-stone-800 pl-4">
               <Database size={14} className={isD1Live ? 'text-emerald-400' : 'text-amber-400'} />
-              <span>D1 Statuss: <strong className={isD1Live ? 'text-emerald-300 font-mono' : 'text-amber-300 font-mono'}>
-                {isD1Live ? 'Tiešsaistē (D1 Connected)' : 'Rezerves režīms'}
-              </strong></span>
+              <span>
+                D1:{' '}
+                <strong className={isD1Live ? 'text-emerald-300 font-mono' : 'text-amber-300 font-mono'}>
+                  {isD1Live ? 'Connected' : 'Rezerves režīms'}
+                </strong>
+              </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-2 text-xs text-stone-300 bg-stone-800/80 px-3 py-1.5 rounded-xl border border-stone-700">
+          <div className="flex items-center gap-2.5">
+            <div className="hidden md:flex items-center gap-2 text-xs text-stone-300 bg-stone-800/80 px-3 py-1.5 rounded-lg border border-stone-700">
               <ShieldCheck size={14} className="text-emerald-400" />
               <span className="font-mono">{adminEmail}</span>
             </div>
 
             <button
-              onClick={() => setView('home')}
-              className="bg-stone-800 hover:bg-stone-700 text-stone-200 px-3 py-1.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors inline-flex items-center gap-1.5"
+              onClick={() => setView('prices')}
+              className="bg-stone-800 hover:bg-stone-700 text-stone-200 px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0"
             >
               <ArrowLeft size={14} /> Vietne
             </button>
@@ -394,7 +720,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                 setIsAuthenticated(false);
                 setAuthError('Sesija pabeigta.');
               }}
-              className="bg-rose-950/60 hover:bg-rose-900 text-rose-300 border border-rose-800/60 px-3 py-1.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors inline-flex items-center gap-1.5"
+              className="bg-rose-950/60 hover:bg-rose-900 text-rose-300 border border-rose-800/60 px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0"
             >
               <LogOut size={14} /> Iziet
             </button>
@@ -402,12 +728,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="container mx-auto px-4 flex gap-1 overflow-x-auto border-t border-stone-800/80 pt-1">
+        <div className="container mx-auto px-4 max-w-7xl flex gap-1 overflow-x-auto border-t border-stone-800/80">
           <button
             onClick={() => setActiveTab('services')}
-            className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 ${
+            className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 whitespace-nowrap ${
               activeTab === 'services'
-                ? 'border-primary text-primary bg-stone-800/50'
+                ? 'border-primary text-primary bg-stone-800/40'
                 : 'border-transparent text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -415,9 +741,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
           </button>
           <button
             onClick={() => setActiveTab('articles')}
-            className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 ${
+            className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 whitespace-nowrap ${
               activeTab === 'articles'
-                ? 'border-primary text-primary bg-stone-800/50'
+                ? 'border-primary text-primary bg-stone-800/40'
                 : 'border-transparent text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -425,179 +751,596 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
           </button>
           <button
             onClick={() => setActiveTab('database')}
-            className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 ${
+            className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 whitespace-nowrap ${
               activeTab === 'database'
-                ? 'border-primary text-primary bg-stone-800/50'
+                ? 'border-primary text-primary bg-stone-800/40'
                 : 'border-transparent text-stone-400 hover:text-stone-200'
             }`}
           >
-            <Server size={15} /> D1 Diagnostika & Rezerves kopijas
+            <Server size={15} /> D1 Diagnostika &amp; Rezerves kopijas
           </button>
           <button
             onClick={() => setActiveTab('settings')}
-            className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 ${
+            className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 whitespace-nowrap ${
               activeTab === 'settings'
-                ? 'border-primary text-primary bg-stone-800/50'
+                ? 'border-primary text-primary bg-stone-800/40'
                 : 'border-transparent text-stone-400 hover:text-stone-200'
             }`}
           >
-            <SettingsIcon size={15} /> Kontakti & Iestatījumi
+            <SettingsIcon size={15} /> Kontakti &amp; Iestatījumi
           </button>
         </div>
       </header>
 
-      {/* Global Alerts */}
-      <div className="container mx-auto px-4 pt-4">
-        {saveSuccessMsg && (
-          <div className="p-4 rounded-2xl bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-medium flex items-center gap-3 shadow-sm mb-4 animate-fadeIn">
-            <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
-            <span>{saveSuccessMsg}</span>
-          </div>
-        )}
-        {saveErrorMsg && (
-          <div className="p-4 rounded-2xl bg-rose-100 border border-rose-300 text-rose-800 text-xs font-medium flex items-center gap-3 shadow-sm mb-4 animate-fadeIn">
-            <AlertCircle size={18} className="text-rose-600 shrink-0" />
-            <span>{saveErrorMsg}</span>
-          </div>
-        )}
-      </div>
+      {/* Floating Feedback Banner */}
+      {(saveSuccessMsg || saveErrorMsg) && (
+        <div className="container mx-auto px-4 max-w-7xl pt-4">
+          {saveSuccessMsg && (
+            <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-medium flex items-center gap-3 shadow-sm">
+              <CheckCircle2 size={17} className="text-emerald-600 shrink-0" />
+              <span>{saveSuccessMsg}</span>
+            </div>
+          )}
+          {saveErrorMsg && (
+            <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs font-medium flex items-center gap-3 shadow-sm">
+              <AlertCircle size={17} className="text-rose-600 shrink-0" />
+              <span>{saveErrorMsg}</span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Tab Content */}
-      <main className="container mx-auto px-4 py-6 flex-1">
+      <main className="container mx-auto px-4 max-w-7xl py-6 flex-1">
         {activeTab === 'services' && (
-          <div className="space-y-6">
-            {/* Action Bar */}
-            <div className="bg-white rounded-2xl p-5 shadow-sm border border-stone-200 flex flex-wrap items-center justify-between gap-4">
-              <div className="flex flex-wrap items-center gap-3 flex-1 min-w-[280px]">
-                {/* Search */}
-                <div className="relative flex-1 min-w-[200px] max-w-md">
-                  <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Meklēt pēc nosaukuma vai ID..."
-                    className="w-full pl-10 pr-4 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-primary transition-colors"
-                  />
+          <div className="space-y-10">
+            {/* Compact WYSIWYG Editor Toolbar */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-stone-200 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                {/* Language Mode Switcher */}
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="inline-flex rounded-xl bg-stone-100 p-1 border border-stone-200" role="group" aria-label="Editor language">
+                    {(['lv', 'ru', 'en'] as Language[]).map(langOpt => (
+                      <button
+                        key={langOpt}
+                        onClick={() => setEditorLang(langOpt)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${
+                          editorLang === langOpt
+                            ? 'bg-primary text-white shadow-sm'
+                            : 'text-stone-600 hover:text-stone-900'
+                        }`}
+                      >
+                        {langOpt.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Section Filter */}
+                  <select
+                    value={selectedSection}
+                    onChange={(e) => setSelectedSection(e.target.value)}
+                    className="bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium text-stone-700 focus:outline-none focus:border-primary"
+                  >
+                    <option value="all">{ui.allSections}</option>
+                    {CATALOG_TAXONOMY.map(sec => (
+                      <option key={sec.id} value={sec.id}>
+                        {sec.titles[editorLang]}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
-                {/* Section Filter */}
-                <select
-                  value={selectedSection}
-                  onChange={(e) => setSelectedSection(e.target.value)}
-                  className="bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs text-stone-700 focus:outline-none focus:border-primary"
-                >
-                  <option value="all">Visas nodaļas (6)</option>
-                  <option value="hair">1. Frizētavas pakalpojumi</option>
-                  <option value="nails">2. Manikīrs un Pedikīrs</option>
-                  <option value="cosmetology">3. Kosmetoloģija un Pīlingi</option>
-                  <option value="permanent">4. Permanentais grims</option>
-                  <option value="waxing">5. Vaksācija</option>
-                  <option value="solarium">6. Solārijs</option>
-                </select>
+                {/* Search + Action Buttons */}
+                <div className="flex flex-wrap items-center gap-2.5 flex-1 justify-end min-w-[260px]">
+                  <div className="relative flex-1 min-w-[190px] max-w-xs">
+                    <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder={ui.searchPlaceholder}
+                      className="w-full pl-9 pr-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-primary transition-colors"
+                    />
+                  </div>
+
+                  <button
+                    onClick={loadServices}
+                    disabled={isLoadingServices}
+                    className="px-3.5 py-2 rounded-xl border border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0"
+                  >
+                    <RefreshCw size={14} className={isLoadingServices ? 'animate-spin' : ''} />
+                    {ui.refreshBtn}
+                  </button>
+                  <button
+                    onClick={handleExportBackup}
+                    disabled={isDownloadingBackup}
+                    className="px-3.5 py-2 rounded-xl bg-primary hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors shadow-sm whitespace-nowrap shrink-0"
+                  >
+                    <Download size={14} /> {ui.backupBtn}
+                  </button>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={loadServices}
-                  disabled={isLoadingServices}
-                  className="px-3.5 py-2 rounded-xl border border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition-colors"
-                >
-                  <RefreshCw size={14} className={isLoadingServices ? 'animate-spin' : ''} />
-                  Atjaunināt sarakstu
-                </button>
-                <button
-                  onClick={handleExportBackup}
-                  className="px-3.5 py-2 rounded-xl bg-primary hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors shadow-sm"
-                >
-                  <Download size={14} /> Rezerves kopija (JSON)
-                </button>
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-stone-100 text-[11px] text-stone-500">
+                <span>{ui.editHint}</span>
+                <span className="font-mono tabular-nums text-stone-400">
+                  {filteredServices.length} / {servicesList.length}
+                </span>
               </div>
             </div>
 
-            {/* Services Table */}
-            <div className="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
-              <div className="p-4 border-b border-stone-200 bg-stone-50 flex items-center justify-between text-xs text-stone-500 font-semibold uppercase tracking-wider">
-                <span>Pakalpojumu skaits: {filteredServices.length} no {servicesList.length}</span>
-                <span className="font-mono text-[11px] text-stone-400">D1 Schema: services + service_translations</span>
+            {/* Loading skeleton */}
+            {isLoadingServices && servicesList.length === 0 && (
+              <div className="grid lg:grid-cols-2 gap-8">
+                {[1, 2, 3, 4].map(n => (
+                  <div key={n} className="bg-white p-8 rounded-[2rem] border border-stone-200/80 space-y-4 animate-pulse">
+                    <div className="h-6 w-40 bg-stone-200 rounded" />
+                    <div className="h-10 w-full bg-stone-100 rounded-lg" />
+                    <div className="h-10 w-full bg-stone-100 rounded-lg" />
+                    <div className="h-10 w-full bg-stone-100 rounded-lg" />
+                  </div>
+                ))}
               </div>
+            )}
 
-              <div className="divide-y divide-stone-100 max-h-[70vh] overflow-y-auto">
-                {filteredServices.map((service) => {
-                  const currentInputValue = editingPrices[service.id] !== undefined
-                    ? editingPrices[service.id]
-                    : service.price;
-                  const isModified = editingPrices[service.id] !== undefined && editingPrices[service.id] !== service.price;
-                  const isSavingThis = isSyncingId === service.id;
+            {/* 6 Site-Mirroring Sections & Category Cards */}
+            <div className="space-y-16 pb-12">
+              {visibleSections.map(section => {
+                const knownKeys = section.categories.map(c => c.key);
+                const extraGroups = getExtraCategoriesForSection(section.id, knownKeys);
 
-                  return (
-                    <div
-                      key={service.id}
-                      className={`p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors ${
-                        isModified ? 'bg-amber-50/60' : 'hover:bg-stone-50/50'
-                      }`}
-                    >
-                      <div className="flex-1 min-w-0 space-y-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-mono text-[10px] text-stone-500 bg-stone-100 border border-stone-200 px-2 py-0.5 rounded">
-                            {service.id}
-                          </span>
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-rose-800 bg-rose-50 px-2 py-0.5 rounded">
-                            {service.subcategory_title || service.category_id}
-                          </span>
-                        </div>
-
-                        <h3 className="text-sm font-semibold text-stone-900">
-                          {service.name_lv || service.name || service.id}
-                        </h3>
-
-                        {(service.name_ru || service.name_en) && (
-                          <p className="text-[11px] text-stone-500 flex flex-wrap gap-3">
-                            {service.name_ru && <span>RU: {service.name_ru}</span>}
-                            {service.name_en && <span>EN: {service.name_en}</span>}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-3 shrink-0">
-                        <div className="text-right">
-                          <label className="block text-[10px] uppercase font-bold text-stone-400 mb-0.5">
-                            Cena D1
-                          </label>
-                          <input
-                            type="text"
-                            value={currentInputValue}
-                            onChange={(e) => handlePriceInputChange(service.id, e.target.value)}
-                            placeholder="piem., 25.00 €"
-                            className={`w-36 px-3 py-1.5 text-xs font-semibold rounded-xl border text-center transition-colors focus:outline-none ${
-                              isModified
-                                ? 'border-amber-400 bg-white ring-2 ring-amber-200 font-bold text-amber-900'
-                                : 'border-stone-200 bg-stone-50 text-stone-800 focus:border-primary'
-                            }`}
-                          />
-                        </div>
-
-                        <button
-                          onClick={() => handleSavePrice(service)}
-                          disabled={!isModified || isSavingThis}
-                          className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors ${
-                            isModified
-                              ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
-                              : 'bg-stone-100 text-stone-400 cursor-not-allowed'
-                          }`}
-                        >
-                          {isSavingThis ? (
-                            <RefreshCw size={13} className="animate-spin" />
-                          ) : (
-                            <Save size={13} />
-                          )}
-                          Saglabāt D1
-                        </button>
-                      </div>
+                return (
+                  <section key={section.id} className="space-y-8">
+                    {/* Section Title mirroring PricePage.tsx */}
+                    <div className="flex items-center gap-6">
+                      <h2 className="text-2xl md:text-4xl font-serif font-bold text-stone-800 whitespace-nowrap">
+                        {section.titles[editorLang]}
+                      </h2>
+                      <div className="h-px w-full bg-stone-200" />
                     </div>
-                  );
-                })}
-              </div>
+
+                    {/* 2-column Category Cards grid matching PricePage.tsx */}
+                    <div className="grid lg:grid-cols-2 gap-8">
+                      {section.categories.map(category => {
+                        const cardKey = `${section.id}::${category.key}`;
+                        const items = getServicesForCategory(section.id, category.key);
+                        const isAddingHere = addingCardKey === cardKey;
+
+                        // Hide empty card ONLY when user is actively searching and card has 0 hits
+                        if (searchQuery.trim() && items.length === 0) {
+                          return null;
+                        }
+
+                        return (
+                          <div
+                            key={cardKey}
+                            className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-stone-200/80 flex flex-col justify-between"
+                          >
+                            <div>
+                              {/* Card Heading */}
+                              <div className="flex items-center justify-between mb-6 pb-3.5 border-b border-stone-100">
+                                <h3 className="text-2xl font-serif font-bold text-primary flex items-center gap-2.5">
+                                  <CheckCircle2 size={20} className="text-primary/40 shrink-0" />
+                                  <span>{category.titles[editorLang]}</span>
+                                </h3>
+                                <span className="text-xs font-mono tabular-nums text-stone-400">
+                                  {items.length}
+                                </span>
+                              </div>
+
+                              {/* Visual Service Rows */}
+                              <div className="space-y-2">
+                                {items.length === 0 ? (
+                                  <p className="text-xs text-stone-400 italic py-4 text-center">
+                                    {ui.emptyCategory}
+                                  </p>
+                                ) : (
+                                  items.map(service => {
+                                    const draft = rowDrafts[service.id] || {};
+                                    const activeField = getActiveNameField(editorLang);
+                                    const currentNameVal =
+                                      draft[activeField] !== undefined
+                                        ? draft[activeField]!
+                                        : getServiceDisplayName(service, editorLang);
+                                    const currentPriceVal =
+                                      draft.price !== undefined ? draft.price : service.price;
+
+                                    const dirty = isRowDirty(service);
+                                    const isSaving = isSyncingId === service.id;
+                                    const isConfirmingDel = confirmDeleteId === service.id;
+                                    const isTransOpen = expandedTransId === service.id;
+                                    const isHidden = service.is_active === 0;
+
+                                    return (
+                                      <div
+                                        key={service.id}
+                                        className={`rounded-xl border transition-colors p-2 ${
+                                          dirty
+                                            ? 'bg-amber-50/70 border-amber-300'
+                                            : isHidden
+                                            ? 'bg-stone-100/70 border-stone-200/80 opacity-65'
+                                            : 'border-transparent hover:bg-stone-50/80 hover:border-stone-200/70'
+                                        }`}
+                                      >
+                                        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
+                                          {/* Inline Editable Service Name */}
+                                          <div className="flex-1 min-w-[170px] flex items-center gap-1.5">
+                                            <input
+                                              type="text"
+                                              value={currentNameVal}
+                                              onChange={(e) => handleDraftChange(service.id, activeField, e.target.value)}
+                                              onKeyDown={(e) => {
+                                                if (e.key === 'Enter' && dirty && !isSaving) {
+                                                  handleSaveRow(service);
+                                                }
+                                              }}
+                                              aria-label={`Service name (${editorLang})`}
+                                              className={`w-full px-2 py-1 text-sm md:text-[15px] rounded-lg border transition-colors focus:outline-none ${
+                                                isHidden ? 'line-through text-stone-500' : 'text-stone-800'
+                                              } ${
+                                                draft[activeField] !== undefined &&
+                                                draft[activeField]?.trim() !== (service[activeField] || '').trim()
+                                                  ? 'border-amber-400 bg-white font-medium'
+                                                  : 'border-transparent hover:border-stone-200 bg-transparent focus:bg-white focus:border-primary'
+                                              }`}
+                                            />
+                                            {isHidden && (
+                                              <span className="text-[10px] font-mono uppercase text-stone-500 shrink-0">
+                                                {ui.hiddenLabel}
+                                              </span>
+                                            )}
+                                          </div>
+
+                                          {/* Inline Editable Price */}
+                                          <input
+                                            type="text"
+                                            value={currentPriceVal}
+                                            onChange={(e) => handleDraftChange(service.id, 'price', e.target.value)}
+                                            onKeyDown={(e) => {
+                                              if (e.key === 'Enter' && dirty && !isSaving) {
+                                                handleSaveRow(service);
+                                              }
+                                            }}
+                                            aria-label="Service price"
+                                            className={`w-28 sm:w-32 px-2 py-1 text-sm font-bold tabular-nums text-right rounded-lg border transition-colors focus:outline-none shrink-0 ${
+                                              draft.price !== undefined && draft.price.trim() !== service.price.trim()
+                                                ? 'border-amber-400 bg-white text-amber-900'
+                                                : 'border-transparent hover:border-stone-200 bg-stone-50/80 text-stone-900 focus:bg-white focus:border-primary'
+                                            }`}
+                                          />
+
+                                          {/* Compact Row Controls */}
+                                          <div className="flex items-center gap-1 shrink-0 ml-auto">
+                                            {dirty && (
+                                              <button
+                                                onClick={() => handleSaveRow(service)}
+                                                disabled={isSaving}
+                                                className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1 shadow-sm transition-colors"
+                                              >
+                                                {isSaving ? (
+                                                  <RefreshCw size={12} className="animate-spin" />
+                                                ) : (
+                                                  <Check size={13} />
+                                                )}
+                                                {ui.saveOk}
+                                              </button>
+                                            )}
+
+                                            <button
+                                              type="button"
+                                              onClick={() =>
+                                                setExpandedTransId(isTransOpen ? null : service.id)
+                                              }
+                                              title={ui.moreLangs}
+                                              className={`p-1.5 rounded-lg transition-colors ${
+                                                isTransOpen
+                                                  ? 'bg-primary/10 text-primary'
+                                                  : 'text-stone-400 hover:text-stone-700 hover:bg-stone-100'
+                                              }`}
+                                            >
+                                              <Languages size={14} />
+                                            </button>
+
+                                            <button
+                                              type="button"
+                                              onClick={() => handleToggleActive(service)}
+                                              disabled={isSaving}
+                                              title={isHidden ? 'Parādīt cenrādī' : 'Paslēpt cenrādī'}
+                                              className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
+                                            >
+                                              {isHidden ? <EyeOff size={14} /> : <Eye size={14} />}
+                                            </button>
+
+                                            {isConfirmingDel ? (
+                                              <div className="flex items-center gap-1 bg-rose-50 border border-rose-200 rounded-lg px-1.5 py-0.5 text-[11px]">
+                                                <span className="text-rose-800 font-semibold">{ui.confirmDelete}</span>
+                                                <button
+                                                  type="button"
+                                                  onClick={() => handleDeleteService(service)}
+                                                  disabled={isSaving}
+                                                  className="px-1.5 py-0.5 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold"
+                                                >
+                                                  {ui.yes}
+                                                </button>
+                                                <button
+                                                  type="button"
+                                                  onClick={() => setConfirmDeleteId(null)}
+                                                  className="px-1.5 py-0.5 rounded text-stone-600 hover:bg-stone-200 font-semibold"
+                                                >
+                                                  {ui.no}
+                                                </button>
+                                              </div>
+                                            ) : (
+                                              <button
+                                                type="button"
+                                                onClick={() => setConfirmDeleteId(service.id)}
+                                                title="Dzēst pozīciju"
+                                                className="p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                                              >
+                                                <Trash2 size={14} />
+                                              </button>
+                                            )}
+                                          </div>
+                                        </div>
+
+                                        {/* Expandable All-3-Languages Name Editor */}
+                                        {isTransOpen && (
+                                          <div className="mt-2.5 pt-2.5 border-t border-stone-200/80 grid sm:grid-cols-3 gap-2">
+                                            <div>
+                                              <label className="block text-[10px] font-mono uppercase text-stone-400 mb-0.5">
+                                                LV nosaukums
+                                              </label>
+                                              <input
+                                                type="text"
+                                                value={
+                                                  draft.name_lv !== undefined
+                                                    ? draft.name_lv
+                                                    : service.name_lv || ''
+                                                }
+                                                onChange={(e) =>
+                                                  handleDraftChange(service.id, 'name_lv', e.target.value)
+                                                }
+                                                className="w-full px-2.5 py-1.5 text-xs bg-white border border-stone-200 rounded-lg focus:outline-none focus:border-primary"
+                                              />
+                                            </div>
+                                            <div>
+                                              <label className="block text-[10px] font-mono uppercase text-stone-400 mb-0.5">
+                                                RU название
+                                              </label>
+                                              <input
+                                                type="text"
+                                                value={
+                                                  draft.name_ru !== undefined
+                                                    ? draft.name_ru
+                                                    : service.name_ru || ''
+                                                }
+                                                onChange={(e) =>
+                                                  handleDraftChange(service.id, 'name_ru', e.target.value)
+                                                }
+                                                className="w-full px-2.5 py-1.5 text-xs bg-white border border-stone-200 rounded-lg focus:outline-none focus:border-primary"
+                                              />
+                                            </div>
+                                            <div>
+                                              <label className="block text-[10px] font-mono uppercase text-stone-400 mb-0.5">
+                                                EN name
+                                              </label>
+                                              <input
+                                                type="text"
+                                                value={
+                                                  draft.name_en !== undefined
+                                                    ? draft.name_en
+                                                    : service.name_en || ''
+                                                }
+                                                onChange={(e) =>
+                                                  handleDraftChange(service.id, 'name_en', e.target.value)
+                                                }
+                                                className="w-full px-2.5 py-1.5 text-xs bg-white border border-stone-200 rounded-lg focus:outline-none focus:border-primary"
+                                              />
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Bottom of Card: Inline "+ Add service" Form or Button */}
+                            <div className="mt-6 pt-4 border-t border-stone-100">
+                              {isAddingHere ? (
+                                <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
+                                  <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
+                                    <input
+                                      type="text"
+                                      autoFocus
+                                      value={newDraft[getActiveNameField(editorLang)]}
+                                      onChange={(e) =>
+                                        setNewDraft(prev => ({
+                                          ...prev,
+                                          [getActiveNameField(editorLang)]: e.target.value
+                                        }))
+                                      }
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && !isCreating) {
+                                          handleCreateService(section.id, category.key, category.titles);
+                                        }
+                                      }}
+                                      placeholder={`${ui.namePlaceholder} (${editorLang.toUpperCase()})`}
+                                      className="flex-1 min-w-[160px] px-3 py-2 text-xs md:text-sm bg-white border border-stone-300 rounded-xl focus:outline-none focus:border-primary"
+                                    />
+                                    <input
+                                      type="text"
+                                      value={newDraft.price}
+                                      onChange={(e) =>
+                                        setNewDraft(prev => ({ ...prev, price: e.target.value }))
+                                      }
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && !isCreating) {
+                                          handleCreateService(section.id, category.key, category.titles);
+                                        }
+                                      }}
+                                      placeholder={ui.pricePlaceholder}
+                                      className="w-32 px-3 py-2 text-xs md:text-sm font-bold tabular-nums text-right bg-white border border-stone-300 rounded-xl focus:outline-none focus:border-primary"
+                                    />
+                                  </div>
+
+                                  {newDraft.showAllLangs && (
+                                    <div className="grid sm:grid-cols-3 gap-2">
+                                      <input
+                                        type="text"
+                                        value={newDraft.name_lv}
+                                        onChange={(e) =>
+                                          setNewDraft(prev => ({ ...prev, name_lv: e.target.value }))
+                                        }
+                                        placeholder="LV nosaukums"
+                                        className="px-2.5 py-1.5 text-xs bg-white border border-stone-200 rounded-lg focus:outline-none focus:border-primary"
+                                      />
+                                      <input
+                                        type="text"
+                                        value={newDraft.name_ru}
+                                        onChange={(e) =>
+                                          setNewDraft(prev => ({ ...prev, name_ru: e.target.value }))
+                                        }
+                                        placeholder="RU название"
+                                        className="px-2.5 py-1.5 text-xs bg-white border border-stone-200 rounded-lg focus:outline-none focus:border-primary"
+                                      />
+                                      <input
+                                        type="text"
+                                        value={newDraft.name_en}
+                                        onChange={(e) =>
+                                          setNewDraft(prev => ({ ...prev, name_en: e.target.value }))
+                                        }
+                                        placeholder="EN name"
+                                        className="px-2.5 py-1.5 text-xs bg-white border border-stone-200 rounded-lg focus:outline-none focus:border-primary"
+                                      />
+                                    </div>
+                                  )}
+
+                                  <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setNewDraft(prev => ({
+                                          ...prev,
+                                          showAllLangs: !prev.showAllLangs
+                                        }))
+                                      }
+                                      className="text-[11px] font-semibold text-stone-500 hover:text-primary inline-flex items-center gap-1"
+                                    >
+                                      <Languages size={13} />
+                                      {newDraft.showAllLangs ? ui.hideLangs : ui.moreLangs}
+                                    </button>
+
+                                    <div className="flex items-center gap-2 ml-auto">
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setAddingCardKey(null);
+                                          setNewDraft({ ...EMPTY_NEW_DRAFT });
+                                        }}
+                                        className="px-3 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-100 text-stone-600 text-xs font-semibold inline-flex items-center gap-1"
+                                      >
+                                        <X size={13} /> {ui.cancelBtn}
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          handleCreateService(section.id, category.key, category.titles)
+                                        }
+                                        disabled={isCreating}
+                                        className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold inline-flex items-center gap-1 shadow-sm"
+                                      >
+                                        {isCreating ? (
+                                          <RefreshCw size={12} className="animate-spin" />
+                                        ) : (
+                                          <Check size={13} />
+                                        )}
+                                        {ui.saveOk}
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenAddForm(cardKey)}
+                                  className="w-full py-2.5 px-4 rounded-xl border border-dashed border-stone-300 hover:border-primary hover:bg-rose-50/40 text-stone-600 hover:text-primary text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"
+                                >
+                                  <Plus size={15} /> {ui.addBtn}
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      {/* Fallback cards for any custom/orphan D1 subcategories */}
+                      {extraGroups.map(([subTitle, extraItems]) => (
+                        <div
+                          key={`${section.id}::${subTitle}`}
+                          className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-stone-200/80 flex flex-col justify-between"
+                        >
+                          <div>
+                            <div className="flex items-center justify-between mb-6 pb-3.5 border-b border-stone-100">
+                              <h3 className="text-2xl font-serif font-bold text-primary flex items-center gap-2.5">
+                                <CheckCircle2 size={20} className="text-primary/40 shrink-0" />
+                                <span>{subTitle}</span>
+                              </h3>
+                              <span className="text-xs font-mono tabular-nums text-stone-400">
+                                {extraItems.length}
+                              </span>
+                            </div>
+                            <div className="space-y-2">
+                              {extraItems.map(service => {
+                                const draft = rowDrafts[service.id] || {};
+                                const activeField = getActiveNameField(editorLang);
+                                const currentNameVal =
+                                  draft[activeField] !== undefined
+                                    ? draft[activeField]!
+                                    : getServiceDisplayName(service, editorLang);
+                                const currentPriceVal =
+                                  draft.price !== undefined ? draft.price : service.price;
+                                const dirty = isRowDirty(service);
+                                const isSaving = isSyncingId === service.id;
+
+                                return (
+                                  <div
+                                    key={service.id}
+                                    className="rounded-xl border border-transparent hover:bg-stone-50/80 hover:border-stone-200/70 p-2 flex items-center gap-2"
+                                  >
+                                    <input
+                                      type="text"
+                                      value={currentNameVal}
+                                      onChange={(e) => handleDraftChange(service.id, activeField, e.target.value)}
+                                      className="flex-1 px-2 py-1 text-sm text-stone-800 bg-transparent border border-transparent hover:border-stone-200 focus:bg-white focus:border-primary rounded-lg focus:outline-none"
+                                    />
+                                    <input
+                                      type="text"
+                                      value={currentPriceVal}
+                                      onChange={(e) => handleDraftChange(service.id, 'price', e.target.value)}
+                                      className="w-28 px-2 py-1 text-sm font-bold tabular-nums text-right bg-stone-50 border border-transparent hover:border-stone-200 focus:bg-white focus:border-primary rounded-lg focus:outline-none"
+                                    />
+                                    {dirty && (
+                                      <button
+                                        onClick={() => handleSaveRow(service)}
+                                        disabled={isSaving}
+                                        className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-xs font-bold"
+                                      >
+                                        {ui.saveOk}
+                                      </button>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
             </div>
           </div>
         )}
@@ -610,8 +1353,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                 <h2 className="text-lg font-serif font-bold text-stone-900">Publikācijas un SEO Raksti</h2>
                 <p className="text-xs text-stone-500">11 raksti ar 33 lokalizācijām (LV, RU, EN) sinhronizēti D1 datubāzē.</p>
               </div>
-              <span className="bg-emerald-100 text-emerald-800 text-xs font-mono font-bold px-3 py-1 rounded-full border border-emerald-300">
-                11 / 11 Raksti Aktīvi
+              <span className="text-emerald-700 text-xs font-mono font-bold">
+                11 / 11 Aktīvi
               </span>
             </div>
 
@@ -647,25 +1390,29 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-200 space-y-6">
               <h2 className="text-lg font-serif font-bold text-stone-900 flex items-center gap-2">
                 <Database className="text-primary" size={20} />
-                Cloudflare D1 Arhitektūra & Migrācijas
+                Cloudflare D1 Arhitektūra &amp; Migrācijas
               </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                   <div className="text-[11px] text-stone-400 font-bold uppercase tracking-wider">Kataloga Pakalpojumi</div>
-                  <div className="text-2xl font-serif font-bold text-stone-900 mt-1">82</div>
+                  <div className="text-2xl font-serif font-bold tabular-nums text-stone-900 mt-1">
+                    {servicesList.length || 83}
+                  </div>
                   <div className="text-[11px] text-emerald-600 font-medium">100% pilns katalogs D1</div>
                 </div>
 
                 <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                   <div className="text-[11px] text-stone-400 font-bold uppercase tracking-wider">Lokalizēti Tulkojumi</div>
-                  <div className="text-2xl font-serif font-bold text-stone-900 mt-1">246</div>
+                  <div className="text-2xl font-serif font-bold tabular-nums text-stone-900 mt-1">
+                    {(servicesList.length || 83) * 3}
+                  </div>
                   <div className="text-[11px] text-stone-500">LV, RU, EN valodās</div>
                 </div>
 
                 <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                   <div className="text-[11px] text-stone-400 font-bold uppercase tracking-wider">SEO Publikācijas</div>
-                  <div className="text-2xl font-serif font-bold text-stone-900 mt-1">11 (33)</div>
+                  <div className="text-2xl font-serif font-bold tabular-nums text-stone-900 mt-1">11 (33)</div>
                   <div className="text-[11px] text-stone-500">Raksti ar Markdown saturu</div>
                 </div>
               </div>
@@ -679,7 +1426,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                   </div>
                   <div className="p-3 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-between">
                     <span>0002_seed_full_catalog.sql</span>
-                    <span className="text-emerald-600 font-bold">Aktīvs (82 Services Seed)</span>
+                    <span className="text-emerald-600 font-bold">Aktīvs (83 Services Seed)</span>
                   </div>
                   <div className="p-3 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-between">
                     <span>0003_seed_all_articles.sql</span>
@@ -706,11 +1453,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                 </button>
 
                 <a
-                  href="/aneri-v1.13.zip"
-                  download="aneri-v1.13.zip"
+                  href="/aneri-v1.16.zip"
+                  download="aneri-v1.16.zip"
                   className="px-5 py-3 rounded-xl bg-primary hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors shadow-sm"
                 >
-                  <Download size={14} /> Lejupielādēt Koda Arhīvu (aneri-v1.13.zip)
+                  <Download size={14} /> Lejupielādēt Koda Arhīvu (aneri-v1.16.zip)
                 </a>
               </div>
             </div>
@@ -720,7 +1467,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
         {/* Tab 4: Settings */}
         {activeTab === 'settings' && (
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-200 max-w-2xl space-y-4">
-            <h2 className="text-lg font-serif font-bold text-stone-900">Salona Rekvizīti & Saziņa</h2>
+            <h2 className="text-lg font-serif font-bold text-stone-900">Salona Rekvizīti &amp; Saziņa</h2>
             <div className="space-y-3 text-xs">
               <div>
                 <label className="block text-stone-400 font-bold uppercase mb-1">Tālrunis</label>
@@ -745,7 +1492,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                 <input
                   type="text"
                   readOnly
-                  value="Pirmdiena - Sestdiena: 09:00 - 20:00 | Svētdiena: 10:00 - 18:00"
+                  value="Pirmdiena - Sestdiena: 09:00 - 20:00 | Svētdiena: 10:00 - 16:00"
                   className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-800"
                 />
               </div>

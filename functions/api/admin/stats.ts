@@ -16,7 +16,7 @@ export const onRequestGet = async (context: { env: Env }) => {
       activeServices: 0,
       totalArticles: 0,
       recentPriceChanges: []
-    }), { status: 200 });
+    }), { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8' } });
   }
 
   try {
@@ -37,7 +37,7 @@ export const onRequestGet = async (context: { env: Env }) => {
       activeServices: activeServicesRow ? activeServicesRow.count : 0,
       totalArticles: totalArticlesRow ? totalArticlesRow.count : 0,
       recentPriceChanges: recentLogs || []
-    }), { status: 200 });
+    }), { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8' } });
   } catch (e: any) {
     return new Response(JSON.stringify({
       status: 'error',
@@ -46,6 +46,6 @@ export const onRequestGet = async (context: { env: Env }) => {
       activeServices: 0,
       totalArticles: 0,
       recentPriceChanges: []
-    }), { status: 200 });
+    }), { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8' } });
   }
 };

@@ -9,7 +9,10 @@ export const onRequestGet = async (context: { env: Env }) => {
   const { env } = context;
 
   if (!env.DB) {
-    return new Response(JSON.stringify({ status: 'offline', settings: {} }), { status: 200 });
+    return new Response(JSON.stringify({ status: 'offline', settings: {} }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json; charset=utf-8' }
+    });
   }
 
   try {
@@ -20,16 +23,25 @@ export const onRequestGet = async (context: { env: Env }) => {
         settings[row.key] = row.value;
       });
     }
-    return new Response(JSON.stringify({ status: 'ok', settings }), { status: 200 });
+    return new Response(JSON.stringify({ status: 'ok', settings }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json; charset=utf-8' }
+    });
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+    return new Response(JSON.stringify({ error: e.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json; charset=utf-8' }
+    });
   }
 };
 
 export const onRequestPut = async (context: { request: Request; env: Env }) => {
   const { request, env } = context;
 
-  if (!env.DB) return new Response(JSON.stringify({ status: 'offline' }), { status: 500 });
+  if (!env.DB) return new Response(JSON.stringify({ status: 'offline' }), {
+    status: 500,
+    headers: { 'Content-Type': 'application/json; charset=utf-8' }
+  });
 
   try {
     const body: Record<string, string> = await request.json();
@@ -42,8 +54,14 @@ export const onRequestPut = async (context: { request: Request; env: Env }) => {
       `).bind(key, String(val)).run();
     }
 
-    return new Response(JSON.stringify({ ok: true, updatedKeys: Object.keys(body) }), { status: 200 });
+    return new Response(JSON.stringify({ ok: true, updatedKeys: Object.keys(body) }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json; charset=utf-8' }
+    });
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+    return new Response(JSON.stringify({ error: e.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json; charset=utf-8' }
+    });
   }
 };

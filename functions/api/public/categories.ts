@@ -13,7 +13,7 @@ export const onRequestGet = async (context: { request: Request; env: Env }) => {
   if (!env.DB) {
     return new Response(JSON.stringify({ status: 'offline', categories: [] }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json; charset=utf-8' }
     });
   }
 
@@ -39,14 +39,14 @@ export const onRequestGet = async (context: { request: Request; env: Env }) => {
     }), {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
         'Cache-Control': 'public, max-age=120, s-maxage=600'
       }
     });
   } catch (error: any) {
     return new Response(JSON.stringify({ status: 'error', message: error?.message, categories: [] }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json; charset=utf-8' }
     });
   }
 };
