@@ -18,7 +18,7 @@
   "vars": {
     "CF_ACCESS_TEAM_DOMAIN": "pomellius.cloudflareaccess.com",
     "CF_ACCESS_AUD": "a6cc569ad92df94d2c74c638b459162620794b1a4867578c357fffeebb5b3969",
-    "APP_VERSION": "1.21"
+    "APP_VERSION": "1.22"
   },
   // Isolated Preview Environment
   "env": {
@@ -33,7 +33,7 @@
       "vars": {
         "CF_ACCESS_TEAM_DOMAIN": "pomellius.cloudflareaccess.com",
         "CF_ACCESS_AUD": "a6cc569ad92df94d2c74c638b459162620794b1a4867578c357fffeebb5b3969",
-        "APP_VERSION": "1.21-preview"
+        "APP_VERSION": "1.22-preview"
       }
     }
   }

@@ -532,7 +532,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
     }
   };
 
-  // 8. Authoritative Server-Side D1 JSON Backup Export (v1.21)
+  // 8. Authoritative Server-Side D1 JSON Backup Export (v1.22)
   const handleExportBackup = async () => {
     setIsDownloadingBackup(true);
     setSaveErrorMsg('');
@@ -543,11 +543,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
 
       if (res.ok && res.data) {
         jsonStr = JSON.stringify(res.data, null, 2);
-        filename = `aneri_d1_backup_${new Date().toISOString().slice(0, 10)}_v1.21.json`;
+        filename = `aneri_d1_backup_${new Date().toISOString().slice(0, 10)}_v1.22.json`;
         showSuccess(`Servera Cloudflare D1 rezerves kopija veiksmīgi iegūta (${res.data.totalRecords || 0} ieraksti).`);
       } else {
         jsonStr = dataService.exportBackupJson();
-        filename = `aneri_catalog_snapshot_${new Date().toISOString().slice(0, 10)}_v1.21.json`;
+        filename = `aneri_catalog_snapshot_${new Date().toISOString().slice(0, 10)}_v1.22.json`;
         showError(`D1 servera brīdinājums: ${res.error || 'D1 bezsaistē'}. Lejupielādēts lokālais kataloga uzņēmums.`);
       }
 
@@ -761,7 +761,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
             <div className="flex items-center gap-2.5">
               <span className="text-2xl font-serif font-bold text-primary">Aneri</span>
               <span className="text-[11px] font-mono uppercase bg-stone-800 text-rose-300 border border-stone-700 px-2 py-0.5 rounded font-semibold">
-                Admin Panel v1.21
+                Admin Panel v1.22
               </span>
             </div>
             <div className="hidden sm:flex items-center gap-2 text-xs text-stone-400 border-l border-stone-800 pl-4">
@@ -1554,11 +1554,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                 </button>
 
                 <a
-                  href="/aneri-v1.21.zip"
-                  download="aneri-v1.21.zip"
+                  href="/aneri-v1.22.zip"
+                  download="aneri-v1.22.zip"
                   className="px-5 py-3 rounded-xl bg-primary hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors shadow-sm"
                 >
-                  <Download size={14} /> Lejupielādēt Koda Arhīvu (aneri-v1.21.zip)
+                  <Download size={14} /> Lejupielādēt Koda Arhīvu (aneri-v1.22.zip)
                 </a>
               </div>
             </div>
@@ -1680,7 +1680,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                       </div>
                     </div>
 
-                    {/* Live Visual Preview (Window-glass demo for active/selected season) */}
+                    {/* Live Visual Preview (Window-glass demo for active/selected season using real PNG sprites) */}
                     <div className="relative overflow-hidden rounded-2xl bg-stone-900 border border-stone-800 px-6 py-5 flex items-center justify-between gap-4">
                       <div className="relative z-10">
                         <div className="text-[11px] uppercase tracking-widest text-stone-400 font-semibold mb-0.5">
@@ -1690,49 +1690,33 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                           Salons Aneri
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        {[0.75, 1, 0.88].map((scale, idx) => {
-                          const iconSize = Math.round(snowSize * scale);
-                          const tulipPalette = ['#E11D48', '#FBBF24', '#A855F7'];
-                          const autumnPalette = ['#EA580C', '#DC2626', '#F59E0B'];
-                          const birdPalette = ['#38BDF8', '#94A3B8', '#E2E8F0'];
-
-                          if (previewSeason === 'spring') {
-                            return (
-                              <Flower2
-                                key={idx}
-                                size={iconSize}
-                                style={{ color: tulipPalette[idx], opacity: snowEnabled ? 0.92 : 0.25 }}
-                                className="transition-all duration-200"
-                              />
-                            );
-                          }
-                          if (previewSeason === 'summer') {
-                            return (
-                              <Bird
-                                key={idx}
-                                size={iconSize}
-                                style={{ color: birdPalette[idx], opacity: snowEnabled ? 0.92 : 0.25 }}
-                                className="transition-all duration-200"
-                              />
-                            );
-                          }
-                          if (previewSeason === 'autumn') {
-                            return (
-                              <Leaf
-                                key={idx}
-                                size={iconSize}
-                                style={{ color: autumnPalette[idx], opacity: snowEnabled ? 0.92 : 0.25 }}
-                                className="transition-all duration-200"
-                              />
-                            );
-                          }
+                      <div className="flex items-center gap-3.5">
+                        {(previewSeason === 'spring'
+                          ? ['/assets/seasonal/tulip_1.png', '/assets/seasonal/tulip_3.png', '/assets/seasonal/tulip_6.png']
+                          : previewSeason === 'summer'
+                          ? ['/assets/seasonal/bird_1.png', '/assets/seasonal/bird_2.png', '/assets/seasonal/bird_5.png']
+                          : previewSeason === 'autumn'
+                          ? ['/assets/seasonal/leaf_1.png', '/assets/seasonal/leaf_2.png', '/assets/seasonal/leaf_6.png']
+                          : ['/assets/seasonal/snowflake_1.png', '/assets/seasonal/snowflake_3.png', '/assets/seasonal/snowflake_8.png']
+                        ).map((src, idx) => {
+                          const scales = [0.85, 1.15, 0.95];
+                          const dim = Math.round(snowSize * scales[idx] * (previewSeason === 'spring' ? 1.55 : previewSeason === 'summer' ? 1.4 : 1.2));
                           return (
-                            <Snowflake
-                              key={idx}
-                              size={iconSize}
-                              style={{ color: snowColor, opacity: snowEnabled ? 0.9 : 0.25 }}
-                              className="transition-all duration-200"
+                            <img
+                              key={src}
+                              src={src}
+                              alt=""
+                              referrerPolicy="no-referrer"
+                              style={{
+                                height: `${dim}px`,
+                                width: 'auto',
+                                opacity: snowEnabled ? 0.95 : 0.25,
+                                filter:
+                                  previewSeason === 'winter' && snowColor !== '#FFFFFF'
+                                    ? `drop-shadow(0 0 6px ${snowColor})`
+                                    : undefined
+                              }}
+                              className="object-contain select-none transition-all duration-200"
                             />
                           );
                         })}

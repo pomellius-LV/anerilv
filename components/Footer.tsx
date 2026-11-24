@@ -210,7 +210,7 @@ const Footer: React.FC<FooterProps> = ({ lang, content, onNavigate }) => {
         <div className="pt-8 border-t border-stone-200 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] uppercase tracking-[0.25em] font-bold text-stone-500">
           <div className="flex items-center gap-2">
             <span>&copy; {new Date().getFullYear()} {footer.copyright}</span>
-            <span className="opacity-50 normal-case tracking-normal">v1.21</span>
+            <span className="opacity-50 normal-case tracking-normal">v1.22</span>
             <button
               onClick={() => onNavigate('admin')}
               title="Administratora panelis"
