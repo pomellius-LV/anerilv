@@ -14,7 +14,7 @@ const FAQPage: React.FC<FAQPageProps> = ({ lang, content, setView }) => {
   const mapUrl = "https://www.google.com/maps/place/56%C2%B054'30.6%22N+24%C2%B010'56.3%22E/@56.9085003,24.1822941,17z/";
 
   return (
-    <section className="pt-32 pb-24 min-h-screen bg-stone-50">
+    <section className="pt-32 pb-24 min-h-screen bg-[#F5F6F8]">
       <div className="container mx-auto px-4 max-w-6xl">
         <a
           href={buildSeoUrl(lang, 'home')}
@@ -60,27 +60,28 @@ const FAQPage: React.FC<FAQPageProps> = ({ lang, content, setView }) => {
           </div>
 
           <div className="lg:col-span-4">
-             <div className="bg-stone-900 text-white p-10 sticky top-32 rounded-[2rem] shadow-2xl">
+             <div className="bg-signboard-metal border border-slate-500/40 text-white p-10 sticky top-32 rounded-[2rem] shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#8E1B32] via-[#E33955] to-[#8E1B32]" aria-hidden="true" />
                 <h4 className="text-3xl font-serif font-bold mb-8">Informācija</h4>
                 <div className="space-y-10">
                    <div className="flex gap-5">
-                      <MapPin className="text-primary shrink-0" size={24} />
+                      <MapPin className="text-[#E33955] shrink-0" size={24} />
                       <div>
                          <p className="font-bold text-xl mb-1">Latgales iela 264</p>
-                         <p className="text-stone-400 text-sm">Rīga, Ķengarags (blakus TC Dole)</p>
+                         <p className="text-[#C7CDD6] text-sm">Rīga, Ķengarags (blakus TC Dole)</p>
                       </div>
                    </div>
                    <div className="flex gap-5">
-                      <TramFront className="text-primary shrink-0" size={24} />
+                      <TramFront className="text-[#E33955] shrink-0" size={24} />
                       <div>
                          <p className="font-bold mb-2 uppercase tracking-widest text-xs">Transports:</p>
-                         <p className="text-stone-300 text-sm leading-relaxed">
+                         <p className="text-[#E3E7ED] text-sm leading-relaxed">
                             7. tramvajs<br/>Autobusi: 15, 18, 31, 49, 60
                          </p>
                       </div>
                    </div>
-                   <div className="pt-8 border-t border-white/10 text-center">
-                      <a href={mapUrl} target="_blank" className="inline-flex items-center gap-3 bg-primary text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-white hover:text-primary transition-all">
+                   <div className="pt-8 border-t border-white/15 text-center">
+                      <a href={mapUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 bg-[#8E1B32] text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-white hover:text-[#25282E] transition-all">
                         <Navigation size={14} /> Atvērt kartē
                       </a>
                    </div>

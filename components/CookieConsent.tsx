@@ -76,7 +76,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ content }) => {
   return (
     <div
       id="cookie-consent-banner"
-      className="fixed bottom-0 left-0 right-0 bg-white border-t border-rose-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] p-4 md:p-6 z-50 flex flex-col md:flex-row items-center justify-between gap-4 animate-in slide-in-from-bottom duration-500"
+      className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-[#8E1B32]/30 shadow-[0_-4px_12px_-1px_rgba(37,40,46,0.1)] p-4 md:p-6 z-50 flex flex-col md:flex-row items-center justify-between gap-4 animate-in slide-in-from-bottom duration-500"
     >
       <div className="text-slate-700 text-sm md:text-base text-center md:text-left">
         {content.cookie.text}

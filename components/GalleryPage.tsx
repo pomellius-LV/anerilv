@@ -32,7 +32,7 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ lang, content, setView }) => 
   };
 
   return (
-    <section className="pt-32 pb-24 min-h-screen bg-stone-50">
+    <section className="pt-32 pb-24 min-h-screen bg-[#F5F6F8]">
       <div className="container mx-auto px-4 max-w-7xl">
         <a
           href={buildSeoUrl(lang, 'home')}

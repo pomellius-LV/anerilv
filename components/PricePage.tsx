@@ -24,7 +24,7 @@ const PricePage: React.FC<PricePageProps> = ({ lang, content, onNavigate }) => {
   };
 
   return (
-    <section className="pt-32 pb-24 min-h-screen bg-stone-50">
+    <section className="pt-32 pb-24 min-h-screen bg-[#F5F6F8]">
       <div className="container mx-auto px-4 max-w-6xl">
         <a
           href={buildSeoUrl(lang, 'home')}
@@ -122,7 +122,7 @@ const PricePage: React.FC<PricePageProps> = ({ lang, content, onNavigate }) => {
           <div className="mt-10 flex flex-col md:flex-row items-center justify-center gap-8">
             <a
               href="tel:+37127580047"
-              className="bg-primary text-white px-12 py-5 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-stone-900 transition-colors shadow-xl"
+              className="bg-[#8E1B32] text-white px-12 py-5 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-[#3A3E45] transition-colors shadow-xl"
             >
               {content.nav.bookBtn} +371 27580047
             </a>

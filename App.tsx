@@ -216,13 +216,21 @@ const App: React.FC = () => {
 
     const baseUrl = 'https://aneri.lv';
     const currentUrl = baseUrl + buildSeoUrl(lang, view, { serviceId, articleId });
+    const ogType = view === 'article' ? 'article' : 'website';
+    const ogImage =
+      view === 'service' && serviceId
+        ? `${baseUrl}/assets/services/${serviceId}.jpg`
+        : `${baseUrl}/assets/services/hair.jpg`;
 
+    updateOrCreateMeta('og:type', ogType);
     updateOrCreateMeta('og:title', pageTitle);
     updateOrCreateMeta('og:description', pageDesc);
     updateOrCreateMeta('og:url', currentUrl);
+    updateOrCreateMeta('og:image', ogImage);
     updateOrCreateMeta('twitter:title', pageTitle, true);
     updateOrCreateMeta('twitter:description', pageDesc, true);
     updateOrCreateMeta('twitter:url', currentUrl, true);
+    updateOrCreateMeta('twitter:image', ogImage, true);
 
     if (view !== 'admin') {
       document.querySelectorAll('link[rel="alternate"]').forEach(el => el.remove());
@@ -272,7 +280,7 @@ const App: React.FC = () => {
   if (!currentContent) return null;
 
   return (
-    <div className="min-h-screen bg-stone-50 selection:bg-rose-200">
+    <div className="min-h-screen bg-[#F5F6F8] text-[#25282E] selection:bg-slate-200 selection:text-[#8E1B32]">
       <SchemaMarkup
         content={currentContent}
         lang={lang}
@@ -295,7 +303,7 @@ const App: React.FC = () => {
           <>
             <Hero content={currentContent} lang={lang} />
             <Services lang={lang} content={currentContent} onNavigate={navigateTo} />
-            <Advantages content={currentContent} />
+            <Advantages content={currentContent} lang={lang} />
           </>
         )}
         {view === 'service' && serviceId && (

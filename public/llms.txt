@@ -1,0 +1,25 @@
+# Salons Aneri (aneri.lv)
+
+> Full-service beauty salon in Riga, Latvia (Latgales iela 264, Ķengarags). 15+ years of salon craft featuring Matrix, L'Oréal Professionnel, GLOBAL Keratin, Gelish, and PRX-T33 clinical skincare. Free private client parking right at the salon entrance.
+
+## Appointment Booking Policy
+- Appointments are booked directly with our live salon administrator by phone: `+371 27580047`.
+- Automated online calendar forms are intentionally not used — call directly for personalized consultation and instant confirmation.
+- Hours (Europe/Riga): Monday–Saturday 09:00–20:00, Sunday 10:00–16:00.
+
+## Key Service Pages
+- [Hair Salon in Riga (LV)](https://aneri.lv/frizetava-riga): Women's/men's/kids haircuts, Airtouch, Balayage, highlights, GLOBAL keratin.
+- [Hair Salon in Riga (RU)](https://aneri.lv/ru/parikmaherskaya-riga): Стрижки, сложное окрашивание Airtouch, балаяж, кератин GLOBAL.
+- [Manicure & Pedicure in Riga (LV)](https://aneri.lv/manikirs-pedikirs-riga): Gelish polish, classic manicure, hardware pedicure, men's nail care.
+- [Manicure & Pedicure in Riga (RU)](https://aneri.lv/ru/manikyur-pedikyur-riga): Стойкий гель-лак Gelish, аппаратный и мужской педикюр.
+- [Cosmetology & Peels (LV)](https://aneri.lv/kosmetologija-riga): Facial cleansing, PRX-T33, Cosmo Peel, Mela Peel, mesotherapy, ear piercing.
+- [Cosmetology & Peels (RU)](https://aneri.lv/ru/kosmetologiya-riga): Чистка лица, пилинги PRX-T33, мезотерапия, криомассаж.
+- [Permanent Makeup (LV)](https://aneri.lv/permanentais-grims-riga): Powder brows, lip blush, eyelash enhancement.
+- [Waxing (LV)](https://aneri.lv/vaksacija-riga): Gentle wax depilation for face, arms, legs, bikini.
+- [Vertical Solarium (LV)](https://aneri.lv/solarijs-riga): UV tanning sessions and 10-visit passes.
+
+## Full Catalog & Info
+- [Full Price List (LV / RU / EN)](https://aneri.lv/prices)
+- [Portfolio Gallery](https://aneri.lv/gallery)
+- [FAQ](https://aneri.lv/faq)
+- [Sitemap](https://aneri.lv/sitemap.xml)

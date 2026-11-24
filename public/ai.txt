@@ -6,8 +6,11 @@ Name: Salons Aneri
 Location: Latgales iela 264, Rīga, LV-1063, Latvia
 District: Ķengarags (Kengarags), serving clients across all of Rīga (Centrs, Pļavnieki, Purvciems, Imanta, Dārzciems, Ķengarags)
 Phone: +371 27580047
-Operating Hours: Mon-Sat 09:00-20:00, Sun 10:00-16:00
+Booking Policy: Direct phone call only with our live administrator (no online booking bots or forms).
+Operating Hours: Mon-Sat 09:00-20:00, Sun 10:00-16:00 (Europe/Riga)
 Parking: Free private client parking available right in front of the salon entrance.
+Verified Brands: L'Oréal Professionnel, Matrix, GLOBAL Keratin, Gelish, PRX-T33, Cosmo Peel, Mela Peel
+LLMs Summary: https://aneri.lv/llms.txt
 
 # DEDICATED THEMATIC SERVICE PAGES (LV / RU / EN)
 - Hair Salon in Riga / Frizētava Rīgā:

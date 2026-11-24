@@ -80,6 +80,19 @@ export const DEFAULT_SNOW_CONFIG: SnowConfig = {
   count: 55
 };
 
+export interface GoogleProfileConfig {
+  rating: string;
+  reviewsCount: string;
+  mapsUrl: string;
+}
+
+export const DEFAULT_GOOGLE_PROFILE: GoogleProfileConfig = {
+  rating: '',
+  reviewsCount: '',
+  mapsUrl:
+    "https://www.google.com/maps/place/56%C2%B054'30.6%22N+24%C2%B010'56.3%22E/@56.9085003,24.1822941,17z/"
+};
+
 export interface TaxonomyCategory {
   key: string;
   titles: Record<Language, string>;
@@ -218,6 +231,7 @@ class DataService {
   public lastSyncTime: Date | null = null;
   public d1Error: string | null = null;
   public snowConfig: SnowConfig = { ...DEFAULT_SNOW_CONFIG };
+  public googleProfile: GoogleProfileConfig = { ...DEFAULT_GOOGLE_PROFILE };
 
   public getSnowEnabled(): boolean {
     return this.snowConfig.enabled;
@@ -227,8 +241,13 @@ class DataService {
     return this.snowConfig;
   }
 
+  public getGoogleProfile(): GoogleProfileConfig {
+    return this.googleProfile;
+  }
+
   private applySettingsMap(settings: Record<string, string>) {
     const next: SnowConfig = { ...this.snowConfig };
+    const nextGoogle: GoogleProfileConfig = { ...this.googleProfile };
 
     if (settings.snow_enabled !== undefined) {
       next.enabled = settings.snow_enabled !== '0' && settings.snow_enabled !== 'false';
@@ -255,7 +274,27 @@ class DataService {
       next.color = settings.snow_color.trim().toUpperCase();
     }
 
+    if (settings.google_rating !== undefined) {
+      const cleaned = settings.google_rating.trim().replace(',', '.');
+      if (cleaned === '' || (/^\d(\.\d{1,2})?$/.test(cleaned) && Number(cleaned) >= 1 && Number(cleaned) <= 5)) {
+        nextGoogle.rating = cleaned;
+      }
+    }
+    if (settings.google_reviews_count !== undefined) {
+      const cleanedCount = settings.google_reviews_count.trim().replace(/[^\d]/g, '');
+      nextGoogle.reviewsCount = cleanedCount;
+    }
+    if (settings.google_maps_url !== undefined) {
+      const trimmedUrl = settings.google_maps_url.trim();
+      if (trimmedUrl.startsWith('https://')) {
+        nextGoogle.mapsUrl = trimmedUrl;
+      } else if (trimmedUrl === '') {
+        nextGoogle.mapsUrl = DEFAULT_GOOGLE_PROFILE.mapsUrl;
+      }
+    }
+
     this.snowConfig = next;
+    this.googleProfile = nextGoogle;
     this.notify();
   }
 
@@ -953,10 +992,10 @@ class DataService {
     }
   }
 
-  // Export full JSON backup of salon catalog (v1.24)
+  // Export full JSON backup of salon catalog (v2.01)
   public exportBackupJson(): string {
     return JSON.stringify({
-      version: '1.24',
+      version: '2.01',
       exportDate: new Date().toISOString(),
       salon: 'Salons Aneri',
       address: 'Latgales iela 264, Rīga',

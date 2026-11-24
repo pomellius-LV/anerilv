@@ -29,7 +29,7 @@ const Header: React.FC<HeaderProps> = ({
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 30);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -119,70 +119,119 @@ const Header: React.FC<HeaderProps> = ({
   const isLight = !scrolled && view === 'home';
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${!isLight ? 'bg-white/95 backdrop-blur-xl border-b border-stone-100 py-3 shadow-sm' : 'bg-transparent py-6'}`}>
-      <div className="container mx-auto px-4 flex justify-between items-center">
-        {/* Crawlable Brand Home Link */}
+    <header
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
+        !isLight
+          ? 'bg-[#F5F6F8]/95 backdrop-blur-xl border-b border-slate-200/80 py-3.5 shadow-[0_1px_18px_rgba(37,40,46,0.06)]'
+          : 'bg-gradient-to-b from-[#2F333B]/75 via-[#3F444E]/35 to-transparent py-5'
+      }`}
+    >
+      <div className="container mx-auto px-4 md:px-6 max-w-7xl flex justify-between items-center gap-6">
+        {/* Zone 1: Signboard Wordmark (White/Graphite 'Salons' + Deep Crimson 'Aneri') */}
         <a
           href={homeHref}
           onClick={(e) => handleAnchorLink(e, 'view', 'home')}
-          className="group flex flex-col items-start leading-none focus:outline-none z-[110]"
+          className="group flex items-baseline gap-1.5 leading-none focus:outline-none z-[110] shrink-0 whitespace-nowrap"
           aria-label="Salons Aneri Home"
         >
-          <span className={`text-3xl md:text-4xl font-serif font-bold transition-colors ${!isLight ? 'text-primary' : 'text-white'}`}>
-            Salons <span className={!isLight ? 'text-stone-900' : 'text-stone-100'}>Aneri</span>
+          <span
+            className={`text-2xl sm:text-3xl font-serif font-semibold tracking-tight transition-colors whitespace-nowrap ${
+              !isLight ? 'text-[#25282E]' : 'text-white'
+            }`}
+          >
+            Salons{' '}
+            <span
+              className={
+                !isLight
+                  ? 'text-[#8E1B32]'
+                  : 'text-[#E33955] drop-shadow-[0_1px_10px_rgba(20,22,26,0.5)]'
+              }
+            >
+              Aneri
+            </span>
           </span>
         </a>
 
-        {/* Desktop Nav using real <a> links for crawlers */}
-        <nav className="hidden lg:flex items-center space-x-8 xl:space-x-10" aria-label="Main Navigation">
+        {/* Zone 2: Minimalist Desktop Navigation */}
+        <nav className="hidden lg:flex items-center gap-7 xl:gap-9" aria-label="Main Navigation">
           {navLinks.map((link) => (
             <a
               key={link.name}
               href={link.href}
               onClick={(e) => handleAnchorLink(e, link.type, link.target)}
-              className={`text-[11px] uppercase tracking-[0.2em] font-semibold hover:text-primary transition-all focus:outline-none ${!isLight ? 'text-stone-600' : 'text-white/90 hover:text-white'}`}
+              className={`relative py-1 text-[11px] uppercase tracking-[0.2em] font-semibold transition-colors whitespace-nowrap focus:outline-none after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:transition-all after:duration-300 hover:after:w-full ${
+                !isLight
+                  ? 'text-slate-600 hover:text-[#25282E] after:bg-[#8E1B32]'
+                  : 'text-white/90 hover:text-white after:bg-[#E33955]'
+              }`}
             >
               {link.name}
             </a>
           ))}
         </nav>
 
-        {/* Contact & Language */}
-        <div className="hidden lg:flex items-center space-x-10">
-          <div className="flex flex-col items-end">
-            <a
-              href="tel:+37127580047"
-              className={`flex items-center gap-2 text-xl font-sans font-bold tracking-tight transition-all hover:text-primary ${!isLight ? 'text-stone-900' : 'text-white'}`}
-              aria-label="Call Salons Aneri"
-            >
-              <Phone size={18} className="text-primary" />
-              <span className="tabular-nums font-sans tracking-wider">+371 27580047</span>
-            </a>
-            <div className="flex gap-4 mt-1">
-              {(['lv', 'ru', 'en'] as Language[]).map((l) => {
-                const href = generateUrl(l, view, articleId, serviceId);
-                return (
+        {/* Zone 3: Language Switcher & Direct Call CTA */}
+        <div className="hidden lg:flex items-center gap-6 shrink-0">
+          <div className="flex items-center gap-2.5">
+            {(['lv', 'ru', 'en'] as Language[]).map((l, idx) => {
+              const href = generateUrl(l, view, articleId, serviceId);
+              const active = lang === l;
+              return (
+                <React.Fragment key={l}>
+                  {idx > 0 && (
+                    <span
+                      aria-hidden="true"
+                      className={`text-[10px] ${!isLight ? 'text-slate-300' : 'text-white/25'}`}
+                    >
+                      /
+                    </span>
+                  )}
                   <a
-                    key={l}
                     href={href}
                     onClick={(e) => {
                       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
                       e.preventDefault();
                       setLang(l);
                     }}
-                    className={`text-[10px] font-bold uppercase tracking-widest transition-opacity hover:opacity-100 focus:outline-none ${lang === l ? 'text-primary' : !isLight ? 'text-stone-400 opacity-60' : 'text-white/40 opacity-40'}`}
+                    className={`text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors whitespace-nowrap focus:outline-none ${
+                      active
+                        ? !isLight
+                          ? 'text-[#8E1B32] font-bold'
+                          : 'text-white font-bold underline decoration-[#E33955] underline-offset-4'
+                        : !isLight
+                        ? 'text-slate-400 hover:text-slate-800'
+                        : 'text-white/60 hover:text-white'
+                    }`}
                     aria-label={`Switch language to ${l}`}
                   >
                     {l}
                   </a>
-                );
-              })}
-            </div>
+                </React.Fragment>
+              );
+            })}
           </div>
+
           <a
             href="tel:+37127580047"
-            className="bg-primary text-white px-8 py-3 rounded-full text-[12px] font-bold uppercase tracking-wider hover:bg-stone-900 transition-colors shadow-lg focus:outline-none"
-            aria-label="Book an appointment"
+            className={`inline-flex items-center gap-2.5 text-sm font-sans font-semibold tracking-tight transition-colors whitespace-nowrap ${
+              !isLight
+                ? 'text-[#25282E] hover:text-[#8E1B32]'
+                : 'text-white hover:text-[#E3E7ED]'
+            }`}
+            aria-label="Call Salons Aneri"
+          >
+            <Phone size={15} className={!isLight ? 'text-[#8E1B32]' : 'text-[#E33955]'} />
+            <span className="tabular-nums tracking-wider">+371 27580047</span>
+          </a>
+
+          <a
+            href="tel:+37127580047"
+            className={`px-6 py-2.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.16em] transition-all whitespace-nowrap focus:outline-none ${
+              !isLight
+                ? 'bg-[#8E1B32] text-white hover:bg-[#3A3E45] shadow-sm'
+                : 'bg-[#8E1B32] text-white border border-white/20 hover:bg-white hover:text-[#25282E] shadow-sm'
+            }`}
+            aria-label="Book an appointment by phone"
           >
             {content.nav.bookBtn}
           </a>
@@ -191,26 +240,28 @@ const Header: React.FC<HeaderProps> = ({
         {/* Mobile Burger */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`lg:hidden transition-colors focus:outline-none relative z-[110] p-2 -mr-2 ${isOpen ? 'text-stone-900' : (!isLight ? 'text-stone-900' : 'text-white')}`}
+          className={`lg:hidden transition-colors focus:outline-none relative z-[110] p-2 -mr-2 ${
+            isOpen ? 'text-[#25282E]' : !isLight ? 'text-[#25282E]' : 'text-white'
+          }`}
           aria-label="Toggle Menu"
           aria-expanded={isOpen}
         >
-          {isOpen ? <X size={32} /> : <Menu size={32} />}
+          {isOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Drawer */}
       {isOpen && (
-        <div className="lg:hidden fixed inset-0 bg-white z-[105] flex flex-col pt-24 px-8 space-y-8 animate-in fade-in slide-in-from-right duration-300 overflow-y-auto h-screen">
+        <div className="lg:hidden fixed inset-0 bg-[#F5F6F8] z-[105] flex flex-col pt-24 px-8 space-y-8 animate-in fade-in slide-in-from-right duration-300 overflow-y-auto h-screen">
           <nav className="flex flex-col space-y-6" aria-label="Mobile Navigation">
             {navLinks.map((link) => {
               if (link.target === 'gallery') {
                 return (
-                  <div key={link.name} className="flex items-center justify-between border-b border-stone-100 pb-4">
+                  <div key={link.name} className="flex items-center justify-between border-b border-slate-200/80 pb-4">
                     <a
                       href={link.href}
                       onClick={(e) => handleAnchorLink(e, link.type, link.target)}
-                      className="text-2xl font-serif font-bold text-stone-900 text-left active:text-primary"
+                      className="text-2xl font-serif font-semibold text-[#25282E] text-left active:text-primary"
                     >
                       {link.name}
                     </a>
@@ -219,19 +270,21 @@ const Header: React.FC<HeaderProps> = ({
                         href="https://www.instagram.com/salons_aneri/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-stone-800 hover:text-[#E1306C] transition-colors"
+                        className="text-slate-700 hover:text-[#E1306C] transition-colors"
                         onClick={() => setIsOpen(false)}
+                        aria-label="Instagram"
                       >
-                        <Instagram size={28} />
+                        <Instagram size={24} />
                       </a>
                       <a
                         href="https://www.facebook.com/61568612101531/about/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-stone-800 hover:text-[#1877F2] transition-colors"
+                        className="text-slate-700 hover:text-[#1877F2] transition-colors"
                         onClick={() => setIsOpen(false)}
+                        aria-label="Facebook"
                       >
-                        <Facebook size={28} />
+                        <Facebook size={24} />
                       </a>
                     </div>
                   </div>
@@ -243,7 +296,7 @@ const Header: React.FC<HeaderProps> = ({
                   key={link.name}
                   href={link.href}
                   onClick={(e) => handleAnchorLink(e, link.type, link.target)}
-                  className="text-2xl font-serif font-bold text-stone-900 text-left border-b border-stone-100 pb-4 active:text-primary"
+                  className="text-2xl font-serif font-semibold text-[#25282E] text-left border-b border-slate-200/80 pb-4 active:text-primary"
                 >
                   {link.name}
                 </a>
@@ -251,27 +304,30 @@ const Header: React.FC<HeaderProps> = ({
             })}
 
             {deferredPrompt && (
-              <div className="flex items-center justify-between border-b border-stone-100 pb-4 animate-in fade-in slide-in-from-right duration-500 delay-100">
+              <div className="flex items-center justify-between border-b border-slate-200/80 pb-4 animate-in fade-in slide-in-from-right duration-500">
                 <button
                   onClick={handleInstallClick}
-                  className="text-2xl font-serif font-bold text-stone-900 text-left active:text-primary"
+                  className="text-2xl font-serif font-semibold text-[#25282E] text-left active:text-primary"
                 >
                   {content.nav.installApp}
                 </button>
                 <button
                   onClick={handleInstallClick}
-                  className="text-stone-800 hover:text-primary transition-colors p-2"
+                  className="text-slate-700 hover:text-primary transition-colors p-2"
                   aria-label="Install App"
                 >
-                  <Download size={28} />
+                  <Download size={24} />
                 </button>
               </div>
             )}
           </nav>
 
           <div className="pt-4 space-y-6 pb-24">
-            <a href="tel:+37127580047" className="flex items-center justify-center gap-3 w-full bg-primary text-white py-5 rounded-2xl font-sans font-bold text-2xl shadow-xl">
-              <Phone size={24} /> <span className="tabular-nums">+371 27580047</span>
+            <a
+              href="tel:+37127580047"
+              className="flex items-center justify-center gap-3 w-full bg-[#8E1B32] hover:bg-[#3A3E45] text-white py-5 rounded-full font-sans font-bold text-xl shadow-lg transition-colors"
+            >
+              <Phone size={22} /> <span className="tabular-nums">+371 27580047</span>
             </a>
             <div className="flex justify-center gap-8">
               {(['lv', 'ru', 'en'] as Language[]).map((l) => {
@@ -286,7 +342,9 @@ const Header: React.FC<HeaderProps> = ({
                       setLang(l);
                       setIsOpen(false);
                     }}
-                    className={`text-lg font-bold uppercase tracking-widest ${lang === l ? 'text-primary' : 'text-stone-300'}`}
+                    className={`text-base font-bold uppercase tracking-widest ${
+                      lang === l ? 'text-[#8E1B32]' : 'text-slate-400'
+                    }`}
                   >
                     {l}
                   </a>

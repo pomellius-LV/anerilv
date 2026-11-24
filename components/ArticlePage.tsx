@@ -29,7 +29,7 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ articleId, lang, content, onN
 
   if (!article) {
     return (
-      <section className="pt-32 pb-24 min-h-screen bg-stone-50 flex items-center justify-center">
+      <section className="pt-32 pb-24 min-h-screen bg-[#F5F6F8] flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-serif text-stone-800 mb-4">Article not found</h1>
           <a
@@ -50,7 +50,7 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ articleId, lang, content, onN
     : buildSeoUrl(lang, 'prices');
 
   return (
-    <section className="pt-32 pb-24 min-h-screen bg-stone-50">
+    <section className="pt-32 pb-24 min-h-screen bg-[#F5F6F8]">
       <div className="container mx-auto px-4 max-w-3xl">
         <a
           href={buildSeoUrl(lang, 'prices')}

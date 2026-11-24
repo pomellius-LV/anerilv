@@ -155,6 +155,11 @@ export const onRequest = async (context: {
         el.setAttribute('content', seo.robots);
       }
     })
+    .on('meta[property="og:type"]', {
+      element(el) {
+        el.setAttribute('content', seo.ogType);
+      }
+    })
     .on('meta[property="og:title"]', {
       element(el) {
         el.setAttribute('content', seo.title);
@@ -168,6 +173,11 @@ export const onRequest = async (context: {
     .on('meta[property="og:url"]', {
       element(el) {
         el.setAttribute('content', seo.canonicalUrl);
+      }
+    })
+    .on('meta[property="og:image"]', {
+      element(el) {
+        el.setAttribute('content', seo.ogImage);
       }
     })
     .on('meta[property="og:locale"]', {
@@ -188,6 +198,11 @@ export const onRequest = async (context: {
     .on('meta[name="twitter:url"]', {
       element(el) {
         el.setAttribute('content', seo.canonicalUrl);
+      }
+    })
+    .on('meta[name="twitter:image"]', {
+      element(el) {
+        el.setAttribute('content', seo.ogImage);
       }
     })
     .on('link[rel="canonical"]', {

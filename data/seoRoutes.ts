@@ -918,6 +918,11 @@ export function getEdgeSeoPayload(pathname: string) {
   });
 
   const ogLocale = lang === 'lv' ? 'lv_LV' : lang === 'ru' ? 'ru_RU' : 'en_US';
+  const ogType = view === 'article' ? 'article' : 'website';
+  const ogImage =
+    view === 'service' && serviceId
+      ? `${baseUrl}/assets/services/${serviceId}.jpg`
+      : `${baseUrl}/assets/services/hair.jpg`;
 
   // Route-specific JSON-LD Schema.org
   const breadcrumbItems: Array<{ '@type': string; position: number; name: string; item: string }> = [
@@ -929,7 +934,20 @@ export function getEdgeSeoPayload(pathname: string) {
     }
   ];
 
-  if (view !== 'home' && view !== 'admin') {
+  if (view === 'service' && serviceId) {
+    breadcrumbItems.push({
+      '@type': 'ListItem',
+      position: 2,
+      name: STATIC_PAGES_SEO.prices[lang].h1.split('–')[0].trim(),
+      item: `${baseUrl}${buildSeoUrl(lang, 'prices')}`
+    });
+    breadcrumbItems.push({
+      '@type': 'ListItem',
+      position: 3,
+      name: THEMATIC_SERVICES_SEO[serviceId].cardLabels[lang],
+      item: canonicalUrl
+    });
+  } else if (view !== 'home' && view !== 'admin') {
     breadcrumbItems.push({
       '@type': 'ListItem',
       position: 2,
@@ -938,6 +956,8 @@ export function getEdgeSeoPayload(pathname: string) {
     });
   }
 
+  const hasOfferCatalog = view === 'home' || view === 'prices';
+
   const schemas: any[] = [
     {
       '@context': 'https://schema.org',
@@ -945,7 +965,10 @@ export function getEdgeSeoPayload(pathname: string) {
       '@id': `${baseUrl}/#salon`,
       name: 'Salons Aneri',
       url: baseUrl,
-      image: 'https://aneri-icon.pages.dev/photo/facade.jpg',
+      image: [
+        `${baseUrl}/assets/services/hair.jpg`,
+        'https://aneri-icon.pages.dev/photo/facade.jpg'
+      ],
       telephone: '+371 27580047',
       priceRange: '$$',
       paymentAccepted: 'Cash',
@@ -966,6 +989,20 @@ export function getEdgeSeoPayload(pathname: string) {
         latitude: 56.9085003,
         longitude: 24.1822941
       },
+      openingHoursSpecification: [
+        {
+          '@type': 'OpeningHoursSpecification',
+          dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+          opens: '09:00',
+          closes: '20:00'
+        },
+        {
+          '@type': 'OpeningHoursSpecification',
+          dayOfWeek: 'Sunday',
+          opens: '10:00',
+          closes: '16:00'
+        }
+      ],
       amenityFeature: [
         {
           '@type': 'LocationFeatureSpecification',
@@ -976,7 +1013,27 @@ export function getEdgeSeoPayload(pathname: string) {
       sameAs: [
         'https://www.instagram.com/salons_aneri/',
         'https://www.facebook.com/61568612101531/about/'
-      ]
+      ],
+      ...(hasOfferCatalog
+        ? {
+            hasOfferCatalog: {
+              '@type': 'OfferCatalog',
+              name: lang === 'lv' ? 'Salons Aneri Pakalpojumi' : lang === 'ru' ? 'Услуги салона Aneri' : 'Aneri Salon Services',
+              itemListElement: SERVICE_SECTION_IDS.map(id => {
+                const svc = THEMATIC_SERVICES_SEO[id];
+                return {
+                  '@type': 'Offer',
+                  itemOffered: {
+                    '@type': 'Service',
+                    name: svc.cardLabels[lang],
+                    description: svc.descriptions[lang],
+                    url: `${baseUrl}${buildSeoUrl(lang, 'service', { serviceId: id })}`
+                  }
+                };
+              })
+            }
+          }
+        : {})
     },
     {
       '@context': 'https://schema.org',
@@ -992,6 +1049,7 @@ export function getEdgeSeoPayload(pathname: string) {
       '@type': 'Service',
       name: svc.cardLabels[lang],
       description: svc.descriptions[lang],
+      image: `${baseUrl}/assets/services/${serviceId}.jpg`,
       url: canonicalUrl,
       areaServed: { '@type': 'City', name: 'Rīga' },
       provider: { '@id': `${baseUrl}/#salon` }
@@ -1004,6 +1062,24 @@ export function getEdgeSeoPayload(pathname: string) {
         name: item.question,
         acceptedAnswer: { '@type': 'Answer', text: item.answer }
       }))
+    });
+  } else if (view === 'article' && articleId) {
+    schemas.push({
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: h1,
+      description,
+      image: ogImage,
+      inLanguage: lang,
+      mainEntityOfPage: canonicalUrl,
+      author: {
+        '@type': 'Organization',
+        name: 'Salons Aneri',
+        url: baseUrl
+      },
+      publisher: {
+        '@id': `${baseUrl}/#salon`
+      }
     });
   }
 
@@ -1021,6 +1097,8 @@ export function getEdgeSeoPayload(pathname: string) {
     canonicalUrl,
     alternates,
     ogLocale,
+    ogType,
+    ogImage,
     schemas,
     thematicLinks: SERVICE_SECTION_IDS.map(id => ({
       href: buildSeoUrl(lang, 'service', { serviceId: id }),

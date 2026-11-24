@@ -34,8 +34,8 @@ const Footer: React.FC<FooterProps> = ({ lang, content, onNavigate }) => {
   };
 
   return (
-    <footer id="contacts" className="bg-stone-100/50 border-t border-stone-200 pt-24 pb-12 overflow-hidden relative">
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+    <footer id="contacts" className="bg-[#ECEFF3] border-t border-slate-200 pt-24 pb-12 overflow-hidden relative">
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#8E1B32]/30 to-transparent" />
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-16 lg:gap-20 mb-16">
@@ -44,9 +44,9 @@ const Footer: React.FC<FooterProps> = ({ lang, content, onNavigate }) => {
             <a
               href={buildSeoUrl(lang, 'home')}
               onClick={(e) => handleLink(e, 'home')}
-              className="inline-block text-4xl font-serif font-bold text-stone-900 mb-8 tracking-tight focus:outline-none"
+              className="inline-block text-4xl font-serif font-bold text-[#25282E] mb-8 tracking-tight focus:outline-none"
             >
-              Salons <span className="text-primary">Aneri</span>
+              Salons <span className="text-[#8E1B32]">Aneri</span>
             </a>
             <p className="leading-relaxed mb-10 text-stone-600 font-light text-lg">
               Mūsu mērķis ir sniegt Jums visaugstākās kvalitātes skaistumkopšanas pakalpojumus Rīgā, Ķengarāgā.
@@ -210,7 +210,7 @@ const Footer: React.FC<FooterProps> = ({ lang, content, onNavigate }) => {
         <div className="pt-8 border-t border-stone-200 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] uppercase tracking-[0.25em] font-bold text-stone-500">
           <div className="flex items-center gap-2">
             <span>&copy; {new Date().getFullYear()} {footer.copyright}</span>
-            <span className="opacity-50 normal-case tracking-normal">v1.24</span>
+            <span className="opacity-50 normal-case tracking-normal">v2.01</span>
             <button
               onClick={() => onNavigate('admin')}
               title="Administratora panelis"

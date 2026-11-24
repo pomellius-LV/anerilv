@@ -7,6 +7,7 @@ import {
   ServiceSectionId,
   buildSeoUrl
 } from '../data/seoRoutes';
+import { dataService } from '../services/dataService';
 
 interface SchemaMarkupProps {
   content: Content;
@@ -29,13 +30,22 @@ const SchemaMarkup: React.FC<SchemaMarkupProps> = ({
     return null;
   }
 
-  const salonSchema = {
+  const googleProfile = dataService.getGoogleProfile();
+  const hasRealRating =
+    googleProfile.rating !== '' &&
+    googleProfile.reviewsCount !== '' &&
+    Number(googleProfile.reviewsCount) > 0;
+
+  const salonSchema: Record<string, any> = {
     '@context': 'https://schema.org',
     '@type': 'BeautySalon',
     '@id': `${BASE_URL}/#salon`,
     name: 'Salons Aneri',
     url: BASE_URL,
-    image: 'https://aneri-icon.pages.dev/photo/facade.jpg',
+    image: [
+      `${BASE_URL}/assets/services/hair.jpg`,
+      'https://aneri-icon.pages.dev/photo/facade.jpg'
+    ],
     telephone: '+371 27580047',
     sameAs: [
       'https://www.instagram.com/salons_aneri/',
@@ -94,19 +104,39 @@ const SchemaMarkup: React.FC<SchemaMarkupProps> = ({
     ],
     priceRange: '$$',
     paymentAccepted: 'Cash',
-    makesOffer: SERVICE_SECTION_IDS.map(sId => {
-      const svc = THEMATIC_SERVICES_SEO[sId];
-      return {
-        '@type': 'Offer',
-        itemOffered: {
-          '@type': 'Service',
-          name: svc.cardLabels[lang],
-          description: svc.descriptions[lang],
-          url: `${BASE_URL}${buildSeoUrl(lang, 'service', { serviceId: sId })}`
-        }
-      };
-    })
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name:
+        lang === 'lv'
+          ? 'Salons Aneri Pakalpojumu Katalogs'
+          : lang === 'ru'
+          ? 'Каталог услуг Салона Aneri'
+          : 'Aneri Salon Service Catalog',
+      itemListElement: SERVICE_SECTION_IDS.map(sId => {
+        const svc = THEMATIC_SERVICES_SEO[sId];
+        return {
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: svc.cardLabels[lang],
+            description: svc.descriptions[lang],
+            url: `${BASE_URL}${buildSeoUrl(lang, 'service', { serviceId: sId })}`
+          }
+        };
+      })
+    }
   };
+
+  // Only emit AggregateRating when genuine Google profile numbers are entered in AdminPanel D1 settings
+  if (hasRealRating) {
+    salonSchema.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: googleProfile.rating,
+      reviewCount: Number(googleProfile.reviewsCount),
+      bestRating: '5',
+      worstRating: '1'
+    };
+  }
 
   // Contextual FAQ schema: specific FAQs on thematic service pages, full FAQ otherwise
   const faqItems =
@@ -199,6 +229,7 @@ const SchemaMarkup: React.FC<SchemaMarkupProps> = ({
           '@type': 'Service',
           name: THEMATIC_SERVICES_SEO[serviceId].cardLabels[lang],
           description: THEMATIC_SERVICES_SEO[serviceId].descriptions[lang],
+          image: `${BASE_URL}/assets/services/${serviceId}.jpg`,
           url: `${BASE_URL}${buildSeoUrl(lang, 'service', { serviceId })}`,
           areaServed: {
             '@type': 'City',
@@ -209,6 +240,32 @@ const SchemaMarkup: React.FC<SchemaMarkupProps> = ({
           }
         }
       : null;
+
+  // BlogPosting Schema on article views
+  const currentArticle =
+    view === 'article' && articleId
+      ? content.articles?.find(a => a.id === articleId)
+      : undefined;
+
+  const articleSchema = currentArticle
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: currentArticle.title,
+        description: currentArticle.metaDescription,
+        image: `${BASE_URL}/assets/services/hair.jpg`,
+        inLanguage: lang,
+        mainEntityOfPage: `${BASE_URL}${buildSeoUrl(lang, 'article', { articleId })}`,
+        author: {
+          '@type': 'Organization',
+          name: 'Salons Aneri',
+          url: BASE_URL
+        },
+        publisher: {
+          '@id': `${BASE_URL}/#salon`
+        }
+      }
+    : null;
 
   return (
     <>
@@ -228,6 +285,12 @@ const SchemaMarkup: React.FC<SchemaMarkupProps> = ({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(servicePageSchema) }}
+        />
+      )}
+      {articleSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
         />
       )}
     </>

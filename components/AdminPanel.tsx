@@ -37,7 +37,8 @@ import {
   Flower2,
   Sparkles,
   Leaf,
-  Calendar
+  Calendar,
+  Star
 } from 'lucide-react';
 
 interface AdminPanelProps {
@@ -187,6 +188,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
   const [snowColor, setSnowColor] = useState<string>(() => dataService.getSnowConfig().color);
   const [snowCount, setSnowCount] = useState<number>(() => dataService.getSnowConfig().count);
   const [isSavingSnow, setIsSavingSnow] = useState<boolean>(false);
+  const [googleRating, setGoogleRating] = useState<string>(() => dataService.getGoogleProfile().rating);
+  const [googleReviewsCount, setGoogleReviewsCount] = useState<string>(() => dataService.getGoogleProfile().reviewsCount);
+  const [isSavingGoogle, setIsSavingGoogle] = useState<boolean>(false);
 
   // Articles State
   const [articlesList, setArticlesList] = useState<any[]>([]);
@@ -239,7 +243,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
     setIsLoadingServices(false);
   };
 
-  // Load D1 site settings (season_mode, snow_enabled, snow_size, snow_color, snow_count)
+  // Load D1 site settings (season_mode, snow_*, google_*)
   const loadAdminSettings = async () => {
     await dataService.fetchAdminSettings();
     const cfg = dataService.getSnowConfig();
@@ -248,6 +252,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
     setSnowSize(cfg.size);
     setSnowColor(cfg.color);
     setSnowCount(cfg.count);
+    const gp = dataService.getGoogleProfile();
+    setGoogleRating(gp.rating);
+    setGoogleReviewsCount(gp.reviewsCount);
   };
 
   // Save all seasonal animation settings atomically to Cloudflare D1
@@ -293,6 +300,39 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
     const nextEnabled = !snowEnabled;
     setSnowEnabled(nextEnabled);
     await handleSaveSnowSettings({ enabled: nextEnabled });
+  };
+
+  const handleSaveGoogleProfile = async () => {
+    if (isSavingGoogle) return;
+    const cleanedRating = googleRating.trim().replace(',', '.');
+    const cleanedCount = googleReviewsCount.trim().replace(/[^\d]/g, '');
+
+    if (
+      cleanedRating !== '' &&
+      (!/^\d(\.\d{1,2})?$/.test(cleanedRating) || Number(cleanedRating) < 1 || Number(cleanedRating) > 5)
+    ) {
+      showError('Google vērtējumam jābūt no 1.0 līdz 5.0 (piemēram, 4.9) vai tukšam.');
+      return;
+    }
+
+    setIsSavingGoogle(true);
+    const res = await dataService.updateAdminSettings({
+      google_rating: cleanedRating,
+      google_reviews_count: cleanedCount
+    });
+    setIsSavingGoogle(false);
+
+    if (res.ok) {
+      setGoogleRating(cleanedRating);
+      setGoogleReviewsCount(cleanedCount);
+      showSuccess(
+        cleanedRating
+          ? `Google profils saglabāts D1 (${cleanedRating} ★ / ${cleanedCount || '0'} atsauksmes).`
+          : 'Google skaitliskais reitings notīrīts (tiek rādīta pieredzes kartīte).'
+      );
+    } else {
+      showError(res.error || 'Neizdevās saglabāt Google profila iestatījumus.');
+    }
   };
 
   // 3. Load Articles for diagnostic review
@@ -532,7 +572,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
     }
   };
 
-  // 8. Authoritative Server-Side D1 JSON Backup Export (v1.24)
+  // 8. Authoritative Server-Side D1 JSON Backup Export (v2.01)
   const handleExportBackup = async () => {
     setIsDownloadingBackup(true);
     setSaveErrorMsg('');
@@ -543,11 +583,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
 
       if (res.ok && res.data) {
         jsonStr = JSON.stringify(res.data, null, 2);
-        filename = `aneri_d1_backup_${new Date().toISOString().slice(0, 10)}_v1.24.json`;
+        filename = `aneri_d1_backup_${new Date().toISOString().slice(0, 10)}_v2.01.json`;
         showSuccess(`Servera Cloudflare D1 rezerves kopija veiksmīgi iegūta (${res.data.totalRecords || 0} ieraksti).`);
       } else {
         jsonStr = dataService.exportBackupJson();
-        filename = `aneri_catalog_snapshot_${new Date().toISOString().slice(0, 10)}_v1.24.json`;
+        filename = `aneri_catalog_snapshot_${new Date().toISOString().slice(0, 10)}_v2.01.json`;
         showError(`D1 servera brīdinājums: ${res.error || 'D1 bezsaistē'}. Lejupielādēts lokālais kataloga uzņēmums.`);
       }
 
@@ -761,7 +801,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
             <div className="flex items-center gap-2.5">
               <span className="text-2xl font-serif font-bold text-primary">Aneri</span>
               <span className="text-[11px] font-mono uppercase bg-stone-800 text-rose-300 border border-stone-700 px-2 py-0.5 rounded font-semibold">
-                Admin Panel v1.24
+                Admin Panel v2.01
               </span>
             </div>
             <div className="hidden sm:flex items-center gap-2 text-xs text-stone-400 border-l border-stone-800 pl-4">
@@ -1554,11 +1594,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                 </button>
 
                 <a
-                  href="/aneri-v1.24.zip"
-                  download="aneri-v1.24.zip"
+                  href="/aneri-v2.01.zip"
+                  download="aneri-v2.01.zip"
                   className="px-5 py-3 rounded-xl bg-primary hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors shadow-sm"
                 >
-                  <Download size={14} /> Lejupielādēt Koda Arhīvu (aneri-v1.24.zip)
+                  <Download size={14} /> Lejupielādēt Koda Arhīvu (aneri-v2.01.zip)
                 </a>
               </div>
             </div>
@@ -1898,6 +1938,77 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                     <Check size={14} />
                   )}
                   <span>Saglabāt iestatījumus D1</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-200 space-y-5">
+              <div className="space-y-1 pb-3 border-b border-stone-100">
+                <h2 className="text-lg font-serif font-bold text-stone-900 flex items-center gap-2">
+                  <Star size={18} className="text-[#8E1B32] fill-[#8E1B32] shrink-0" />
+                  <span>Google Atsauksmes &amp; Reitings (Sākumlapa + Schema.org)</span>
+                </h2>
+                <p className="text-xs text-stone-600 leading-relaxed">
+                  Ievadiet reālo vērtējumu no jūsu Google Maps profila (piem., <strong>4.9</strong> un atsauksmju skaitu). Ja lauki paliek tukši, mājaslapā tiks rādīts «15+ gadu pieredze Rīgā» un saite uz Google Maps — bez izdomātiem skaitļiem.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <label htmlFor="google-rating-input" className="block text-stone-500 font-bold uppercase mb-1.5">
+                    Google vērtējums (1.0 – 5.0)
+                  </label>
+                  <input
+                    id="google-rating-input"
+                    type="text"
+                    inputMode="decimal"
+                    placeholder="piem., 4.9"
+                    value={googleRating}
+                    onChange={(e) => setGoogleRating(e.target.value)}
+                    className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 font-semibold tabular-nums focus:outline-none focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="google-reviews-input" className="block text-stone-500 font-bold uppercase mb-1.5">
+                    Atsauksmju skaits
+                  </label>
+                  <input
+                    id="google-reviews-input"
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="piem., 142"
+                    value={googleReviewsCount}
+                    onChange={(e) => setGoogleReviewsCount(e.target.value)}
+                    className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 font-semibold tabular-nums focus:outline-none focus:border-primary"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setGoogleRating('');
+                    setGoogleReviewsCount('');
+                  }}
+                  disabled={isSavingGoogle}
+                  className="px-3.5 py-2 rounded-xl border border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-600 text-xs font-semibold transition-colors"
+                >
+                  Notīrīt laukus
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSaveGoogleProfile}
+                  disabled={isSavingGoogle}
+                  className="px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-primary disabled:opacity-60 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors shadow-sm"
+                >
+                  {isSavingGoogle ? (
+                    <RefreshCw size={14} className="animate-spin" />
+                  ) : (
+                    <Check size={14} />
+                  )}
+                  <span>Saglabāt Google profilu D1</span>
                 </button>
               </div>
             </div>

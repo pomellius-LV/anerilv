@@ -14,7 +14,7 @@ interface TermsPageProps {
 
 const TermsPage: React.FC<TermsPageProps> = ({ lang, title, content, setView, homeLabel }) => {
   return (
-    <section className="pt-40 pb-32 min-h-screen bg-stone-50">
+    <section className="pt-40 pb-32 min-h-screen bg-[#F5F6F8]">
       <div className="container mx-auto px-4 max-w-3xl">
         <a
           href={buildSeoUrl(lang, 'home')}

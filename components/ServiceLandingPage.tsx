@@ -93,7 +93,7 @@ const ServiceLandingPage: React.FC<ServiceLandingPageProps> = ({
   };
 
   return (
-    <article className="pt-28 md:pt-36 pb-24 min-h-screen bg-stone-50">
+    <article className="pt-28 md:pt-36 pb-24 min-h-screen bg-[#F5F6F8]">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Crawlable Breadcrumb Navigation */}
         <nav
@@ -134,7 +134,7 @@ const ServiceLandingPage: React.FC<ServiceLandingPageProps> = ({
           <div className="flex flex-wrap items-center gap-4 pt-6 border-t border-stone-100">
             <a
               href="tel:+37127580047"
-              className="inline-flex items-center gap-3 bg-primary hover:bg-stone-900 text-white px-8 py-4 rounded-full font-bold text-xs md:text-sm uppercase tracking-widest transition-colors shadow-lg whitespace-nowrap"
+              className="inline-flex items-center gap-3 bg-[#8E1B32] hover:bg-[#3A3E45] text-white px-8 py-4 rounded-full font-bold text-xs md:text-sm uppercase tracking-widest transition-colors shadow-lg whitespace-nowrap"
             >
               <Phone size={16} />
               <span>{content.nav.bookBtn}:</span>
