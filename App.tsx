@@ -22,7 +22,10 @@ import ArticlePage from './components/ArticlePage';
 import ServiceLandingPage from './components/ServiceLandingPage';
 import AdminPanel from './components/AdminPanel';
 import SnowOverlay from './components/SnowOverlay';
+import OffHoursCallModal from './components/OffHoursCallModal';
+import MobileCallDock from './components/MobileCallDock';
 import { dataService } from './services/dataService';
+import { isSalonOpenInRigaNow } from './utils/salonHours';
 
 export const generateUrl = (
   lang: Language,
@@ -39,6 +42,15 @@ const App: React.FC = () => {
   const [view, setViewInternal] = useState<View>(initialRoute.view);
   const [articleId, setArticleId] = useState<string | undefined>(initialRoute.articleId);
   const [serviceId, setServiceId] = useState<ServiceSectionId | undefined>(initialRoute.serviceId);
+  const [offHoursModalOpen, setOffHoursModalOpen] = useState(false);
+
+  const handleBookingCall = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    if (!isSalonOpenInRigaNow()) {
+      e.preventDefault();
+      setOffHoursModalOpen(true);
+    }
+  };
 
   const homeScrollRef = useRef(0);
   const prevViewRef = useRef<View>('home');
@@ -301,9 +313,9 @@ const App: React.FC = () => {
       <main id="main-content">
         {view === 'home' && (
           <>
-            <Hero content={currentContent} lang={lang} />
+            <Hero content={currentContent} lang={lang} onBookingCall={handleBookingCall} />
             <Services lang={lang} content={currentContent} onNavigate={navigateTo} />
-            <Advantages content={currentContent} lang={lang} />
+            <Advantages content={currentContent} lang={lang} onBookingCall={handleBookingCall} />
           </>
         )}
         {view === 'service' && serviceId && (
@@ -312,10 +324,16 @@ const App: React.FC = () => {
             lang={lang}
             content={currentContent}
             onNavigate={navigateTo}
+            onBookingCall={handleBookingCall}
           />
         )}
         {view === 'prices' && (
-          <PricePage lang={lang} content={currentContent} onNavigate={navigateTo} />
+          <PricePage
+            lang={lang}
+            content={currentContent}
+            onNavigate={navigateTo}
+            onBookingCall={handleBookingCall}
+          />
         )}
         {view === 'faq' && <FAQPage lang={lang} content={currentContent} setView={setView} />}
         {view === 'gallery' && <GalleryPage lang={lang} content={currentContent} setView={setView} />}
@@ -349,6 +367,16 @@ const App: React.FC = () => {
 
       <Footer lang={lang} content={currentContent} onNavigate={navigateTo} />
       <CookieConsent content={currentContent} />
+      <MobileCallDock
+        lang={lang}
+        callLabel={currentContent.nav.bookBtn}
+        onBookingCall={handleBookingCall}
+      />
+      <OffHoursCallModal
+        isOpen={offHoursModalOpen}
+        lang={lang}
+        onClose={() => setOffHoursModalOpen(false)}
+      />
       <SnowOverlay config={dataService.getSnowConfig()} lang={lang} />
     </div>
   );

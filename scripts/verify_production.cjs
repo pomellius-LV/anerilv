@@ -124,18 +124,18 @@ assert(!authCode.includes('2640'), 'Auth endpoint must NOT check PIN 2640');
 console.log('  ✓ Fake Math.random() session generator removed from functions/api/admin/auth.ts');
 
 // Test 4: Check version bumps across files
-console.log('\n[TEST 4] Checking version v2.01 bump across files...');
+console.log('\n[TEST 4] Checking version v2.20 bump across files...');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-assert(pkg.name.includes('2.01'), 'package.json name must reflect 2.01');
+assert(pkg.name.includes('2.20'), 'package.json name must reflect 2.20');
 
 const footerCode = fs.readFileSync('components/Footer.tsx', 'utf8');
-assert(footerCode.includes('v2.01'), 'Footer.tsx must display v2.01');
+assert(footerCode.includes('v2.20'), 'Footer.tsx must display v2.20');
 
 const wranglerCode = fs.readFileSync('wrangler.jsonc', 'utf8');
 assert(!wranglerCode.includes('REPLACE_WITH_YOUR_PRODUCTION_D1_ID'), 'wrangler.jsonc must not contain dummy REPLACE_WITH_... strings');
 assert(wranglerCode.includes('e356eee0-ed72-4c96-a0bf-d87f44834d6e'), 'wrangler.jsonc must contain real production database_id');
 assert(wranglerCode.includes('pomellius.cloudflareaccess.com'), 'wrangler.jsonc must use pomellius.cloudflareaccess.com');
-console.log('  ✓ Version bumped to 2.01 in package.json and Footer.tsx');
+console.log('  ✓ Version bumped to 2.20 in package.json and Footer.tsx');
 console.log('  ✓ wrangler.jsonc configured with real database IDs and pomellius.cloudflareaccess.com');
 
 console.log('\n=== ALL PRODUCTION HARDENING TESTS PASSED! ===');

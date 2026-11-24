@@ -6,6 +6,7 @@ import { useRigaSalonStatus } from '../utils/salonHours';
 interface HeroProps {
   content: Content;
   lang: Language;
+  onBookingCall?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
 const HERO_UI: Record<
@@ -29,7 +30,7 @@ const HERO_UI: Record<
   }
 };
 
-const Hero: React.FC<HeroProps> = ({ content, lang }) => {
+const Hero: React.FC<HeroProps> = ({ content, lang, onBookingCall }) => {
   const { hero } = content;
   const status = useRigaSalonStatus(lang);
   const ui = HERO_UI[lang] || HERO_UI.lv;
@@ -69,6 +70,7 @@ const Hero: React.FC<HeroProps> = ({ content, lang }) => {
           <div className="flex flex-col items-center gap-3.5 mb-14">
             <a
               href="tel:+37127580047"
+              onClick={onBookingCall}
               className="group inline-flex items-center gap-3.5 bg-[#8E1B32] text-white px-9 py-4 sm:px-10 sm:py-4.5 rounded-full font-semibold text-xs sm:text-sm uppercase tracking-[0.18em] hover:bg-white hover:text-[#25282E] transition-all duration-300 transform hover:-translate-y-0.5 shadow-2xl border border-white/15"
             >
               <Phone size={17} className="shrink-0" />

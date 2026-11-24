@@ -630,15 +630,23 @@ const SnowOverlay: React.FC<SnowOverlayProps> = ({ config, enabled, lang }) => {
   });
 
   const [hasCookieBanner, setHasCookieBanner] = useState<boolean>(false);
+  const [hasMobileCallDock, setHasMobileCallDock] = useState<boolean>(false);
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
-    const checkBanner = () => {
+    const checkOverlays = () => {
       setHasCookieBanner(Boolean(document.getElementById('cookie-consent-banner')));
+      const dock = document.getElementById('mobile-call-dock');
+      setHasMobileCallDock(dock?.getAttribute('data-visible') === 'true');
     };
-    checkBanner();
-    const observer = new MutationObserver(checkBanner);
-    observer.observe(document.body, { childList: true, subtree: true });
+    checkOverlays();
+    const observer = new MutationObserver(checkOverlays);
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['data-visible']
+    });
     return () => observer.disconnect();
   }, []);
 
@@ -1215,7 +1223,11 @@ const SnowOverlay: React.FC<SnowOverlayProps> = ({ config, enabled, lang }) => {
         <div
           data-snow-hud="true"
           className={`fixed right-4 z-[45] flex items-center gap-3 px-3.5 py-2 rounded-2xl bg-white/92 backdrop-blur-md border border-stone-200/90 shadow-lg text-stone-800 transition-all duration-200 ${
-            hasCookieBanner ? 'bottom-24 md:bottom-20' : 'bottom-4'
+            hasCookieBanner
+              ? 'bottom-24 md:bottom-20'
+              : hasMobileCallDock
+                ? 'bottom-20 md:bottom-4'
+                : 'bottom-4'
           }`}
         >
           <div className="flex items-center gap-2 text-xs font-medium text-stone-700 whitespace-nowrap">

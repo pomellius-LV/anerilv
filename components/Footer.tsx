@@ -34,57 +34,64 @@ const Footer: React.FC<FooterProps> = ({ lang, content, onNavigate }) => {
   };
 
   return (
-    <footer id="contacts" className="bg-[#ECEFF3] border-t border-slate-200 pt-24 pb-12 overflow-hidden relative">
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#8E1B32]/30 to-transparent" />
+    <footer
+      id="contacts"
+      className="bg-signboard-metal border-t border-slate-500/40 pt-20 pb-12 overflow-hidden relative text-white"
+    >
+      {/* Signature Matrix Crimson Hairline */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#8E1B32] via-[#E33955] to-[#8E1B32]"
+        aria-hidden="true"
+      />
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-16 lg:gap-20 mb-16">
+      <div className="container mx-auto px-4 md:px-6 max-w-6xl relative z-10">
+        <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-12 lg:gap-14 mb-16">
           {/* Logo & About */}
           <div className="col-span-1">
             <a
               href={buildSeoUrl(lang, 'home')}
               onClick={(e) => handleLink(e, 'home')}
-              className="inline-block text-4xl font-serif font-bold text-[#25282E] mb-8 tracking-tight focus:outline-none"
+              className="inline-block text-4xl font-serif font-bold text-white mb-6 tracking-tight focus:outline-none"
             >
-              Salons <span className="text-[#8E1B32]">Aneri</span>
+              Salons <span className="text-[#E33955]">Aneri</span>
             </a>
-            <p className="leading-relaxed mb-10 text-stone-600 font-light text-lg">
+            <p className="leading-relaxed mb-8 text-[#E3E7ED]/90 font-light text-base">
               Mūsu mērķis ir sniegt Jums visaugstākās kvalitātes skaistumkopšanas pakalpojumus Rīgā, Ķengarāgā.
             </p>
-            <div className="flex gap-6">
+            <div className="flex gap-4">
               <a
                 href={instagramUrl}
                 target="_blank"
                 rel="nofollow noreferrer noopener"
-                className="flex items-center justify-center w-12 h-12 rounded-full bg-white border border-stone-200 text-[#E1306C] hover:scale-110 hover:shadow-lg transition-all duration-300"
+                className="flex items-center justify-center w-11 h-11 rounded-full bg-white/10 border border-white/20 text-[#E3E7ED] hover:bg-[#8E1B32] hover:border-[#E33955] hover:text-white transition-all duration-300"
                 aria-label="Visit our Instagram"
               >
-                <Instagram size={24} />
+                <Instagram size={20} />
               </a>
               <a
                 href={facebookUrl}
                 target="_blank"
                 rel="nofollow noreferrer noopener"
-                className="flex items-center justify-center w-12 h-12 rounded-full bg-white border border-stone-200 text-[#1877F2] hover:scale-110 hover:shadow-lg transition-all duration-300"
+                className="flex items-center justify-center w-11 h-11 rounded-full bg-white/10 border border-white/20 text-[#E3E7ED] hover:bg-[#8E1B32] hover:border-[#E33955] hover:text-white transition-all duration-300"
                 aria-label="Visit our Facebook"
               >
-                <Facebook size={24} />
+                <Facebook size={20} />
               </a>
             </div>
           </div>
 
           {/* Links */}
           <nav aria-label="Footer Navigation">
-            <h3 className="text-stone-900 font-serif font-bold mb-10 text-xl tracking-wider uppercase flex items-center gap-3">
+            <h3 className="text-white font-serif font-semibold mb-8 text-lg tracking-wider uppercase flex items-center gap-3">
               {footer.quickLinks}
-              <span className="h-px w-8 bg-primary/30"></span>
+              <span className="h-px w-8 bg-[#E33955]/70" />
             </h3>
-            <ul className="space-y-4 text-sm font-semibold text-stone-600">
+            <ul className="space-y-3.5 text-sm font-medium text-[#E3E7ED]">
               <li>
                 <a
                   href={buildSeoUrl(lang, 'home')}
                   onClick={(e) => handleLink(e, 'home')}
-                  className="flex items-center gap-2 hover:text-primary hover:translate-x-2 transition-all duration-300 focus:outline-none w-full text-left"
+                  className="flex items-center gap-2 hover:text-white hover:translate-x-1.5 transition-all duration-300 focus:outline-none w-full text-left"
                 >
                   {nav.home}
                 </a>
@@ -93,7 +100,7 @@ const Footer: React.FC<FooterProps> = ({ lang, content, onNavigate }) => {
                 <a
                   href={buildSeoUrl(lang, 'faq')}
                   onClick={(e) => handleLink(e, 'faq')}
-                  className="flex items-center gap-2 hover:text-primary hover:translate-x-2 transition-all duration-300 focus:outline-none w-full text-left"
+                  className="flex items-center gap-2 hover:text-white hover:translate-x-1.5 transition-all duration-300 focus:outline-none w-full text-left"
                 >
                   {nav.faq}
                 </a>
@@ -102,7 +109,7 @@ const Footer: React.FC<FooterProps> = ({ lang, content, onNavigate }) => {
                 <a
                   href={buildSeoUrl(lang, 'prices')}
                   onClick={(e) => handleLink(e, 'prices')}
-                  className="flex items-center gap-2 hover:text-primary hover:translate-x-2 transition-all duration-300 focus:outline-none w-full text-left"
+                  className="flex items-center gap-2 hover:text-white hover:translate-x-1.5 transition-all duration-300 focus:outline-none w-full text-left"
                 >
                   {nav.prices}
                 </a>
@@ -111,7 +118,7 @@ const Footer: React.FC<FooterProps> = ({ lang, content, onNavigate }) => {
                 <a
                   href={buildSeoUrl(lang, 'gallery')}
                   onClick={(e) => handleLink(e, 'gallery')}
-                  className="flex items-center gap-2 hover:text-primary hover:translate-x-2 transition-all duration-300 focus:outline-none w-full text-left"
+                  className="flex items-center gap-2 hover:text-white hover:translate-x-1.5 transition-all duration-300 focus:outline-none w-full text-left"
                 >
                   {nav.gallery}
                 </a>
@@ -120,7 +127,7 @@ const Footer: React.FC<FooterProps> = ({ lang, content, onNavigate }) => {
                 <a
                   href="https://5plus.lv"
                   rel="dofollow"
-                  className="flex items-center gap-2 hover:text-primary hover:translate-x-2 transition-all duration-300 focus:outline-none w-full text-left"
+                  className="flex items-center gap-2 hover:text-white hover:translate-x-1.5 transition-all duration-300 focus:outline-none w-full text-left"
                 >
                   Noderīgas saites
                 </a>
@@ -130,60 +137,64 @@ const Footer: React.FC<FooterProps> = ({ lang, content, onNavigate }) => {
 
           {/* Contacts */}
           <div>
-            <h3 className="text-stone-900 font-serif font-bold mb-10 text-xl tracking-wider uppercase flex items-center gap-3">
+            <h3 className="text-white font-serif font-semibold mb-8 text-lg tracking-wider uppercase flex items-center gap-3">
               {footer.addressLabel}
-              <span className="h-px w-8 bg-primary/30"></span>
+              <span className="h-px w-8 bg-[#E33955]/70" />
             </h3>
-            <div className="space-y-8">
+            <div className="space-y-7">
               <a
                 href={mapUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-start gap-5 group"
+                className="flex items-start gap-4 group"
                 aria-label="View our location on Google Maps"
               >
-                <div className="shrink-0 w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                <div className="shrink-0 w-10 h-10 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-[#E33955] group-hover:bg-[#8E1B32] group-hover:text-white transition-colors duration-300">
                   <MapPin size={18} />
                 </div>
                 <div>
-                  <span className="block text-stone-900 font-medium text-lg leading-snug group-hover:text-primary transition-colors">Latgales iela 264</span>
-                  <span className="text-stone-500 text-sm font-light">Rīga, Ķengarags</span>
-                  <span className="flex items-center gap-1 text-[10px] uppercase font-bold text-primary mt-2 tracking-widest opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
-                    Atvērt kartē <ArrowUpRight size={10} />
+                  <span className="block text-white font-medium text-base leading-snug group-hover:text-[#E33955] transition-colors">
+                    Latgales iela 264
+                  </span>
+                  <span className="text-[#C7CDD6] text-sm font-light">Rīga, Ķengarags</span>
+                  <span className="flex items-center gap-1 text-[10px] uppercase font-bold text-[#E33955] mt-1.5 tracking-widest opacity-85 group-hover:opacity-100 transition-opacity">
+                    Atvērt kartē <ArrowUpRight size={11} />
                   </span>
                 </div>
               </a>
               <a
                 href="tel:+37127580047"
-                className="flex items-center gap-5 group"
+                className="flex items-center gap-4 group"
                 aria-label="Call us"
               >
-                <div className="shrink-0 w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                <div className="shrink-0 w-10 h-10 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-[#E33955] group-hover:bg-[#8E1B32] group-hover:text-white transition-colors duration-300">
                   <Phone size={18} />
                 </div>
-                <span className="text-2xl font-sans font-bold tracking-tight tabular-nums text-stone-900 group-hover:text-primary transition-colors">+371 27580047</span>
+                <span className="text-xl sm:text-2xl font-sans font-bold tracking-tight tabular-nums text-white group-hover:text-[#E33955] transition-colors">
+                  +371 27580047
+                </span>
               </a>
             </div>
           </div>
 
           {/* Hours */}
           <div>
-            <h3 className="text-stone-900 font-serif font-bold mb-10 text-xl tracking-wider uppercase flex items-center gap-3">
+            <h3 className="text-white font-serif font-semibold mb-8 text-lg tracking-wider uppercase flex items-center gap-3">
               {footer.hoursLabel}
-              <span className="h-px w-8 bg-primary/30"></span>
+              <span className="h-px w-8 bg-[#E33955]/70" />
             </h3>
-            <div className="flex items-start gap-5">
-              <div className="shrink-0 w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-primary">
+            <div className="flex items-start gap-4">
+              <div className="shrink-0 w-10 h-10 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-[#E33955]">
                 <Clock size={18} />
               </div>
-              <div className="space-y-4 font-light text-lg w-full">
-                <div className="flex justify-between items-center border-b border-stone-200 pb-2">
-                  <span className="text-stone-600">P.-S.</span>
-                  <span className="text-stone-900 font-medium tabular-nums">09:00 - 20:00</span>
+              <div className="space-y-3.5 font-light text-base w-full">
+                <div className="flex justify-between items-center border-b border-white/15 pb-2">
+                  <span className="text-[#C7CDD6]">P.-S.</span>
+                  <span className="text-white font-medium tabular-nums">09:00 - 20:00</span>
                 </div>
-                <div className="flex justify-between items-center border-b border-stone-200 pb-2">
-                  <span className="text-stone-600">Sv.</span>
-                  <span className="text-stone-900 font-medium tabular-nums">10:00 - 16:00</span>
+                <div className="flex justify-between items-center border-b border-white/15 pb-2">
+                  <span className="text-[#C7CDD6]">Sv.</span>
+                  <span className="text-white font-medium tabular-nums">10:00 - 16:00</span>
                 </div>
               </div>
             </div>
@@ -193,28 +204,28 @@ const Footer: React.FC<FooterProps> = ({ lang, content, onNavigate }) => {
         {/* Clean Crawl Links to 6 Thematic Riga Service Pages */}
         <nav
           aria-label="Services in Riga"
-          className="pt-8 pb-8 border-t border-stone-200/80 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs font-medium text-stone-500"
+          className="pt-8 pb-8 border-t border-white/15 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs font-medium text-[#C7CDD6]"
         >
           {SERVICE_SECTION_IDS.map(sId => (
             <a
               key={sId}
               href={buildSeoUrl(lang, 'service', { serviceId: sId })}
               onClick={(e) => handleLink(e, 'service', { serviceId: sId })}
-              className="hover:text-primary transition-colors"
+              className="hover:text-white transition-colors"
             >
               {THEMATIC_SERVICES_SEO[sId].cardLabels[lang]}
             </a>
           ))}
         </nav>
 
-        <div className="pt-8 border-t border-stone-200 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] uppercase tracking-[0.25em] font-bold text-stone-500">
+        <div className="pt-8 border-t border-white/15 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] uppercase tracking-[0.25em] font-semibold text-[#C7CDD6]">
           <div className="flex items-center gap-2">
             <span>&copy; {new Date().getFullYear()} {footer.copyright}</span>
-            <span className="opacity-50 normal-case tracking-normal">v2.01</span>
+            <span className="opacity-70 normal-case tracking-normal">v2.20</span>
             <button
               onClick={() => onNavigate('admin')}
               title="Administratora panelis"
-              className="opacity-30 hover:opacity-100 hover:text-primary transition-opacity p-1 ml-1 focus:outline-none"
+              className="opacity-45 hover:opacity-100 hover:text-[#E33955] transition-opacity p-1 ml-1 focus:outline-none"
               aria-label="Admin panel"
             >
               <Lock size={12} />
@@ -224,14 +235,14 @@ const Footer: React.FC<FooterProps> = ({ lang, content, onNavigate }) => {
             <a
               href={buildSeoUrl(lang, 'terms')}
               onClick={(e) => handleLink(e, 'terms')}
-              className="hover:text-primary transition-colors focus:outline-none"
+              className="hover:text-white transition-colors focus:outline-none"
             >
               {footer.termsLabel}
             </a>
             <a
               href={buildSeoUrl(lang, 'privacy')}
               onClick={(e) => handleLink(e, 'privacy')}
-              className="hover:text-primary transition-colors focus:outline-none"
+              className="hover:text-white transition-colors focus:outline-none"
             >
               {footer.privacyLabel}
             </a>

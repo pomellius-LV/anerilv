@@ -1,12 +1,13 @@
 import React from 'react';
 import { Content, Language } from '../types';
-import { Clock, MapPin, Phone, Star, ArrowUpRight, Car } from 'lucide-react';
+import { Award, Heart, Clock, MapPin, Phone, Star, ArrowUpRight, Car } from 'lucide-react';
 import { useRigaSalonStatus } from '../utils/salonHours';
 import { dataService } from '../services/dataService';
 
 interface AdvantagesProps {
   content: Content;
   lang?: Language;
+  onBookingCall?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
 const TRUST_UI: Record<
@@ -75,7 +76,9 @@ const SALON_BRANDS = [
   { name: 'COSMO & MELA PEEL', sub: 'Dermaceutics', isMatrix: false }
 ] as const;
 
-const Advantages: React.FC<AdvantagesProps> = ({ content, lang = 'lv' }) => {
+const ADVANTAGE_ICONS = [Award, Heart, Car, MapPin];
+
+const Advantages: React.FC<AdvantagesProps> = ({ content, lang = 'lv', onBookingCall }) => {
   const status = useRigaSalonStatus(lang);
   const googleProfile = dataService.getGoogleProfile();
   const ui = TRUST_UI[lang] || TRUST_UI.lv;
@@ -103,19 +106,25 @@ const Advantages: React.FC<AdvantagesProps> = ({ content, lang = 'lv' }) => {
               </h2>
 
               <div className="divide-y divide-slate-200/90 border-y border-slate-200/90">
-                {content.advantages.items.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="py-4 sm:py-5 flex items-baseline gap-5"
-                  >
-                    <span className="font-sans text-xs font-semibold tracking-[0.2em] text-[#8E1B32] tabular-nums shrink-0">
-                      0{idx + 1}
-                    </span>
-                    <p className="text-[#25282E] text-base sm:text-lg font-normal leading-snug">
-                      {item}
-                    </p>
-                  </div>
-                ))}
+                {content.advantages.items.map((item, idx) => {
+                  const Icon = ADVANTAGE_ICONS[idx] || Award;
+                  return (
+                    <div
+                      key={idx}
+                      className="py-4 sm:py-5 flex items-center gap-4"
+                    >
+                      <span
+                        className="w-9 h-9 rounded-lg bg-[#8E1B32]/10 text-[#8E1B32] flex items-center justify-center shrink-0"
+                        aria-hidden="true"
+                      >
+                        <Icon size={18} strokeWidth={1.9} />
+                      </span>
+                      <p className="text-[#25282E] text-base sm:text-lg font-normal leading-snug">
+                        {item}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -127,6 +136,7 @@ const Advantages: React.FC<AdvantagesProps> = ({ content, lang = 'lv' }) => {
 
               <a
                 href="tel:+37127580047"
+                onClick={onBookingCall}
                 className="shrink-0 inline-flex items-center justify-center gap-2.5 bg-[#8E1B32] text-white px-7 py-3.5 rounded-full text-xs font-semibold uppercase tracking-[0.16em] hover:bg-[#3A3E45] transition-colors shadow-sm"
               >
                 <Phone size={15} />
