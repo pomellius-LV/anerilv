@@ -20,11 +20,13 @@ interface SpriteEntry {
   height: number;
 }
 
-interface MicroGlint {
+// Physical 3D crystal facet on a snowflake: only reflects light when rotated/tilted into specular alignment with Sun half-vector
+interface CrystalFacet {
   distFrac: number;
   angleOffset: number;
-  speed: number;
-  phase: number;
+  nx: number;
+  ny: number;
+  nz: number;
   size: number;
 }
 
@@ -43,17 +45,28 @@ interface Particle {
   spinSpeed: number;
   opacity: number;
   spriteIndex: number;
-  // Shared kinematics slots reused cleanly per season
+  // General / Autumn / Winter kinematics slots
   auxA: number;
   auxB: number;
   auxC: number;
+  tiltFreqX: number;
+  tiltFreqY: number;
+  tiltAmpX: number;
+  tiltAmpY: number;
   regime: LeafRegime;
-  glints?: MicroGlint[];
-  // Spring flowerbed slots
+  facets?: CrystalFacet[];
+  // Summer asynchronous butterfly state machine
+  wingPhase: number;
+  flapSpeed: number;
+  modeTimer: number;
+  isGliding: boolean;
+  glideAngle: number;
+  // Spring staggered multi-step botanical flowerbed slots
   growProgress: number;
   growDuration: number;
   growDelay: number;
-  respawnTimer: number;
+  bloomLife: number;
+  wilting: number; // 0 = alive/growing, >0..1 = gentle fade before new sprout
 }
 
 interface Sparkle {
@@ -76,42 +89,58 @@ interface PopRing {
   color: string;
 }
 
+const SPRITE_VERSION = '1.24';
+
 const SEASONAL_SPRITE_URLS: Record<SeasonType, string[]> = {
   winter: [
-    '/assets/seasonal/snowflake_1.png',
-    '/assets/seasonal/snowflake_2.png',
-    '/assets/seasonal/snowflake_3.png',
-    '/assets/seasonal/snowflake_4.png',
-    '/assets/seasonal/snowflake_5.png',
-    '/assets/seasonal/snowflake_6.png',
-    '/assets/seasonal/snowflake_7.png',
-    '/assets/seasonal/snowflake_8.png'
+    `/assets/seasonal/snowflake_1.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/snowflake_2.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/snowflake_3.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/snowflake_4.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/snowflake_5.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/snowflake_6.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/snowflake_7.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/snowflake_8.png?v=${SPRITE_VERSION}`
   ],
   spring: [
-    '/assets/seasonal/spring_1.png',
-    '/assets/seasonal/spring_2.png',
-    '/assets/seasonal/spring_3.png',
-    '/assets/seasonal/spring_4.png',
-    '/assets/seasonal/spring_5.png',
-    '/assets/seasonal/spring_6.png'
+    `/assets/seasonal/spring_1.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/spring_2.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/spring_3.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/spring_4.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/spring_5.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/spring_6.png?v=${SPRITE_VERSION}`
   ],
   summer: [
-    '/assets/seasonal/butterfly_1.png',
-    '/assets/seasonal/butterfly_2.png',
-    '/assets/seasonal/butterfly_3.png',
-    '/assets/seasonal/butterfly_4.png',
-    '/assets/seasonal/butterfly_5.png',
-    '/assets/seasonal/butterfly_6.png'
+    `/assets/seasonal/butterfly_1.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/butterfly_2.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/butterfly_3.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/butterfly_4.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/butterfly_5.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/butterfly_6.png?v=${SPRITE_VERSION}`
   ],
   autumn: [
-    '/assets/seasonal/leaf_1.png',
-    '/assets/seasonal/leaf_2.png',
-    '/assets/seasonal/leaf_3.png',
-    '/assets/seasonal/leaf_4.png',
-    '/assets/seasonal/leaf_5.png',
-    '/assets/seasonal/leaf_6.png'
+    `/assets/seasonal/leaf_autumn_1.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/leaf_autumn_2.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/leaf_autumn_3.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/leaf_autumn_4.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/leaf_autumn_5.png?v=${SPRITE_VERSION}`,
+    `/assets/seasonal/leaf_autumn_6.png?v=${SPRITE_VERSION}`
   ]
 };
+
+// Fixed directional Sun + Viewer Blinn-Phong Half-Vector H = normalize(L + V)
+// L = normalize(-0.42, -0.58, 0.70), V = (0, 0, 1)
+const HALF_VEC = (() => {
+  const lx = -0.42;
+  const ly = -0.58;
+  const lz = 0.70;
+  const lLen = Math.hypot(lx, ly, lz);
+  const hx = lx / lLen;
+  const hy = ly / lLen;
+  const hz = lz / lLen + 1.0;
+  const hLen = Math.hypot(hx, hy, hz);
+  return { x: hx / hLen, y: hy / hLen, z: hz / hLen };
+})();
 
 const HUD_LABELS: Record<
   Language,
@@ -223,9 +252,9 @@ function getEffectiveCount(
   const clamped = Math.min(120, Math.max(8, Math.round(desktopCount)));
   const seasonScale =
     season === 'summer'
-      ? 0.28 // airy swarm of butterflies (10-32 on desktop)
+      ? 0.28 // airy swarm of butterflies (8-34 on desktop)
       : season === 'spring'
-        ? 0.5 // flowerbed cluster count along bottom edge
+        ? 0.45 // balanced flowerbed density along bottom edge
         : 0.85;
   const scaled = Math.max(5, Math.round(clamped * seasonScale));
   if (width < 640) return Math.max(5, Math.round(scaled * 0.55));
@@ -233,15 +262,33 @@ function getEffectiveCount(
   return scaled;
 }
 
-function createMicroGlints(): MicroGlint[] {
-  const count = 4;
-  return Array.from({ length: count }, (_, idx) => ({
-    distFrac: 0.16 + Math.random() * 0.28,
-    angleOffset: (idx * Math.PI) / 2 + Math.random() * 0.9,
-    speed: 7.5 + Math.random() * 6.5, // rapid crisp twinkling
-    phase: Math.random() * Math.PI * 2,
-    size: 1.0 + Math.random() * 1.15 // tiny 1.0 - 2.15px pinpoints
-  }));
+// Create 5 physically oriented ice-crystal facets per snowflake (tilted bevels in crystal space)
+function createCrystalFacets(): CrystalFacet[] {
+  const count = 5;
+  return Array.from({ length: count }, (_, idx) => {
+    // Spread facets along crystal arms with distinct 3D bevel slopes (14-36 deg)
+    const armAngle = (idx * Math.PI * 2) / count + (Math.random() - 0.5) * 0.65;
+    const bevelTilt = 0.24 + Math.random() * 0.40;
+    const azimuth = armAngle + (Math.random() - 0.5) * 1.4;
+    return {
+      distFrac: 0.14 + Math.random() * 0.28,
+      angleOffset: armAngle,
+      nx: Math.sin(bevelTilt) * Math.cos(azimuth),
+      ny: Math.sin(bevelTilt) * Math.sin(azimuth),
+      nz: Math.cos(bevelTilt),
+      size: 0.95 + Math.random() * 0.95 // tiny 0.95 - 1.9px diamond glints
+    };
+  });
+}
+
+// Generate shuffled appearance ranks so spring blooms pop up organically across the bed rather than left-to-right
+function createShuffledRanks(count: number): number[] {
+  const ranks = Array.from({ length: count }, (_, i) => i);
+  for (let i = ranks.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [ranks[i], ranks[j]] = [ranks[j], ranks[i]];
+  }
+  return ranks;
 }
 
 function spawnParticle(
@@ -252,21 +299,30 @@ function spawnParticle(
   randomPos: boolean,
   spriteCount: number,
   index = 0,
-  total = 1
+  total = 1,
+  spawnOrderRank?: number
 ): Particle {
   const minSize = Math.max(16, baseSize * 0.78);
   const maxSize = Math.max(minSize + 6, baseSize * 1.3);
   const size = minSize + Math.random() * (maxSize - minSize);
 
-  // SPRING: Rooted bottom flowerbed of snowdrops, crocuses & tulips sprouting upward
+  // SPRING: Living bottom flowerbed growing gradually one-by-one in 6 rhythmic botanical pulses ("чик-чик-чик")
   if (season === 'spring') {
     const slotWidth = Math.max(40, width - 56) / Math.max(1, total);
-    const jitter = (Math.random() - 0.5) * slotWidth * 0.75;
+    const jitter = (Math.random() - 0.5) * slotWidth * 0.78;
     const x = Math.min(width - 28, Math.max(28, 28 + slotWidth * (index + 0.5) + jitter));
     // Prefer snowdrops/crocus (~60% springs 0,1,4) alongside tulips (2,3,5)
     const springWeights = [0, 0, 1, 2, 3, 4, 4, 5];
     const spriteIndex = springWeights[Math.floor(Math.random() * springWeights.length)] % Math.max(1, spriteCount);
     const flowerHeight = size * (2.55 + Math.random() * 1.15);
+
+    const rank = spawnOrderRank ?? index;
+    // First 2 early snowdrops begin quickly (0.3s, 1.1s); subsequent blooms appear gradually over ~16s
+    const staggeredDelay = randomPos
+      ? rank < 2
+        ? 0.25 + rank * 0.85
+        : 1.9 + ((rank - 2) / Math.max(1, total - 2)) * 14.5 + Math.random() * 1.1
+      : 0.4 + Math.random() * 1.1;
 
     return {
       x,
@@ -274,25 +330,35 @@ function spawnParticle(
       vx: 0,
       vy: 0,
       size: flowerHeight,
-      swayAmp: 0.04 + Math.random() * 0.045, // breeze tilt in radians
-      swayFreq: 0.9 + Math.random() * 0.8,
+      swayAmp: 0.038 + Math.random() * 0.042,
+      swayFreq: 0.85 + Math.random() * 0.75,
       phase: Math.random() * Math.PI * 2,
-      angle: (Math.random() - 0.5) * 0.14, // slight natural stem lean
+      angle: (Math.random() - 0.5) * 0.14,
       spinSpeed: 0,
       opacity: 0.9 + Math.random() * 0.1,
       spriteIndex,
-      auxA: 0.85 + Math.random() * 0.3, // subtle breeze harmonic
+      auxA: 0.8 + Math.random() * 0.35,
       auxB: 0,
       auxC: 0,
+      tiltFreqX: 0,
+      tiltFreqY: 0,
+      tiltAmpX: 0,
+      tiltAmpY: 0,
       regime: 'flutter',
-      growProgress: randomPos ? Math.random() * 0.35 : 0,
-      growDuration: 1.7 + Math.random() * 1.6,
-      growDelay: randomPos ? (index / Math.max(1, total)) * 1.4 + Math.random() * 0.4 : 0.25,
-      respawnTimer: 0
+      wingPhase: 0,
+      flapSpeed: 0,
+      modeTimer: 0,
+      isGliding: false,
+      glideAngle: 0,
+      growProgress: 0,
+      growDuration: 5.2 + Math.random() * 2.4, // ~5.2 - 7.6s total for 6 distinct botanical growth steps
+      growDelay: staggeredDelay,
+      bloomLife: 34 + Math.random() * 26, // blooms stay 34-60s then gently cycle to a fresh sprout
+      wilting: 0
     };
   }
 
-  // SUMMER: Flapping butterflies flying along smooth curved trails
+  // SUMMER: Completely asynchronous per-butterfly flight & wingbeat state machine
   if (season === 'summer') {
     const bSize = size * 1.35;
     const edge = Math.floor(Math.random() * 4);
@@ -320,28 +386,43 @@ function spawnParticle(
       }
     }
 
-    const baseSpeed = 48 + Math.random() * 46;
+    const baseSpeed = 46 + Math.random() * 48;
+    // Diverse individual wingbeat cadence: smaller butterflies beat faster, larger Monarchs slower
+    const sizeRatio = Math.min(1.3, Math.max(0.75, baseSize / Math.max(12, size)));
+    const flapSpeed = (14 + Math.random() * 19) * sizeRatio; // ~2.1 to 5.6 full wingbeats/sec!
+    const startGliding = Math.random() < 0.25;
+
     return {
       x,
       y,
       vx: Math.cos(heading) * baseSpeed,
       vy: Math.sin(heading) * baseSpeed,
       size: bSize,
-      swayAmp: baseSpeed, // cruise speed
-      swayFreq: 1.1 + Math.random() * 1.3, // steering meander frequency
+      swayAmp: baseSpeed,
+      swayFreq: 0.9 + Math.random() * 1.6,
       phase: Math.random() * Math.PI * 2,
-      angle: heading, // live heading angle
-      spinSpeed: (Math.random() - 0.5) * 1.2, // turn angular velocity
+      angle: heading,
+      spinSpeed: (Math.random() - 0.5) * 1.3,
       opacity: 0.88 + Math.random() * 0.12,
       spriteIndex: Math.floor(Math.random() * Math.max(1, spriteCount)),
-      auxA: 15 + Math.random() * 9, // wingbeat rad/s (~2.5 - 4 full open/close cycles per sec -> lively ~4-5Hz)
-      auxB: Math.random() * Math.PI * 2, // wing flap phase
-      auxC: 0.5 + Math.random() * 1.2, // glide burst cycle offset
+      auxA: 0.85 + Math.random() * 0.35, // current burst cadence multiplier
+      auxB: 0,
+      auxC: 0,
+      tiltFreqX: 0,
+      tiltFreqY: 0,
+      tiltAmpX: 0,
+      tiltAmpY: 0,
       regime: 'flutter',
+      wingPhase: Math.random() * Math.PI * 2,
+      flapSpeed,
+      modeTimer: startGliding ? 0.2 + Math.random() * 0.8 : 0.4 + Math.random() * 1.9,
+      isGliding: startGliding,
+      glideAngle: 0.78 + Math.random() * 0.2,
       growProgress: 1,
       growDuration: 1,
       growDelay: 0,
-      respawnTimer: 0
+      bloomLife: 0,
+      wilting: 0
     };
   }
 
@@ -355,35 +436,43 @@ function spawnParticle(
     return {
       x: Math.random() * width,
       y: randomPos ? Math.random() * height : -leafSize - Math.random() * 90,
-      // Independent horizontal wind pockets (no uniform herd lockstep)
       vx: (Math.random() - 0.44) * 42,
       vy: 28 + Math.random() * 26 + leafSize * 0.11,
       size: leafSize,
-      // Independent flutter period & amplitude per leaf
       swayAmp: 36 + Math.random() * 58,
       swayFreq: 1.35 + Math.random() * 1.65,
       phase: Math.random() * Math.PI * 2,
-      // Randomized 360-deg initial orientation so stems NEVER uniformly point downward
       angle: Math.random() * Math.PI * 2,
       spinSpeed:
         regime === 'tumble'
           ? spinSign * (1.1 + Math.random() * 1.4)
           : spinSign * (0.28 + Math.random() * 0.55),
-      opacity: 0.85 + Math.random() * 0.14,
+      opacity: 0.86 + Math.random() * 0.14,
       spriteIndex: Math.floor(Math.random() * Math.max(1, spriteCount)),
-      auxA: 1.4 + Math.random() * 1.6, // 3D roll frequency
-      auxB: Math.random() * Math.PI * 2, // 3D roll phase
-      auxC: 0.65 + Math.random() * 0.7, // chaotic period-two asymmetry factor
+      auxA: 1.4 + Math.random() * 1.6,
+      auxB: Math.random() * Math.PI * 2,
+      auxC: 0.65 + Math.random() * 0.7,
+      tiltFreqX: 0,
+      tiltFreqY: 0,
+      tiltAmpX: 0,
+      tiltAmpY: 0,
       regime,
+      wingPhase: 0,
+      flapSpeed: 0,
+      modeTimer: 0,
+      isGliding: false,
+      glideAngle: 0,
       growProgress: 1,
       growDuration: 1,
       growDelay: 0,
-      respawnTimer: 0
+      bloomLife: 0,
+      wilting: 0
     };
   }
 
-  // WINTER: 8 macro snowflakes + micro pinpoint frost glint array
+  // WINTER: 8 macro crystal snowflakes with physically aligned 3D crystal facets
   const flakeSize = size * 1.2;
+  const spinDir = Math.random() < 0.5 ? 1 : -1;
   return {
     x: Math.random() * width,
     y: randomPos ? Math.random() * height : -flakeSize - Math.random() * 70,
@@ -394,18 +483,28 @@ function spawnParticle(
     swayFreq: 0.55 + Math.random() * 0.8,
     phase: Math.random() * Math.PI * 2,
     angle: Math.random() * Math.PI * 2,
-    spinSpeed: (Math.random() - 0.5) * 0.6,
-    opacity: 0.72 + Math.random() * 0.25,
+    spinSpeed: spinDir * (0.35 + Math.random() * 0.65),
+    opacity: 0.76 + Math.random() * 0.22,
     spriteIndex: Math.floor(Math.random() * Math.max(1, spriteCount)),
-    auxA: 0.85 + Math.random() * 0.85,
-    auxB: 1.8 + Math.random() * 2.0,
+    auxA: 0,
+    auxB: Math.random() * Math.PI * 2,
     auxC: Math.random() * Math.PI * 2,
+    tiltFreqX: 0.9 + Math.random() * 1.1,
+    tiltFreqY: 0.85 + Math.random() * 1.15,
+    tiltAmpX: 0.35 + Math.random() * 0.32, // subtle real 3D wobble (~20-38 deg)
+    tiltAmpY: 0.35 + Math.random() * 0.32,
     regime: 'flutter',
-    glints: createMicroGlints(),
+    facets: createCrystalFacets(),
+    wingPhase: 0,
+    flapSpeed: 0,
+    modeTimer: 0,
+    isGliding: false,
+    glideAngle: 0,
     growProgress: 1,
     growDuration: 1,
     growDelay: 0,
-    respawnTimer: 0
+    bloomLife: 0,
+    wilting: 0
   };
 }
 
@@ -422,7 +521,7 @@ function getSparklePalette(season: SeasonType, snowColor: string): string[] {
   }
 }
 
-// Micro crystal pinpoint sparkle dot (fast, tiny 1-2px light glints)
+// Micro crystal pinpoint specular flash (only visible when rotated/tilted into reflection cone)
 function drawMicroPinpoint(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -430,7 +529,7 @@ function drawMicroPinpoint(
   r: number,
   alpha: number
 ) {
-  if (alpha <= 0.05) return;
+  if (alpha <= 0.04) return;
   ctx.save();
   ctx.globalAlpha = alpha;
   ctx.fillStyle = '#FFFFFF';
@@ -438,10 +537,9 @@ function drawMicroPinpoint(
   ctx.arc(x, y, r, 0, Math.PI * 2);
   ctx.fill();
 
-  // Crisp tiny sub-pixel specular core cross
-  ctx.strokeStyle = 'rgba(224, 242, 254, 0.92)';
-  ctx.lineWidth = 0.75;
-  const arm = r * 2.1;
+  ctx.strokeStyle = 'rgba(224, 242, 254, 0.95)';
+  ctx.lineWidth = 0.7;
+  const arm = r * 2.2;
   ctx.beginPath();
   ctx.moveTo(x - arm, y);
   ctx.lineTo(x + arm, y);
@@ -455,6 +553,31 @@ function easeOutBack(t: number): number {
   const c1 = 1.4;
   const c3 = c1 + 1;
   return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+}
+
+// 6-stage botanical "chik-chik-chik" time-lapse curve:
+// Each beat surges smoothly in the first 36% of the beat, then pauses & sways before the next growth spurt
+function steppedBotanicalGrowth(progress: number): { scaleY: number; scaleX: number } {
+  if (progress <= 0) return { scaleY: 0, scaleX: 0 };
+  if (progress >= 1) return { scaleY: 1, scaleX: 1 };
+
+  const stages = 6;
+  const scaled = progress * stages;
+  const stageIdx = Math.min(stages - 1, Math.floor(scaled));
+  const local = scaled - stageIdx;
+
+  // Within each stage: quick upward surge during 0..0.36, steady rest during 0.36..1.0
+  const pulseEnd = 0.36;
+  const localEase =
+    local < pulseEnd ? easeOutBack(local / pulseEnd) : 1.0;
+
+  const prevTier = stageIdx / stages;
+  const nextTier = (stageIdx + 1) / stages;
+  const stepHeight = prevTier + (nextTier - prevTier) * localEase;
+
+  // Leaves/petals gradually unfurl wider across the upper stages
+  const unfurl = Math.min(1, 0.42 + stepHeight * 0.62);
+  return { scaleY: Math.max(0.03, stepHeight), scaleX: unfurl };
 }
 
 const SeasonIcon: React.FC<{ season: SeasonType }> = ({ season }) => {
@@ -572,8 +695,19 @@ const SnowOverlay: React.FC<SnowOverlayProps> = ({ config, enabled, lang }) => {
     let sprites: SpriteEntry[] = [];
     const targetCount = getEffectiveCount(width, itemCount, activeSeason);
     const urlCount = SEASONAL_SPRITE_URLS[activeSeason].length;
+    const springRanks = activeSeason === 'spring' ? createShuffledRanks(targetCount) : [];
     const particles: Particle[] = Array.from({ length: targetCount }, (_, i) =>
-      spawnParticle(width, height, itemSize, activeSeason, true, urlCount, i, targetCount)
+      spawnParticle(
+        width,
+        height,
+        itemSize,
+        activeSeason,
+        true,
+        urlCount,
+        i,
+        targetCount,
+        springRanks[i]
+      )
     );
     const sparkles: Sparkle[] = [];
     const popRings: PopRing[] = [];
@@ -594,11 +728,11 @@ const SnowOverlay: React.FC<SnowOverlayProps> = ({ config, enabled, lang }) => {
       resizeCanvas();
       const desired = getEffectiveCount(width, itemCount, activeSeason);
       if (activeSeason === 'spring') {
-        // Reflow flowerbed bases cleanly across updated viewport width
+        const ranks = createShuffledRanks(desired);
         particles.length = 0;
         for (let i = 0; i < desired; i++) {
           particles.push(
-            spawnParticle(width, height, itemSize, activeSeason, true, urlCount, i, desired)
+            spawnParticle(width, height, itemSize, activeSeason, true, urlCount, i, desired, ranks[i])
           );
         }
         return;
@@ -632,14 +766,13 @@ const SnowOverlay: React.FC<SnowOverlayProps> = ({ config, enabled, lang }) => {
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
-        if (activeSeason === 'spring' && (p.growProgress < 0.25 || p.respawnTimer > 0)) {
+        if (activeSeason === 'spring' && (p.growProgress < 0.25 || p.wilting > 0.4)) {
           continue;
         }
-        // Flower head center sits above bottom base; floating items center at (p.x, p.y)
         const targetX = p.x;
         const targetY =
           activeSeason === 'spring'
-            ? p.y - p.size * 0.58 * easeOutBack(Math.min(1, p.growProgress))
+            ? p.y - p.size * 0.58 * steppedBotanicalGrowth(Math.min(1, p.growProgress)).scaleY
             : p.y;
         const hitRadius = activeSeason === 'spring' ? Math.max(p.size * 0.45, 28) : Math.max(p.size * 0.72, 26);
 
@@ -658,7 +791,7 @@ const SnowOverlay: React.FC<SnowOverlayProps> = ({ config, enabled, lang }) => {
       const burstX = hit.x;
       const burstY =
         activeSeason === 'spring'
-          ? hit.y - hit.size * 0.62 * easeOutBack(Math.min(1, hit.growProgress))
+          ? hit.y - hit.size * 0.62 * steppedBotanicalGrowth(Math.min(1, hit.growProgress)).scaleY
           : hit.y;
 
       if (sparkles.length < 180) {
@@ -688,7 +821,6 @@ const SnowOverlay: React.FC<SnowOverlayProps> = ({ config, enabled, lang }) => {
       }
 
       if (activeSeason === 'spring') {
-        // Gently re-sprout a fresh blossom in the same garden bed slot
         particles[bestIdx] = spawnParticle(
           width,
           height,
@@ -743,38 +875,55 @@ const SnowOverlay: React.FC<SnowOverlayProps> = ({ config, enabled, lang }) => {
           const drawH = (sprite.height / maxDim) * p.size;
 
           if (activeSeason === 'spring') {
-            // Sprouting flowerbed anchored cleanly along viewport bottom edge
+            // Gradual one-by-one appearance + 6-stage organic growth pulse ("чик-чик-чик")
             if (p.growDelay > 0) {
               p.growDelay = Math.max(0, p.growDelay - dt);
               continue;
             }
             if (p.growProgress < 1) {
               p.growProgress = Math.min(1, p.growProgress + dt / p.growDuration);
+            } else {
+              p.bloomLife -= dt;
+              if (p.bloomLife <= 0) {
+                p.wilting += dt / 1.4;
+                if (p.wilting >= 1) {
+                  particles[i] = spawnParticle(
+                    width,
+                    height,
+                    itemSize,
+                    activeSeason,
+                    false,
+                    urlCount,
+                    i,
+                    particles.length
+                  );
+                  continue;
+                }
+              }
             }
 
-            const ease = easeOutBack(p.growProgress);
-            const scaleY = Math.max(0.02, ease);
-            const scaleX = 0.55 + 0.45 * Math.min(1, p.growProgress * 1.3);
+            const { scaleY, scaleX } = steppedBotanicalGrowth(p.growProgress);
+            const wiltScale = p.wilting > 0 ? 1 - p.wilting * 0.25 : 1;
+            const wiltAlpha = p.wilting > 0 ? 1 - p.wilting : 1;
+
             const breezeSway =
               p.angle +
-              Math.sin(elapsed * p.swayFreq + p.phase) * p.swayAmp * Math.min(1, p.growProgress) +
+              Math.sin(elapsed * p.swayFreq + p.phase) * p.swayAmp * Math.min(1, p.growProgress * 1.4) +
               Math.sin(elapsed * p.swayFreq * 0.43 + p.auxA) * (p.swayAmp * 0.45);
 
             ctx.save();
-            ctx.globalAlpha = p.opacity * Math.min(1, p.growProgress * 2.5);
+            ctx.globalAlpha = p.opacity * Math.min(1, p.growProgress * 6) * wiltAlpha;
             ctx.translate(p.x, p.y);
             ctx.rotate(breezeSway);
-            ctx.scale(scaleX, scaleY);
-            // Draw anchored at stem base center (-drawW/2, -drawH)
+            ctx.scale(scaleX * wiltScale, scaleY * wiltScale);
             ctx.drawImage(sprite.source, -drawW / 2, -drawH, drawW, drawH);
             ctx.restore();
           } else if (activeSeason === 'summer') {
-            // Smooth curvilinear butterfly flight with realistic periodic wing-flapping + glides
+            // Asynchronous per-butterfly curved flight + independent flap bursts & soaring glides
             const turnWobble =
               Math.sin(elapsed * p.swayFreq + p.phase) * 1.45 +
-              Math.cos(elapsed * (p.swayFreq * 0.47) + p.phase * 1.7) * 0.75;
+              Math.cos(elapsed * (p.swayFreq * 0.47) + p.phase * 1.7) * 0.8;
 
-            // Gentle inward edge steering so butterflies gracefully cruise across screen
             const margin = 80;
             let steerOffset = 0;
             if (p.x < margin) steerOffset += Math.sin(0 - p.angle) * 2.2;
@@ -784,20 +933,34 @@ const SnowOverlay: React.FC<SnowOverlayProps> = ({ config, enabled, lang }) => {
 
             p.angle += (turnWobble + steerOffset) * dt;
 
-            // Alternate between rapid flapping (~80% of time) & brief soaring open-wing glides (~20%)
-            const glideGate = Math.sin(elapsed * 1.2 + p.auxC);
-            const isGliding = glideGate > 0.65;
-            const wingFold = isGliding
-              ? 0.92 + 0.06 * Math.sin(elapsed * 4 + p.auxB)
-              : 0.22 + 0.78 * (0.5 + 0.5 * Math.sin(elapsed * p.auxA + p.auxB));
+            // Independent timer toggles each butterfly between wingbeats & brief soaring glides
+            p.modeTimer -= dt;
+            if (p.modeTimer <= 0) {
+              p.isGliding = !p.isGliding;
+              if (p.isGliding) {
+                p.modeTimer = 0.28 + Math.random() * 0.95;
+                p.glideAngle = 0.72 + Math.random() * 0.24;
+              } else {
+                p.modeTimer = 0.55 + Math.random() * 2.1;
+                p.auxA = 0.8 + Math.random() * 0.42; // vary tempo slightly on every new flap burst
+              }
+            }
 
-            // Wing downstroke provides subtle forward speed pulse
-            const flapBoost = 0.85 + 0.32 * (1 - wingFold);
+            let wingFold: number;
+            if (p.isGliding) {
+              wingFold = p.glideAngle + 0.04 * Math.sin(elapsed * 3.5 + p.phase);
+            } else {
+              p.wingPhase += dt * p.flapSpeed * p.auxA;
+              // Crisp natural wingstroke shape (lingering slightly open, quick crisp closure)
+              const stroke = Math.pow(0.5 + 0.5 * Math.sin(p.wingPhase), 0.72);
+              wingFold = 0.18 + 0.82 * stroke;
+            }
+
+            const flapBoost = p.isGliding ? 0.92 : 0.84 + 0.34 * (1 - wingFold);
             const speed = p.swayAmp * flapBoost;
             p.x += Math.cos(p.angle) * speed * dt;
             p.y += Math.sin(p.angle) * speed * dt;
 
-            // Recycle smoothly only if far outside viewport
             if (
               p.x < -p.size * 2.2 ||
               p.x > width + p.size * 2.2 ||
@@ -818,27 +981,22 @@ const SnowOverlay: React.FC<SnowOverlayProps> = ({ config, enabled, lang }) => {
             ctx.save();
             ctx.globalAlpha = p.opacity;
             ctx.translate(p.x, p.y);
-            // Symmetrical dorsal sprite points straight UP (-PI/2), so +PI/2 aligns nose with flight tangent
             ctx.rotate(p.angle + Math.PI / 2);
-            // Folding wings inward/outward symmetrically along body spine
             ctx.scale(wingFold, 1.0 - (1.0 - wingFold) * 0.08);
             ctx.drawImage(sprite.source, -drawW / 2, -drawH / 2, drawW, drawH);
             ctx.restore();
           } else if (activeSeason === 'autumn') {
-            // Independent Andersen-Pesavento-Wang falling leaf dynamics (flutter / tumble / chaotic)
+            // Independent Andersen-Pesavento-Wang falling leaf dynamics
             const tPhase = elapsed * p.swayFreq + p.phase;
             const glideSwing =
               Math.cos(tPhase) + 0.34 * Math.cos(tPhase * p.auxC + p.auxB);
 
-            // Spatial micro-turbulence unique to leaf's position rather than uniform global wave
             const eddyX =
               Math.sin(p.y * 0.007 + p.phase) * 14 +
               Math.cos(p.x * 0.006 + elapsed * 0.6) * 10;
 
             p.x += (p.vx + eddyX + glideSwing * p.swayAmp) * dt;
 
-            // Upward cusp lift phenomenon: at turning points (where |glideSwing| spikes),
-            // rotational circulation creates upward lift that stalls or briefly raises the leaf
             const cuspLift =
               p.regime === 'tumble'
                 ? 1.0 - 0.25 * Math.abs(Math.sin(tPhase))
@@ -850,17 +1008,14 @@ const SnowOverlay: React.FC<SnowOverlayProps> = ({ config, enabled, lang }) => {
               p.angle += p.spinSpeed * dt;
               renderAngle = p.angle;
             } else if (p.regime === 'chaotic') {
-              // Bifurcation flips between fluttering glide and sudden mid-air tumbling bursts
               const tumbleBurst = Math.sin(elapsed * 0.85 + p.auxB) > 0.35;
               p.angle += (tumbleBurst ? p.spinSpeed * 2.4 : p.spinSpeed * 0.35) * dt;
               renderAngle = p.angle + glideSwing * 0.55;
             } else {
-              // Asymmetric tilted fluttering around randomized starting orientation
               p.angle += p.spinSpeed * 0.22 * dt;
               renderAngle = p.angle + glideSwing * 0.68;
             }
 
-            // Continuous 3D pitch/roll tumbling so stems & blades flip naturally in air
             const rollScaleX = 0.56 + 0.44 * Math.cos(elapsed * p.auxA + p.auxB);
             const pitchScaleY = 0.72 + 0.28 * Math.sin(elapsed * p.auxA * 0.73 + p.phase);
 
@@ -888,7 +1043,7 @@ const SnowOverlay: React.FC<SnowOverlayProps> = ({ config, enabled, lang }) => {
             ctx.drawImage(sprite.source, -drawW / 2, -drawH / 2, drawW, drawH);
             ctx.restore();
           } else {
-            // WINTER: Macro snowflakes + rapid micro pinpoint twinkling dots
+            // WINTER: Macro crystal snowflakes with physically aligned 3D sun-glint reflections
             const swayOffset = Math.sin(elapsed * p.swayFreq + p.phase) * p.swayAmp * dt;
             p.x += p.vx * dt + swayOffset;
             p.y += p.vy * dt;
@@ -910,36 +1065,55 @@ const SnowOverlay: React.FC<SnowOverlayProps> = ({ config, enabled, lang }) => {
               p.x = -p.size;
             }
 
-            const shimmerWave = 0.5 + 0.5 * Math.sin(elapsed * p.auxB + p.auxC);
-            const liveAlpha = Math.min(1, p.opacity * (0.82 + 0.2 * shimmerWave));
-            const facetTilt = 0.9 + 0.1 * Math.cos(elapsed * p.auxA + p.phase);
+            // Real 3D flutter tilt (pitch around X, roll around Y)
+            const pitch = p.tiltAmpX * Math.sin(elapsed * p.tiltFreqX + p.auxB);
+            const roll = p.tiltAmpY * Math.cos(elapsed * p.tiltFreqY + p.auxC);
+            const cosP = Math.cos(pitch);
+            const sinP = Math.sin(pitch);
+            const cosR = Math.cos(roll);
+            const sinR = Math.sin(roll);
+            const cosA = Math.cos(p.angle);
+            const sinA = Math.sin(p.angle);
 
             ctx.save();
-            ctx.globalAlpha = liveAlpha;
+            ctx.globalAlpha = p.opacity;
             ctx.translate(p.x, p.y);
+            ctx.scale(cosR, cosP);
             ctx.rotate(p.angle);
-            ctx.scale(facetTilt, 1);
             ctx.drawImage(sprite.source, -drawW / 2, -drawH / 2, drawW, drawH);
             ctx.restore();
 
-            // Multiple fast, tiny crystal pinpoint glints (1-2px) flashing briefly on light reflections
-            if (p.glints) {
+            // Specular crystal glints: fire ONLY when rotated & tilted facet normal aligns with Blinn-Phong half-vector H
+            if (p.facets) {
               const baseRadius = Math.min(drawW, drawH);
-              for (let g = 0; g < p.glints.length; g++) {
-                const gl = p.glints[g];
-                const wave = 0.5 + 0.5 * Math.sin(elapsed * gl.speed + gl.phase);
-                // High power curve -> stays dark most of the time, then rapidly twinkles & vanishes
-                const intensity = Math.pow(wave, 11);
-                if (intensity > 0.25) {
-                  const a = p.angle + gl.angleOffset;
-                  const dist = baseRadius * gl.distFrac;
-                  drawMicroPinpoint(
-                    ctx,
-                    p.x + Math.cos(a) * dist * facetTilt,
-                    p.y + Math.sin(a) * dist,
-                    gl.size,
-                    intensity * 0.95
-                  );
+              for (let g = 0; g < p.facets.length; g++) {
+                const fc = p.facets[g];
+                // 1) Spin facet normal in snowflake plane (Z rotation by p.angle)
+                const n1x = fc.nx * cosA - fc.ny * sinA;
+                const n1y = fc.nx * sinA + fc.ny * cosA;
+                const n1z = fc.nz;
+                // 2) Tilt around Y (roll)
+                const n2x = n1x * cosR + n1z * sinR;
+                const n2y = n1y;
+                const n2z = -n1x * sinR + n1z * cosR;
+                // 3) Tilt around X (pitch)
+                const n3x = n2x;
+                const n3y = n2y * cosP - n2z * sinP;
+                const n3z = n2y * sinP + n2z * cosP;
+
+                const specDot = n3x * HALF_VEC.x + n3y * HALF_VEC.y + n3z * HALF_VEC.z;
+                // Narrow ~17 deg specular reflection cone: off when turned away, crisp glint only at sun angle
+                const threshold = 0.955;
+                if (specDot > threshold) {
+                  const normIntensity = (specDot - threshold) / (1 - threshold);
+                  const flash = Math.pow(normIntensity, 1.7);
+                  if (flash > 0.08) {
+                    const localA = p.angle + fc.angleOffset;
+                    const dist = baseRadius * fc.distFrac;
+                    const gx = p.x + Math.cos(localA) * dist * cosR;
+                    const gy = p.y + Math.sin(localA) * dist * cosP;
+                    drawMicroPinpoint(ctx, gx, gy, fc.size * (0.7 + 0.5 * flash), flash * 0.95);
+                  }
                 }
               }
             }

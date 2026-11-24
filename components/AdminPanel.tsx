@@ -532,7 +532,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
     }
   };
 
-  // 8. Authoritative Server-Side D1 JSON Backup Export (v1.23)
+  // 8. Authoritative Server-Side D1 JSON Backup Export (v1.24)
   const handleExportBackup = async () => {
     setIsDownloadingBackup(true);
     setSaveErrorMsg('');
@@ -543,11 +543,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
 
       if (res.ok && res.data) {
         jsonStr = JSON.stringify(res.data, null, 2);
-        filename = `aneri_d1_backup_${new Date().toISOString().slice(0, 10)}_v1.23.json`;
+        filename = `aneri_d1_backup_${new Date().toISOString().slice(0, 10)}_v1.24.json`;
         showSuccess(`Servera Cloudflare D1 rezerves kopija veiksmīgi iegūta (${res.data.totalRecords || 0} ieraksti).`);
       } else {
         jsonStr = dataService.exportBackupJson();
-        filename = `aneri_catalog_snapshot_${new Date().toISOString().slice(0, 10)}_v1.23.json`;
+        filename = `aneri_catalog_snapshot_${new Date().toISOString().slice(0, 10)}_v1.24.json`;
         showError(`D1 servera brīdinājums: ${res.error || 'D1 bezsaistē'}. Lejupielādēts lokālais kataloga uzņēmums.`);
       }
 
@@ -761,7 +761,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
             <div className="flex items-center gap-2.5">
               <span className="text-2xl font-serif font-bold text-primary">Aneri</span>
               <span className="text-[11px] font-mono uppercase bg-stone-800 text-rose-300 border border-stone-700 px-2 py-0.5 rounded font-semibold">
-                Admin Panel v1.23
+                Admin Panel v1.24
               </span>
             </div>
             <div className="hidden sm:flex items-center gap-2 text-xs text-stone-400 border-l border-stone-800 pl-4">
@@ -1554,11 +1554,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                 </button>
 
                 <a
-                  href="/aneri-v1.23.zip"
-                  download="aneri-v1.23.zip"
+                  href="/aneri-v1.24.zip"
+                  download="aneri-v1.24.zip"
                   className="px-5 py-3 rounded-xl bg-primary hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors shadow-sm"
                 >
-                  <Download size={14} /> Lejupielādēt Koda Arhīvu (aneri-v1.23.zip)
+                  <Download size={14} /> Lejupielādēt Koda Arhīvu (aneri-v1.24.zip)
                 </a>
               </div>
             </div>
@@ -1692,12 +1692,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                       </div>
                       <div className={`flex gap-3.5 ${previewSeason === 'spring' ? 'items-end -mb-5 pt-2' : 'items-center'}`}>
                         {(previewSeason === 'spring'
-                          ? ['/assets/seasonal/spring_1.png', '/assets/seasonal/spring_2.png', '/assets/seasonal/spring_3.png']
+                          ? ['/assets/seasonal/spring_1.png?v=1.24', '/assets/seasonal/spring_2.png?v=1.24', '/assets/seasonal/spring_3.png?v=1.24']
                           : previewSeason === 'summer'
-                          ? ['/assets/seasonal/butterfly_1.png', '/assets/seasonal/butterfly_2.png', '/assets/seasonal/butterfly_5.png']
+                          ? ['/assets/seasonal/butterfly_1.png?v=1.24', '/assets/seasonal/butterfly_2.png?v=1.24', '/assets/seasonal/butterfly_5.png?v=1.24']
                           : previewSeason === 'autumn'
-                          ? ['/assets/seasonal/leaf_1.png', '/assets/seasonal/leaf_2.png', '/assets/seasonal/leaf_6.png']
-                          : ['/assets/seasonal/snowflake_1.png', '/assets/seasonal/snowflake_3.png', '/assets/seasonal/snowflake_8.png']
+                          ? ['/assets/seasonal/leaf_autumn_1.png?v=1.24', '/assets/seasonal/leaf_autumn_2.png?v=1.24', '/assets/seasonal/leaf_autumn_6.png?v=1.24']
+                          : ['/assets/seasonal/snowflake_1.png?v=1.24', '/assets/seasonal/snowflake_3.png?v=1.24', '/assets/seasonal/snowflake_8.png?v=1.24']
                         ).map((src, idx) => {
                           const scales = [0.85, 1.15, 0.95];
                           const dim = Math.round(snowSize * scales[idx] * (previewSeason === 'spring' ? 1.65 : previewSeason === 'summer' ? 1.35 : 1.2));
