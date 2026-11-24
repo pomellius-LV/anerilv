@@ -953,10 +953,10 @@ class DataService {
     }
   }
 
-  // Export full JSON backup of salon catalog (v1.22)
+  // Export full JSON backup of salon catalog (v1.23)
   public exportBackupJson(): string {
     return JSON.stringify({
-      version: '1.22',
+      version: '1.23',
       exportDate: new Date().toISOString(),
       salon: 'Salons Aneri',
       address: 'Latgales iela 264, Rīga',

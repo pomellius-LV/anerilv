@@ -35,7 +35,7 @@ import {
   X,
   Snowflake,
   Flower2,
-  Bird,
+  Sparkles,
   Leaf,
   Calendar
 } from 'lucide-react';
@@ -532,7 +532,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
     }
   };
 
-  // 8. Authoritative Server-Side D1 JSON Backup Export (v1.22)
+  // 8. Authoritative Server-Side D1 JSON Backup Export (v1.23)
   const handleExportBackup = async () => {
     setIsDownloadingBackup(true);
     setSaveErrorMsg('');
@@ -543,11 +543,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
 
       if (res.ok && res.data) {
         jsonStr = JSON.stringify(res.data, null, 2);
-        filename = `aneri_d1_backup_${new Date().toISOString().slice(0, 10)}_v1.22.json`;
+        filename = `aneri_d1_backup_${new Date().toISOString().slice(0, 10)}_v1.23.json`;
         showSuccess(`Servera Cloudflare D1 rezerves kopija veiksmīgi iegūta (${res.data.totalRecords || 0} ieraksti).`);
       } else {
         jsonStr = dataService.exportBackupJson();
-        filename = `aneri_catalog_snapshot_${new Date().toISOString().slice(0, 10)}_v1.22.json`;
+        filename = `aneri_catalog_snapshot_${new Date().toISOString().slice(0, 10)}_v1.23.json`;
         showError(`D1 servera brīdinājums: ${res.error || 'D1 bezsaistē'}. Lejupielādēts lokālais kataloga uzņēmums.`);
       }
 
@@ -761,7 +761,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
             <div className="flex items-center gap-2.5">
               <span className="text-2xl font-serif font-bold text-primary">Aneri</span>
               <span className="text-[11px] font-mono uppercase bg-stone-800 text-rose-300 border border-stone-700 px-2 py-0.5 rounded font-semibold">
-                Admin Panel v1.22
+                Admin Panel v1.23
               </span>
             </div>
             <div className="hidden sm:flex items-center gap-2 text-xs text-stone-400 border-l border-stone-800 pl-4">
@@ -797,7 +797,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                   }`}
                 >
                   {previewSeason === 'spring' && <Flower2 size={14} className={snowEnabled ? 'text-rose-300' : 'text-stone-400'} />}
-                  {previewSeason === 'summer' && <Bird size={14} className={snowEnabled ? 'text-sky-300' : 'text-stone-400'} />}
+                  {previewSeason === 'summer' && <Sparkles size={14} className={snowEnabled ? 'text-sky-300' : 'text-stone-400'} />}
                   {previewSeason === 'autumn' && <Leaf size={14} className={snowEnabled ? 'text-amber-300' : 'text-stone-400'} />}
                   {previewSeason === 'winter' && <Snowflake size={14} className={snowEnabled ? 'text-sky-300' : 'text-stone-400'} />}
                   <span>{snowEnabled ? `${seasonNames[previewSeason]}: ON` : 'Efekti: OFF'}</span>
@@ -1554,11 +1554,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                 </button>
 
                 <a
-                  href="/aneri-v1.22.zip"
-                  download="aneri-v1.22.zip"
+                  href="/aneri-v1.23.zip"
+                  download="aneri-v1.23.zip"
                   className="px-5 py-3 rounded-xl bg-primary hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors shadow-sm"
                 >
-                  <Download size={14} /> Lejupielādēt Koda Arhīvu (aneri-v1.22.zip)
+                  <Download size={14} /> Lejupielādēt Koda Arhīvu (aneri-v1.23.zip)
                 </a>
               </div>
             </div>
@@ -1573,10 +1573,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                 const calendarSeason = getCalendarSeason();
                 const previewSeason = resolveActiveSeason(seasonMode);
                 const seasonLabelsRu: Record<SeasonType, string> = {
-                  winter: 'Зима — Снежинки',
-                  spring: 'Весна — Разноцветные тюльпаны',
-                  summer: 'Лето — Летающие птички',
-                  autumn: 'Осень — Осенние листики'
+                  winter: 'Зима — Снежинки с переливом',
+                  spring: 'Весна — Клумба: подснежники и тюльпаны',
+                  summer: 'Лето — Порхающие бабочки',
+                  autumn: 'Осень — Кленовые листья'
                 };
 
                 return (
@@ -1588,7 +1588,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                           <span>Sezonu animācija vietnē (Авто-сезоны на сайте)</span>
                         </h2>
                         <p className="text-xs text-stone-600 leading-relaxed">
-                          Režīmā <strong>Auto</strong> vietne automātiski pārslēdz elementus pēc kalendāra (Pavasaris: tulpes · Vasara: putniņi · Rudens: lapas · Ziema: sniegpārsliņas). Elementi lido aiz skatloga stikla (z-5).
+                          Režīmā <strong>Auto</strong> vietne automātiski pārslēdz animāciju pēc kalendāra (Pavasaris: puķu dobe · Vasara: tauriņi · Rudens: lapas · Ziema: sniegpārsliņas). Elementi atrodas aiz skatloga stikla (z-5).
                         </p>
                       </div>
 
@@ -1635,14 +1635,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                           {
                             id: 'spring' as SeasonMode,
                             title: 'Весна (03–05)',
-                            sub: 'Тюльпаны',
+                            sub: 'Клумба первоцветов',
                             icon: <Flower2 size={15} className="text-rose-500" />
                           },
                           {
                             id: 'summer' as SeasonMode,
                             title: 'Лето (06–08)',
-                            sub: 'Птички',
-                            icon: <Bird size={15} className="text-sky-500" />
+                            sub: 'Бабочки',
+                            icon: <Sparkles size={15} className="text-sky-500" />
                           },
                           {
                             id: 'autumn' as SeasonMode,
@@ -1690,17 +1690,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ setView }) => {
                           Salons Aneri
                         </div>
                       </div>
-                      <div className="flex items-center gap-3.5">
+                      <div className={`flex gap-3.5 ${previewSeason === 'spring' ? 'items-end -mb-5 pt-2' : 'items-center'}`}>
                         {(previewSeason === 'spring'
-                          ? ['/assets/seasonal/tulip_1.png', '/assets/seasonal/tulip_3.png', '/assets/seasonal/tulip_6.png']
+                          ? ['/assets/seasonal/spring_1.png', '/assets/seasonal/spring_2.png', '/assets/seasonal/spring_3.png']
                           : previewSeason === 'summer'
-                          ? ['/assets/seasonal/bird_1.png', '/assets/seasonal/bird_2.png', '/assets/seasonal/bird_5.png']
+                          ? ['/assets/seasonal/butterfly_1.png', '/assets/seasonal/butterfly_2.png', '/assets/seasonal/butterfly_5.png']
                           : previewSeason === 'autumn'
                           ? ['/assets/seasonal/leaf_1.png', '/assets/seasonal/leaf_2.png', '/assets/seasonal/leaf_6.png']
                           : ['/assets/seasonal/snowflake_1.png', '/assets/seasonal/snowflake_3.png', '/assets/seasonal/snowflake_8.png']
                         ).map((src, idx) => {
                           const scales = [0.85, 1.15, 0.95];
-                          const dim = Math.round(snowSize * scales[idx] * (previewSeason === 'spring' ? 1.55 : previewSeason === 'summer' ? 1.4 : 1.2));
+                          const dim = Math.round(snowSize * scales[idx] * (previewSeason === 'spring' ? 1.65 : previewSeason === 'summer' ? 1.35 : 1.2));
                           return (
                             <img
                               key={src}
