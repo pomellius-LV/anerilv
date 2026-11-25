@@ -308,6 +308,7 @@ const App: React.FC = () => {
         setView={setView}
         serviceId={serviceId}
         articleId={articleId}
+        onBookingCall={handleBookingCall}
       />
 
       <main id="main-content">
@@ -343,6 +344,7 @@ const App: React.FC = () => {
             lang={lang}
             content={currentContent}
             onNavigate={navigateTo}
+            onBookingCall={handleBookingCall}
           />
         )}
         {view === 'terms' && (
@@ -365,7 +367,12 @@ const App: React.FC = () => {
         )}
       </main>
 
-      <Footer lang={lang} content={currentContent} onNavigate={navigateTo} />
+      <Footer
+        lang={lang}
+        content={currentContent}
+        onNavigate={navigateTo}
+        onBookingCall={handleBookingCall}
+      />
       <CookieConsent content={currentContent} />
       <MobileCallDock
         lang={lang}

@@ -79,6 +79,7 @@ const Hero: React.FC<HeroProps> = ({ content, lang, onBookingCall }) => {
             </a>
             <a
               href="tel:+37127580047"
+              onClick={onBookingCall}
               className="text-sm font-sans font-semibold text-white/95 hover:text-white tracking-wider tabular-nums transition-colors"
             >
               +371 27580047
@@ -145,6 +146,7 @@ const Hero: React.FC<HeroProps> = ({ content, lang, onBookingCall }) => {
             <span>{ui.interiorCaption}</span>
             <a
               href="tel:+37127580047"
+              onClick={onBookingCall}
               className="text-white hover:text-[#E33955] transition-colors font-semibold tabular-nums"
             >
               +371 27580047

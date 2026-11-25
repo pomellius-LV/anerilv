@@ -425,34 +425,34 @@ export const THEMATIC_SERVICES_SEO: Record<ServiceSectionId, ThematicServiceSeo>
       en: 'Solarium Riga'
     },
     titles: {
-      lv: 'Solārijs Rīgā – Vertikālais Solārijs un Abonementi | Aneri',
-      ru: 'Солярий в Риге – Вертикальный Солярий и Абонементы | Aneri',
-      en: 'Solarium Tanning in Riga – Vertical Booth & Passes | Aneri Salon'
+      lv: 'Solārijs Rīgā – Ergoline Open Air un Abonementi | Aneri',
+      ru: 'Солярий в Риге – Ergoline Open Air и Абонементы | Aneri',
+      en: 'Solarium Tanning in Riga – Ergoline Open Air & Passes | Aneri Salon'
     },
     descriptions: {
-      lv: 'Vertikālais solārijs Rīgā no 4.00 € par seansu vai izdevīgi 10x abonementi (-30%). Jaunas lampas pēc ES normām, bezmaksas stāvvieta pie TC Dole.',
-      ru: 'Мощный вертикальный солярий в Риге: от 4.00 € за сеанс, абонементы на 10 посещений со скидкой 30%. Своевременная замена ламп и бесплатная парковка.',
-      en: 'Professional vertical solarium tanning in Riga from 4.00 € per session or 10-visit passes (-30% off) with free parking at the door.'
+      lv: 'Ergoline Open Air solārijs Rīgā no 4.00 € par seansu vai izdevīgi 10x abonementi (-30%). Plašs atvērtā tipa dizains, jaunas lampas un bezmaksas stāvvieta.',
+      ru: 'Солярий Ergoline Open Air в Риге: от 4.00 € за сеанс, абонементы на 10 посещений со скидкой 30%. Открытая конструкция без ощущения тесноты, новые лампы и бесплатная парковка.',
+      en: 'Ergoline Open Air solarium tanning in Riga from 4.00 € per session or 10-visit passes (-30% off) with spacious open-canopy comfort and free parking.'
     },
     keywords: {
-      lv: 'solārijs Rīgā, vertikālais solārijs Rīga, solārija abonements Rīgā, sauļošanās Rīga',
-      ru: 'солярий в Риге, вертикальный солярий Рига, абонемент в солярий Рига',
-      en: 'solarium Riga, vertical tanning Riga, tanning studio Riga'
+      lv: 'solārijs Rīgā, Ergoline Open Air Rīga, solārija abonements Rīgā, sauļošanās Rīga',
+      ru: 'солярий в Риге, Ergoline Open Air Рига, абонемент в солярий Рига',
+      en: 'solarium Riga, Ergoline Open Air Riga, tanning studio Riga'
     },
     h1: {
-      lv: 'Solārijs Rīgā – Vertikālais Solārijs un Izdevīgi Abonementi',
-      ru: 'Солярий в Риге – Мощный Вертикальный Солярий и Абонементы',
-      en: 'Solarium in Riga – Vertical Tanning & Value Passes'
+      lv: 'Solārijs Rīgā – Ergoline Open Air un Izdevīgi Abonementi',
+      ru: 'Солярий в Риге – Ergoline Open Air и Выгодные Абонементы',
+      en: 'Solarium in Riga – Ergoline Open Air & Value Passes'
     },
     subtitles: {
-      lv: 'Vienmērīgs un drošs iedegums katru dienu no Rīgas centra 15 minūtēs, ar bezmaksas stāvvietu.',
-      ru: 'Ровный золотистый загар каждый день — с проверенными лампами и бесплатной парковкой у входа.',
-      en: 'Even, radiant tan every day with regularly maintained EU-compliant lamps and free parking.'
+      lv: 'Vienmērīgs un drošs iedegums atvērtā dizaina Ergoline Open Air solārijā ar bezmaksas stāvvietu.',
+      ru: 'Ровный золотистый загар в просторном солярии Ergoline Open Air с бесплатной парковкой у входа.',
+      en: 'Even, radiant tan in our open-canopy Ergoline Open Air unit with free parking.'
     },
     intro: {
-      lv: 'Salons Aneri piedāvā modernu vertikālo solāriju ar regulāri mainītām lampām atbilstoši ES drošības prasībām. Pieejami seansi no 6 līdz 24 minūtēm, kā arī 10 reižu abonementi ar būtisku ietaupījumu.',
-      ru: 'В Salons Aneri установлен профессиональный вертикальный солярий, где мы строго следим за ресурсом и своевременной заменой ламп. Гости со всей Риги выбирают сеансы от 6 до 24 минут или выгодные абонементы на 10 посещений.',
-      en: 'Our vertical solarium maintains strict EU lamp standards for safe, even tanning from 6 to 24 minutes, with discounted 10-session passes.'
+      lv: 'Salons Aneri piedāvā Ergoline Open Air solāriju ar atvērtu augšējo kupolu bez slēgtas telpas sajūtas un ar regulāri mainītām lampām atbilstoši ES drošības prasībām. Pieejami seansi no 6 līdz 24 minūtēm, kā arī 10 reižu abonementi.',
+      ru: 'В Salons Aneri установлен комфортный солярий Ergoline Open Air (Open Sun): благодаря открытому куполу нет ощущения замкнутого пространства, а лампы регулярно меняются по нормам ЕС. Доступны сеансы от 6 до 24 минут и абонементы на 10 посещений.',
+      en: 'Our Ergoline Open Air (Open Sun) unit delivers open-canopy comfort without feeling enclosed, maintaining strict EU lamp standards for sessions from 6 to 24 minutes.'
     },
     highlights: {
       lv: [
@@ -650,15 +650,15 @@ export const ARTICLES_SEO_META: Record<string, ArticleSeoMeta> = {
     id: 'solarium-rules',
     lv: {
       title: 'Kā pareizi un droši sauļoties solārijā? | Salons Aneri Rīga',
-      description: 'Noteikumi drošam iedegumam vertikālajā solārijā Rīgā: minūšu izvēle, aizsargbrilles un ādas kopšana.'
+      description: 'Noteikumi drošam iedegumam Ergoline Open Air solārijā Rīgā: minūšu izvēle, aizsargbrilles un ādas kopšana.'
     },
     ru: {
       title: 'Как правильно загорать в солярии? | Салон Aneri Рига',
-      description: 'Советы для красивого и безопасного загара в вертикальном солярии в Риге: время, косметика и уход.'
+      description: 'Советы для красивого и безопасного загара в солярии Ergoline Open Air в Риге: время, косметика и уход.'
     },
     en: {
-      title: 'How to Tan Safely in a Vertical Solarium | Aneri Riga',
-      description: 'Guidelines for safe session duration, eye protection, and moisturizing when using our solarium in Riga.'
+      title: 'How to Tan Safely in a Solarium | Aneri Riga',
+      description: 'Guidelines for safe session duration, eye protection, and moisturizing in our Ergoline Open Air solarium in Riga.'
     }
   }
 };

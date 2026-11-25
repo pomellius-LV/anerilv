@@ -15,9 +15,10 @@ interface FooterProps {
     view: View,
     options?: { serviceId?: ServiceSectionId; articleId?: string }
   ) => void;
+  onBookingCall?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
-const Footer: React.FC<FooterProps> = ({ lang, content, onNavigate }) => {
+const Footer: React.FC<FooterProps> = ({ lang, content, onNavigate, onBookingCall }) => {
   const { footer, nav } = content;
   const mapUrl = "https://www.google.com/maps/place/56%C2%B054'30.6%22N+24%C2%B010'56.3%22E/@56.9085003,24.1822941,17z/";
   const instagramUrl = "https://www.instagram.com/salons_aneri/";
@@ -164,6 +165,7 @@ const Footer: React.FC<FooterProps> = ({ lang, content, onNavigate }) => {
               </a>
               <a
                 href="tel:+37127580047"
+                onClick={onBookingCall}
                 className="flex items-center gap-4 group"
                 aria-label="Call us"
               >

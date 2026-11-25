@@ -70,7 +70,7 @@ export const contentData: Record<Language, Content> = {
         {
           id: "solarium",
           title: "Solārijs",
-          description: "Profesionāls vertikālais solārijs skaistam iedegumam.",
+          description: "Ergoline Open Air solārijs — plašs, atvērts dizains skaistam iedegumam.",
           longDescription: "",
           keywords: [],
           image: ""
@@ -427,7 +427,7 @@ export const contentData: Record<Language, Content> = {
         {
           id: "solarium",
           title: "Солярий",
-          description: "Профессиональный вертикальный солярий для красивого загара.",
+          description: "Просторный солярий Ergoline Open Air для комфортного и ровного загара.",
           longDescription: "",
           keywords: [],
           image: ""
@@ -770,7 +770,7 @@ export const contentData: Record<Language, Content> = {
         {
           id: "solarium",
           title: "Solarium",
-          description: "Professional vertical solarium for a beautiful tan.",
+          description: "Ergoline Open Air solarium for a spacious, comfortable tan.",
           longDescription: "",
           keywords: [],
           image: ""

@@ -12,6 +12,7 @@ interface HeaderProps {
   setView: (view: View) => void;
   serviceId?: ServiceSectionId;
   articleId?: string;
+  onBookingCall?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -21,7 +22,8 @@ const Header: React.FC<HeaderProps> = ({
   view,
   setView,
   serviceId,
-  articleId
+  articleId,
+  onBookingCall
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -213,6 +215,7 @@ const Header: React.FC<HeaderProps> = ({
 
           <a
             href="tel:+37127580047"
+            onClick={onBookingCall}
             className={`inline-flex items-center gap-2.5 text-sm font-sans font-semibold tracking-tight transition-colors whitespace-nowrap ${
               !isLight
                 ? 'text-[#25282E] hover:text-[#8E1B32]'
@@ -226,6 +229,7 @@ const Header: React.FC<HeaderProps> = ({
 
           <a
             href="tel:+37127580047"
+            onClick={onBookingCall}
             className={`px-6 py-2.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.16em] transition-all whitespace-nowrap focus:outline-none ${
               !isLight
                 ? 'bg-[#8E1B32] text-white hover:bg-[#3A3E45] shadow-sm'
@@ -325,6 +329,10 @@ const Header: React.FC<HeaderProps> = ({
           <div className="pt-4 space-y-6 pb-24">
             <a
               href="tel:+37127580047"
+              onClick={(e) => {
+                setIsOpen(false);
+                onBookingCall?.(e);
+              }}
               className="flex items-center justify-center gap-3 w-full bg-[#8E1B32] hover:bg-[#3A3E45] text-white py-5 rounded-full font-sans font-bold text-xl shadow-lg transition-colors"
             >
               <Phone size={22} /> <span className="tabular-nums">+371 27580047</span>

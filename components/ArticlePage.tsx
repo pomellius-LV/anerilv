@@ -12,6 +12,7 @@ interface ArticlePageProps {
     view: View,
     options?: { serviceId?: ServiceSectionId; articleId?: string }
   ) => void;
+  onBookingCall?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
 const ARTICLE_UI: Record<Language, { eyebrow: string; notFound: string }> = {
@@ -20,7 +21,13 @@ const ARTICLE_UI: Record<Language, { eyebrow: string; notFound: string }> = {
   en: { eyebrow: 'Expert Guide · Salons Aneri', notFound: 'Article not found' }
 };
 
-const ArticlePage: React.FC<ArticlePageProps> = ({ articleId, lang, content, onNavigate }) => {
+const ArticlePage: React.FC<ArticlePageProps> = ({
+  articleId,
+  lang,
+  content,
+  onNavigate,
+  onBookingCall
+}) => {
   const article = content.articles.find(a => a.id === articleId);
   const ui = ARTICLE_UI[lang] || ARTICLE_UI.lv;
 
@@ -151,6 +158,7 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ articleId, lang, content, onN
 
             <a
               href="tel:+37127580047"
+              onClick={onBookingCall}
               className="inline-flex items-center justify-center gap-2.5 bg-[#8E1B32] hover:bg-[#25282E] text-white px-6 py-3.5 rounded-full text-xs font-semibold uppercase tracking-[0.16em] transition-colors shrink-0"
             >
               <Phone size={14} />
